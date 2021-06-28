@@ -3,7 +3,7 @@ sed -i -e "s/import tensorflow as tf/\nimport tensorflow.compat.v1 as tf\ntf.dis
 sed -i -e "s/import keras.engine as KE/import keras.engine.topology as KE/g" mask_rcnn_ros/src/mask_rcnn_ros/model.py
 sed -i -e "s/(s\[1\]/(-1/g" mask_rcnn_ros/src/mask_rcnn_ros/model.py
 sed -i -e "s/probs.shape\[0\]/1000/g" mask_rcnn_ros/src/mask_rcnn_ros/model.py
-sed -i -e "s/from keras.engine import topology/from tensorflow.python.keras.saving import hdf4_format/g" mask_rcnn_ros/src/mask_rcnn_ros/model.py
+sed -i -e "s/from keras.engine import topology/from tensorflow.python.keras.saving import hdf5_format/g" mask_rcnn_ros/src/mask_rcnn_ros/model.py
 sed -i -e "s/topology.load/hdf5_format.load/g" mask_rcnn_ros/src/mask_rcnn_ros/model.py
 sed -i -e "22a\from PIL import Image\ndef scipy_misc_imresize(arr, size, interp='bilinear', mode=None):\n\t# im = scipy.misc.toimage(arr, mode=mode) # im为PIL.Image.Image对象\n\tim = Image.fromarray(arr, mode=mode)\n\tts = type(size)\n\tif np.issubdtype(ts, np.signedinteger):\n\t\tpercent = size / 100.0\n\t\tsize = tuple((np.array(im.size)*percent).astype(int))\n\telif np.issubdtype(type(size), np.floating):\n\t\tsize = tuple((np.array(im.size)*size).astype(int))\n\telse:\n\t\tsize = (size[1], size[0])\n\tfunc = {'nearest': 0, 'lanczos': 1, 'bilinear': 2, 'bicubic': 3, 'cubic': 3}\n\timnew = im.resize(size, resample=func[interp]) # 调用PIL库中的resize函数\n\t# return scipy.misc.fromimage(imnew)\n\treturn np.array(imnew)\n" mask_rcnn_ros/src/mask_rcnn_ros/utils.py
 sed -i -e "s/scipy.misc.imresize/scipy_misc_imresize/g" mask_rcnn_ros/src/mask_rcnn_ros/utils.py
