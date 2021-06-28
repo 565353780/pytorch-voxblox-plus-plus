@@ -9,5 +9,7 @@ sed -i -e "22a\from PIL import Image\ndef scipy_misc_imresize(arr, size, interp=
 sed -i -e "s/scipy.misc.imresize/scipy_misc_imresize/g" mask_rcnn_ros/src/mask_rcnn_ros/utils.py
 sed -i -e 's/CV_BGR2GRAY/cv::COLOR_BGR2GRAY/g' -e 's/CV_CHAIN_APPROX_NONE/cv::CHAIN_APPROX_NONE/g' -e 's/CV_FILLED/cv::FILLED/g' depth_segmentation/depth_segmentation/src/depth_segmentation.cpp
 
-sed -i -e "s/<depend>opencv3_catkin<\/depend>//g" ./depth_segmentation/depth_segmentation/package.xml
-sed -i -e "s/<depend>pcl_catkin<\/depend>//g" ./depth_segmentation/depth_segmentation/package.xml
+sed -i -e "s/<depend>opencv3_catkin<\/depend>//g" depth_segmentation/depth_segmentation/package.xml
+sed -i -e "s/<depend>pcl_catkin<\/depend>//g" depth_segmentation/depth_segmentation/package.xml
+sed -i -e "s/<depend>opencv3_catkin<\/depend>//g" depth_segmentation/iclcv_segmentation/package.xml
+sed -i -e "s/<depend>pcl_catkin<\/depend>//g" depth_segmentation/iclcv_segmentation/package.xml
