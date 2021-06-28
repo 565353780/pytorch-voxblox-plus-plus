@@ -29,7 +29,7 @@ wstool update
 
 ## Change the source code to support OpenCV4
 ```bash
-sed -i -e 's/CV_BGR2GRAY/cv::COLOR_BGR2GRAY/g' -e 's/CV_CHAIN_APPROX_NONE/cv::CHAIN_APPROX_NONE/g' -e 's/CV_FILLED/cv::FILLED/g' depth_segmentation/depth_segmentation/src/depth_segmentation.cpp
+bash voxblox-plusplus/update_code.sh
 ```
 
 ## Build the project
