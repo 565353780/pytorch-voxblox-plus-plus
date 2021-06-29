@@ -13,3 +13,4 @@ sed -i -e "s/<depend>opencv3_catkin<\/depend>//g" depth_segmentation/depth_segme
 sed -i -e "s/<depend>pcl_catkin<\/depend>//g" depth_segmentation/depth_segmentation/package.xml
 sed -i -e "s/<depend>opencv3_catkin<\/depend>//g" depth_segmentation/iclcv_segmentation/package.xml
 sed -i -e "s/<depend>pcl_catkin<\/depend>//g" depth_segmentation/iclcv_segmentation/package.xml
+

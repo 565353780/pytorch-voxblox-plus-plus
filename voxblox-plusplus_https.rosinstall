@@ -6,7 +6,7 @@
     uri: https://github.com/catkin/catkin_simple.git
 - git:
     local-name: depth_segmentation
-    uri: https://github.com/ethz-asl/depth_segmentation.git
+    uri: https://github.com/againxx/depth_segmentation.git
 - git:
     local-name: eigen_catkin
     uri: https://github.com/ethz-asl/eigen_catkin.git
@@ -15,13 +15,13 @@
     uri: https://github.com/ethz-asl/eigen_checks.git
 - git:
     local-name: gflags_catkin
-    uri: https://github.com/ethz-asl/gflags_catkin.git
+    uri: https://github.com/againxx/gflags_catkin.git
 - git:
     local-name: glog_catkin
-    uri: https://github.com/ethz-asl/glog_catkin.git
+    uri: https://github.com/againxx/glog_catkin.git
 - git:
     local-name: mask_rcnn_ros
-    uri: https://github.com/ethz-asl/mask_rcnn_ros.git
+    uri: https://github.com/againxx/mask_rcnn_ros.git
 - git:
     local-name: minkindr_ros
     uri: https://github.com/ethz-asl/minkindr_ros.git
