@@ -27,11 +27,6 @@ wstool merge -t . voxblox-plusplus/voxblox-plusplus_https.rosinstall
 wstool update
 ```
 
-## Change the source code to support OpenCV4
-```bash
-bash voxblox-plusplus/update_code.sh
-```
-
 ## Build the project
 ```bash
 catkin build mask_rcnn_ros depth_segmentation gsm_node
