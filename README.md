@@ -2,7 +2,7 @@
 
 ## Prepair the environment
 ```bash
-sudo apt install python3-dev python3-pip python3-wstool protobuf-compiler dh-autoreconf
+sudo apt install python3-dev python3-pip python3-wstool protobuf-compiler dh-autoreconf ccache libpcl1-dev libpcl-dev
 sudo pip3 install -U numpy protobuf scipy scikit-image ipython keras wrapt simplejson netaddr osrf-pycommon scipy pillow catkin_pkg rospkg opencv-python empy
 sudo pip3 install -U tensorflow-gpu
 echo "\"# voxblox++
