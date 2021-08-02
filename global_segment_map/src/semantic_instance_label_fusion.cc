@@ -4,6 +4,7 @@ namespace voxblox {
 
 void SemanticInstanceLabelFusion::increaseLabelInstanceCount(
     const Label& label, const InstanceLabel& instance_label) {
+  LOG(WARNING) << "Start increaseLabelInstanceCount function!";
   auto label_it = label_instance_count_.find(label);
   if (label_it != label_instance_count_.end()) {
     auto instance_it = label_it->second.find(instance_label);
@@ -52,6 +53,7 @@ InstanceLabel SemanticInstanceLabelFusion::getInstanceLabel(
 InstanceLabel SemanticInstanceLabelFusion::getInstanceLabel(
     const Label& label, const float count_threshold_factor,
     const std::set<InstanceLabel>& assigned_instances) const {
+
   InstanceLabel instance_label = 0u;
   int max_count = 0;
   auto label_it = label_instance_count_.find(label);

@@ -50,3 +50,5 @@ mesh_results
 autolintc
 
 *.ply
+
+.clangd
