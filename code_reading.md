@@ -18,7 +18,7 @@ semanticInstanceSegmentationFromRosMsg(segmentation_msg,
 
 build a new instance_segmentation from segmentation_msg
 save all masks as cv::Mat to semantic_instance_segmentation->masks
-save all class_ids to semantic_instance_segmentation->labels
+save all instance_label to semantic_instance_segmentation->labels
 ```
 ->
 ```bash
@@ -53,10 +53,23 @@ create the labels for depth, normal and label
 ->
 
 ```
-# label_tsdf_integrator.cc
+# Compute segment for the pointcloud
+but this doesn't give us the instance or semantic label
 ```bash
+void Controller::subscribeSegmentPointCloudTopic(
+    ros::Subscriber* segment_point_cloud_sub)
+->
+*segment_point_cloud_sub = node_handle_private_->subscribe(
+    segment_point_cloud_topic, kSegmentPointCloudQueueSize,
+    &Controller::segmentPointCloudCallback, this);
+->
+void Controller::segmentPointCloudCallback(
+    const sensor_msgs::PointCloud2::Ptr& segment_point_cloud_msg)
+->
 void Controller::processSegment(
     const sensor_msgs::PointCloud2::Ptr& segment_point_cloud_msg)
+
+create segment by the input segment_point_cloud_msg
 ->
 integrator_->computeSegmentLabelCandidates(
     segment, &segment_label_candidates, &segment_merge_candidates_)

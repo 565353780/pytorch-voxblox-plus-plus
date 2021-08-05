@@ -30,7 +30,9 @@ void LabelTsdfIntegrator::checkForSegmentLabelMergeCandidate(
 }
 
 void LabelTsdfIntegrator::increaseLabelCountForSegment(
-    Segment* segment, const Label& label, const int segment_points_count,
+    Segment* segment,
+    const Label& label,
+    const int segment_points_count,
     std::map<Label, std::map<Segment*, size_t>>* candidates,
     std::unordered_set<Label>* merge_candidate_labels) {
   CHECK_NOTNULL(segment);
@@ -51,6 +53,8 @@ void LabelTsdfIntegrator::increaseLabelCountForSegment(
       label_it->second.emplace(segment, 1u);
     }
   } else {
+    LOG(WARNING) << "label and segment both not found, "
+      << "emplace a new label count in candidates";
     std::map<Segment*, size_t> segment_points_count;
     segment_points_count.emplace(segment, 1u);
     candidates->emplace(label, segment_points_count);
@@ -181,10 +185,12 @@ void LabelTsdfIntegrator::computeSegmentLabelCandidates(
   CHECK_NOTNULL(segment);
   CHECK_NOTNULL(candidates);
   CHECK_NOTNULL(segment_merge_candidates);
+
   // Flag to check whether there exists at least one label candidate.
   bool candidate_label_exists = false;
   const int segment_points_count = segment->points_C_.size();
   std::unordered_set<Label> merge_candidate_labels;
+  LOG(WARNING) << "segment_points_count = " << segment_points_count;
 
   for (const Point& point_C : segment->points_C_) {
     const Point point_G = segment->T_G_C_ * point_C;
