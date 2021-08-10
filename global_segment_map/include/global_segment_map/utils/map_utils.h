@@ -66,12 +66,9 @@ inline void createPointcloudFromMap(const LabelTsdfMap& map,
 
         point.segment_label = segment_label;
         point.semantic_class = semantic_class;
-        if(tsdf_voxel.weight > kMinWeight)
-        {
-          LOG(WARNING) << "linear_index = " << linear_index
-            << ", point.segment_label = " << int(segment_label)
-            << ", point.semantic_class = " << int(semantic_class);
-        }
+
+        point.instance_label = instance_id;
+
         pointcloud->push_back(point);
       }
     }

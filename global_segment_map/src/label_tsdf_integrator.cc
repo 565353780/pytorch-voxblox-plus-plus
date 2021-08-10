@@ -53,8 +53,6 @@ void LabelTsdfIntegrator::increaseLabelCountForSegment(
       label_it->second.emplace(segment, 1u);
     }
   } else {
-    LOG(WARNING) << "label and segment both not found, "
-      << "emplace a new label count in candidates";
     std::map<Segment*, size_t> segment_points_count;
     segment_points_count.emplace(segment, 1u);
     candidates->emplace(label, segment_points_count);
@@ -190,7 +188,6 @@ void LabelTsdfIntegrator::computeSegmentLabelCandidates(
   bool candidate_label_exists = false;
   const int segment_points_count = segment->points_C_.size();
   std::unordered_set<Label> merge_candidate_labels;
-  LOG(WARNING) << "segment_points_count = " << segment_points_count;
 
   for (const Point& point_C : segment->points_C_) {
     const Point point_G = segment->T_G_C_ * point_C;
@@ -225,7 +222,7 @@ void LabelTsdfIntegrator::computeSegmentLabelCandidates(
     std::vector<Label> merge_candidates;
     std::copy(merge_candidate_labels.begin(), merge_candidate_labels.end(),
               std::back_inserter(merge_candidates));
-    LOG(WARNING) << "give segment_merge_candidates a merge_candidates";
+    // give segment_merge_candidates a merge_candidates
     (*segment_merge_candidates)[segment] = merge_candidates;
   }
 
@@ -290,7 +287,7 @@ bool LabelTsdfIntegrator::getNextSegmentLabelPair(
           label_it->second.erase(segment.first);
         }
       }
-      LOG(WARNING) << "Start computeSegmentLabelCandidates for recompute";
+
       computeSegmentLabelCandidates(segment.first, candidates,
                                     segment_merge_candidates, *assigned_labels);
     }
@@ -337,14 +334,11 @@ void LabelTsdfIntegrator::decideLabelPointClouds(
   }
 
   if (label_tsdf_config_.enable_semantic_instance_segmentation) {
-    LOG(WARNING) << "In semantic_instance_segmentation progress";
     // Instance stuff.
     for (auto segment_it = labelled_segments.begin();
          segment_it != labelled_segments.end(); ++segment_it) {
       Label label = (*segment_it)->label_;
       if ((*segment_it)->points_C_.size() > 0u) {
-        LOG(WARNING) << "Start increaseLabelFramesCount progress";
-        LOG(WARNING) << "label = " << label;
         semantic_instance_label_fusion_ptr_->increaseLabelFramesCount(label);
       }
 
@@ -357,8 +351,6 @@ void LabelTsdfIntegrator::decideLabelPointClouds(
         auto global_instance_it = current_to_global_instance_map_.find(
             (*segment_it)->instance_label_);
         if (global_instance_it != current_to_global_instance_map_.end()) {
-          LOG(WARNING) << "Start increaseLabelInstanceCount progress at : "
-            << "global_instance_it in current_to_global_instance_map_";
           // If current frame instance maps to a global instance, use it.
           semantic_instance_label_fusion_ptr_->increaseLabelInstanceCount(
               label, global_instance_it->second);
@@ -372,8 +364,6 @@ void LabelTsdfIntegrator::decideLabelPointClouds(
                   label, assigned_instances);
 
           if (instance_label != 0u) {
-            LOG(WARNING) << "Start increaseLabelInstanceCount progress at : "
-              << "instance_label != 0u";
             current_to_global_instance_map_.emplace(
                 (*segment_it)->instance_label_, instance_label);
             semantic_instance_label_fusion_ptr_->increaseLabelInstanceCount(
@@ -385,8 +375,6 @@ void LabelTsdfIntegrator::decideLabelPointClouds(
             InstanceLabel fresh_instance = getFreshInstance();
             current_to_global_instance_map_.emplace(
                 (*segment_it)->instance_label_, fresh_instance);
-            LOG(WARNING) << "Start increaseLabelInstanceCount progress at : "
-              << "create new global instance";
             semantic_instance_label_fusion_ptr_->increaseLabelInstanceCount(
                 label, fresh_instance);
           }

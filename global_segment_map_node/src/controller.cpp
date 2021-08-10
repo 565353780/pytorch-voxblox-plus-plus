@@ -448,8 +448,6 @@ void Controller::processSegment(
       pcl::PointCloud<voxblox::PointSemanticInstanceType>
           point_cloud_semantic_instance;
       pcl::fromROSMsg(*segment_point_cloud_msg, point_cloud_semantic_instance);
-      LOG(WARNING) << "Create a segment with instance_label_ = 0 "
-        << "and will never change the value of instance_label_";
       segment = new Segment(point_cloud_semantic_instance, T_G_C);
     } else if (use_label_propagation_) {
       // TODO(ntonci): maybe rename use_label_propagation_ to something like
@@ -464,8 +462,11 @@ void Controller::processSegment(
       segment = new Segment(point_cloud_label, T_G_C);
     }
     CHECK_NOTNULL(segment);
-    LOG(WARNING) << "segment.instance_label_ = "
-      << segment->instance_label_;
+    if(segment->instance_label_ != 0)
+    {
+      LOG(WARNING) << "segment.instance_label_ = "
+        << segment->instance_label_;
+    }
     segments_to_integrate_.push_back(segment);
     ptcloud_timer.Stop();
 
