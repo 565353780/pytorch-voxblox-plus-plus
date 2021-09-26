@@ -1,5 +1,5 @@
 <launch>
-  <arg name="scene_name" default="asl_office_floor" />
+  <arg name="scene_name" default="scenenn" />
   <arg name="sensor_name" default="primesense" />
   <arg name="visualize" default="true" />
 
