@@ -1,5 +1,5 @@
 <launch>
-  <arg name="scene_name" default="scenenn" />
+  <arg name="scene_name" default="multi_robot_scene" />
   <arg name="sensor_name" default="primesense" />
   <arg name="visualize" default="true" />
 
