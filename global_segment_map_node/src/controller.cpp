@@ -640,6 +640,8 @@ bool Controller::generateMeshCallback(std_srvs::Empty::Request& request,
 bool Controller::getScenePointcloudCallback(
     vpp_msgs::GetScenePointcloud::Request& /* request */,
     vpp_msgs::GetScenePointcloud::Response& response) {
+
+  std::lock_guard<std::mutex> mesh_layer_lock(mesh_layer_mutex_);
   pcl::PointCloud<pcl::PointXYZRGB> pointcloud;
   fillPointcloudWithMesh(mesh_merged_layer_, ColorMode::kColor, &pointcloud);
 
