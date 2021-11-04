@@ -525,7 +525,38 @@ void Controller::segmentPointCloudCallback(
   received_first_message_ = true;
   last_segment_msg_timestamp_ = segment_point_cloud_msg->header.stamp;
 
-  processSegment(segment_point_cloud_msg);
+  std::vector<std::string> robot_name_vec;
+
+  if(!robot_position_loader_.updateRobotBBoxVec(
+        "world",
+        robot_name_vec))
+  {
+    LOG(ERROR) << "Controller::segmentPointCloudCallback : " << std::endl <<
+      "getRobotBBoxVec failed!" << std::endl;
+
+    processSegment(segment_point_cloud_msg);
+  }
+  else
+  {
+    pcl::PointCloud<pcl::PointXYZ> pcl_pointcloud;
+    pcl::fromROSMsg(*segment_point_cloud_msg, pcl_pointcloud);
+    pcl::PointCloud<pcl::PointXYZ> pcl_pointcloud_without_robot;
+
+    for(const pcl::PointXYZ &point : pcl_pointcloud.points)
+    {
+      if(!robot_position_loader_.isPointInRobotBBox(point.x, point.y, point.z))
+      {
+        pcl_pointcloud_without_robot.points.emplace_back(point);
+      }
+    }
+
+    sensor_msgs::PointCloud2 segment_point_cloud_without_robot;
+    pcl::toROSMsg(pcl_pointcloud_without_robot, segment_point_cloud_without_robot);
+    sensor_msgs::PointCloud2::Ptr segment_point_cloud_without_robot_msg =
+      boost::make_shared<sensor_msgs::PointCloud2>(segment_point_cloud_without_robot);
+
+    processSegment(segment_point_cloud_without_robot_msg);
+  }
 }
 
 void Controller::resetMeshIntegrators() {

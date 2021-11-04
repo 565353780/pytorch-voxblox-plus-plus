@@ -25,6 +25,8 @@
 #include <vpp_msgs/GetMap.h>
 #include <vpp_msgs/GetScenePointcloud.h>
 
+#include "global_segment_map_node/RobotPositionLoader.h"
+
 namespace voxblox {
 namespace voxblox_gsm {
 
@@ -198,6 +200,8 @@ class Controller {
   bool mesh_layer_updated_;
   bool need_full_remesh_;
   bool multiple_visualizers_;
+
+  RobotPositionLoader robot_position_loader_;
 };
 
 }  // namespace voxblox_gsm
