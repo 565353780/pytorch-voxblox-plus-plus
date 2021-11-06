@@ -550,10 +550,9 @@ void Controller::segmentPointCloudCallback(
       }
     }
 
-    sensor_msgs::PointCloud2 segment_point_cloud_without_robot;
-    pcl::toROSMsg(pcl_pointcloud_without_robot, segment_point_cloud_without_robot);
     sensor_msgs::PointCloud2::Ptr segment_point_cloud_without_robot_msg =
-      boost::make_shared<sensor_msgs::PointCloud2>(segment_point_cloud_without_robot);
+      boost::shared_ptr<sensor_msgs::PointCloud2>(new sensor_msgs::PointCloud2());
+    pcl::toROSMsg(pcl_pointcloud_without_robot, *segment_point_cloud_without_robot_msg);
 
     processSegment(segment_point_cloud_without_robot_msg);
   }
