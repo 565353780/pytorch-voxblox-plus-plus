@@ -6,6 +6,9 @@ if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   add_definitions(-fext-numeric-literals)
 endif()
 
+find_package(catkin REQUIRED COMPONENTS
+  robot_position_loader)
+
 find_package(catkin_simple REQUIRED)
 
 catkin_simple(ALL_DEPS_REQUIRED)

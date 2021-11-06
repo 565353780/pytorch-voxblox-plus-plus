@@ -71,7 +71,9 @@ Controller::Controller(ros::NodeHandle* node_handle_private)
       need_full_remesh_(false),
       enable_semantic_instance_segmentation_(true),
       publish_object_bbox_(false),
-      use_label_propagation_(true) {
+      use_label_propagation_(true),
+      robot_position_loader_client_(node_handle_private_->serviceClient<robot_position_loader::GetRobotBBox3DVec>("/robot_position_loader/get_robot_bbox_vec"))
+  {
   CHECK_NOTNULL(node_handle_private_);
 
   bool verbose_log = false;
@@ -524,8 +526,6 @@ void Controller::segmentPointCloudCallback(
   }
   received_first_message_ = true;
   last_segment_msg_timestamp_ = segment_point_cloud_msg->header.stamp;
-
-  std::vector<std::string> robot_name_vec;
 
   if(!robot_position_loader_.updateRobotBBoxVec(
         "world",
