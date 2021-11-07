@@ -19,15 +19,15 @@
     <arg name="visualize" value="$(arg visualize)" />
   </include>
 
+  <include file="$(find gsm_node)/launch/gsm_node.launch">
+    <arg name="scene_name" value="$(arg scene_name)" />
+    <arg name="visualize" value="$(arg visualize)" />
+  </include>
+
   <include file="$(find robot_position_loader)/launch/RobotPositionLoaderServer.launch">
     <arg name="world_name" value="$(arg world_name)"/>
     <arg name="robot_num" default="$(arg robot_num)"/>
     <arg name="robot_name" default="$(arg robot_name)"/>
-  </include>
-
-  <include file="$(find gsm_node)/launch/gsm_node.launch">
-    <arg name="scene_name" value="$(arg scene_name)" />
-    <arg name="visualize" value="$(arg visualize)" />
   </include>
 
 </launch>
