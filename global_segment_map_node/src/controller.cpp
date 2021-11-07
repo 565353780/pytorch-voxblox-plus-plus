@@ -538,14 +538,24 @@ void Controller::segmentPointCloudCallback(
     return;
   }
 
-  std::vector<size_t> valid_point_idx_vec;
-
   const std::vector<robot_position_loader::BBox3D> &robot_bbox_vec =
     get_robot_bbox_vec_serve.response.robot_bbox_vec;
+
+  if(robot_bbox_vec.size() == 0)
+  {
+    LOG(ERROR) << "Controller::segmentPointCloudCallback : " << std::endl <<
+      "robot_bbox_vec is empty!" << std::endl;
+
+    processSegment(segment_point_cloud_msg);
+
+    return;
+  }
 
   sensor_msgs::PointCloud source_point_cloud;
   sensor_msgs::PointCloud valid_point_cloud;
   sensor_msgs::convertPointCloud2ToPointCloud(*segment_point_cloud_msg, source_point_cloud);
+
+  valid_point_cloud.header = source_point_cloud.header;
 
   valid_point_cloud.channels.resize(source_point_cloud.channels.size());
   for(size_t i = 0; i < source_point_cloud.channels.size(); ++i)
@@ -585,7 +595,12 @@ void Controller::segmentPointCloudCallback(
 
   sensor_msgs::convertPointCloudToPointCloud2(
       valid_point_cloud, *segment_point_cloud_without_robot_msg);
-  segment_point_cloud_without_robot_msg->header = segment_point_cloud_msg->header;
+
+  for(size_t i = 0; i < segment_point_cloud_msg->fields.size(); ++i)
+  {
+    segment_point_cloud_without_robot_msg->fields[i].datatype =
+      segment_point_cloud_msg->fields[i].datatype;
+  }
 
   processSegment(segment_point_cloud_without_robot_msg);
 }
