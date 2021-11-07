@@ -30,5 +30,7 @@
   <depend>voxblox_msgs</depend>
   <depend>voxblox_ros</depend>
   <depend>vpp_msgs</depend>
+  <build_depend>mask_rcnn_ros</build_depend>
+  <build_depend>depth_segmentation</build_depend>
   <build_depend>robot_position_loader</build_depend>
 </package>

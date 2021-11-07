@@ -50,7 +50,6 @@ cs_add_library(${PROJECT_NAME}_library
 target_link_libraries(${PROJECT_NAME}_library ${catkin_LIBRARIES} ${approxmvbb_catkin_LIBRARIES})
 
 cs_add_executable(${PROJECT_NAME}
-  src/RobotPositionLoader.cpp
   src/node.cpp
 )
 target_link_libraries(${PROJECT_NAME} ${PROJECT_NAME}_library)

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <arg name="world_name" default="map"/>
+  <arg name="robot_num" default="3"/>
+  <arg name="robot_name" default="kinect_camera_"/>
+
+  <node pkg="robot_position_loader" name="RobotPositionLoaderServer" type="robot_position_loader_node" output="screen"
+    args="$(arg world_name) $(arg robot_num) $(arg robot_name)"/>
+
+</launch>
+

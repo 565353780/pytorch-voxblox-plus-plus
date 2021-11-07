@@ -527,35 +527,49 @@ void Controller::segmentPointCloudCallback(
   received_first_message_ = true;
   last_segment_msg_timestamp_ = segment_point_cloud_msg->header.stamp;
 
-  if(!robot_position_loader_.updateRobotBBoxVec(
-        "world",
-        robot_name_vec))
+  robot_position_loader::GetRobotBBox3DVec get_robot_bbox_vec_serve;
+  if(!robot_position_loader_client_.call(get_robot_bbox_vec_serve))
   {
     LOG(ERROR) << "Controller::segmentPointCloudCallback : " << std::endl <<
-      "getRobotBBoxVec failed!" << std::endl;
+      "call GetRobotBBox3DVec failed!" << std::endl;
 
     processSegment(segment_point_cloud_msg);
-  }
-  else
-  {
-    pcl::PointCloud<pcl::PointXYZ> pcl_pointcloud;
-    pcl::fromROSMsg(*segment_point_cloud_msg, pcl_pointcloud);
-    pcl::PointCloud<pcl::PointXYZ> pcl_pointcloud_without_robot;
 
-    for(const pcl::PointXYZ &point : pcl_pointcloud.points)
+    return;
+  }
+
+  const std::vector<robot_position_loader::BBox3D> &robot_bbox_vec =
+    get_robot_bbox_vec_serve.response.robot_bbox_vec;
+
+  pcl::PointCloud<pcl::PointXYZ> pcl_pointcloud;
+  pcl::fromROSMsg(*segment_point_cloud_msg, pcl_pointcloud);
+  pcl::PointCloud<pcl::PointXYZ> pcl_pointcloud_without_robot;
+
+  for(const pcl::PointXYZ &point : pcl_pointcloud.points)
+  {
+    bool is_in_robot_bbox = false;
+    for(const robot_position_loader::BBox3D &robot_bbox : robot_bbox_vec)
     {
-      if(!robot_position_loader_.isPointInRobotBBox(point.x, point.y, point.z))
+      if(robot_bbox.x_min <= point.x && point.x <= robot_bbox.x_max &&
+          robot_bbox.y_min <= point.y && point.y <= robot_bbox.y_max &&
+          robot_bbox.z_min <= point.z && point.z <= robot_bbox.z_max)
       {
-        pcl_pointcloud_without_robot.points.emplace_back(point);
+        is_in_robot_bbox = true;
+        break;
       }
     }
 
-    sensor_msgs::PointCloud2::Ptr segment_point_cloud_without_robot_msg =
-      boost::shared_ptr<sensor_msgs::PointCloud2>(new sensor_msgs::PointCloud2());
-    pcl::toROSMsg(pcl_pointcloud_without_robot, *segment_point_cloud_without_robot_msg);
-
-    processSegment(segment_point_cloud_without_robot_msg);
+    if(!is_in_robot_bbox)
+    {
+      pcl_pointcloud_without_robot.points.emplace_back(point);
+    }
   }
+
+  sensor_msgs::PointCloud2::Ptr segment_point_cloud_without_robot_msg =
+    boost::shared_ptr<sensor_msgs::PointCloud2>(new sensor_msgs::PointCloud2());
+  pcl::toROSMsg(pcl_pointcloud_without_robot, *segment_point_cloud_without_robot_msg);
+
+  processSegment(segment_point_cloud_without_robot_msg);
 }
 
 void Controller::resetMeshIntegrators() {
