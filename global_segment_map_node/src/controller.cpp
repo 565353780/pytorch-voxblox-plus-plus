@@ -538,15 +538,25 @@ void Controller::segmentPointCloudCallback(
     return;
   }
 
+  std::vector<size_t> valid_point_idx_vec;
+
   const std::vector<robot_position_loader::BBox3D> &robot_bbox_vec =
     get_robot_bbox_vec_serve.response.robot_bbox_vec;
 
-  pcl::PointCloud<pcl::PointXYZ> pcl_pointcloud;
-  pcl::fromROSMsg(*segment_point_cloud_msg, pcl_pointcloud);
-  pcl::PointCloud<pcl::PointXYZ> pcl_pointcloud_without_robot;
+  sensor_msgs::PointCloud source_point_cloud;
+  sensor_msgs::PointCloud valid_point_cloud;
+  sensor_msgs::convertPointCloud2ToPointCloud(*segment_point_cloud_msg, source_point_cloud);
 
-  for(const pcl::PointXYZ &point : pcl_pointcloud.points)
+  valid_point_cloud.channels.resize(source_point_cloud.channels.size());
+  for(size_t i = 0; i < source_point_cloud.channels.size(); ++i)
   {
+    valid_point_cloud.channels[i].name = source_point_cloud.channels[i].name;
+  }
+
+  for(size_t i = 0; i < source_point_cloud.points.size(); ++i)
+  {
+    const geometry_msgs::Point32 &point = source_point_cloud.points[i];
+
     bool is_in_robot_bbox = false;
     for(const robot_position_loader::BBox3D &robot_bbox : robot_bbox_vec)
     {
@@ -561,13 +571,21 @@ void Controller::segmentPointCloudCallback(
 
     if(!is_in_robot_bbox)
     {
-      pcl_pointcloud_without_robot.points.emplace_back(point);
+      valid_point_cloud.points.emplace_back(point);
+      for(size_t j = 0; j < source_point_cloud.channels.size(); ++j)
+      {
+        valid_point_cloud.channels[j].values.emplace_back(
+            source_point_cloud.channels[j].values[i]);
+      }
     }
   }
 
   sensor_msgs::PointCloud2::Ptr segment_point_cloud_without_robot_msg =
     boost::shared_ptr<sensor_msgs::PointCloud2>(new sensor_msgs::PointCloud2());
-  pcl::toROSMsg(pcl_pointcloud_without_robot, *segment_point_cloud_without_robot_msg);
+
+  sensor_msgs::convertPointCloudToPointCloud2(
+      valid_point_cloud, *segment_point_cloud_without_robot_msg);
+  segment_point_cloud_without_robot_msg->header = segment_point_cloud_msg->header;
 
   processSegment(segment_point_cloud_without_robot_msg);
 }

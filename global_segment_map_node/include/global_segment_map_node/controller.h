@@ -13,7 +13,9 @@
 #include <global_segment_map/meshing/label_tsdf_mesh_integrator.h>
 #include <global_segment_map/utils/visualizer.h>
 #include <ros/ros.h>
+#include <sensor_msgs/PointCloud.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <sensor_msgs/point_cloud_conversion.h>
 #include <std_srvs/Empty.h>
 #include <std_srvs/SetBool.h>
 #include <tf/transform_listener.h>
