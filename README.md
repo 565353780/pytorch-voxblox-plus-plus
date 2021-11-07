@@ -29,7 +29,7 @@ wstool update
 
 ## Build the project
 ```bash
-catkin build mask_rcnn_ros depth_segmentation gsm_node
+catkin build gsm_node
 ```
 
 ## Enjoy it~
