@@ -24,8 +24,6 @@ bool RobotPositionLoaderServer::getRobotBBoxVecCallback(
     robot_position_loader::GetRobotBBox3DVec::Request &req,
     robot_position_loader::GetRobotBBox3DVec::Response &res)
 {
-  std::cout << "Start RobotPositionLoader serve!" << std::endl;
-
   std::vector<robot_position_loader::BBox3D> robot_bbox_vec;
   robot_position_loader_.getRobotBBoxVec(robot_bbox_vec);
 
