@@ -70,6 +70,11 @@ bool RobotPositionLoader::updateRobotBBoxVec()
     current_robot_bbox.y_max = current_robot_center_y + y_up;
     current_robot_bbox.z_min = current_robot_center_z + z_down;
     current_robot_bbox.z_max = current_robot_center_z + z_up;
+    std::cout << "BBox for robot " << i << " :\n" <<
+      "[" << current_robot_bbox.x_min << "," << current_robot_bbox.x_max << "]" <<
+      "[" << current_robot_bbox.y_min << "," << current_robot_bbox.y_max << "]" <<
+      "[" << current_robot_bbox.z_min << "," << current_robot_bbox.z_max << "]\n";
+
   }
 
   return true;
