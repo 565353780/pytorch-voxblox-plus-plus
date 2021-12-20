@@ -42,7 +42,11 @@ bool RobotPositionLoader::updateRobotBBoxVec()
   {
     tf::StampedTransform current_tf;
 
-    const std::string current_robot_name = robot_name_ + std::to_string(i);
+    std::string current_robot_name = robot_name_ + std::to_string(i);
+    if(current_robot_name.find("fetch") != std::string::npos)
+    {
+      current_robot_name += "/base_link";
+    }
 
     tf_listener_.waitForTransform(
         world_name_, current_robot_name,
