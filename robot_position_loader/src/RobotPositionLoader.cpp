@@ -21,12 +21,12 @@ bool RobotPositionLoader::setWorldAndRobotParam(
 
 bool RobotPositionLoader::updateRobotBBoxVec()
 {
-  const float x_down = -0.1;
-  const float x_up = 0.1;
-  const float y_down = -0.1;
-  const float y_up = 0.1;
+  const float x_down = -0.25;
+  const float x_up = 0.25;
+  const float y_down = -0.25;
+  const float y_up = 0.25;
   const float z_down = -0.1;
-  const float z_up = 0.1;
+  const float z_up = 1.5;
 
   robot_bbox_vec_.resize(robot_num_);
 
