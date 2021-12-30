@@ -169,7 +169,7 @@ void GSMTopicSync::unionCallback(
 
   geometry_msgs::TransformStamped transformStamped_baselink_to_camera;
   transformStamped_baselink_to_camera.header.frame_id = robot_name_ + std::to_string(robot_idx) + "/" + camera_frame_topic_name_;
-  transformStamped_baselink_to_camera.child_frame_id = robot_name_ + "frame_" + std::to_string(robot_idx) + "/robot_camera_frame";
+  transformStamped_baselink_to_camera.child_frame_id = robot_name_ + std::to_string(robot_idx) + "/robot_camera_frame";
   transformStamped_baselink_to_camera.transform.translation.x = 0;
   transformStamped_baselink_to_camera.transform.translation.y = 0;
   transformStamped_baselink_to_camera.transform.translation.z = 0;
