@@ -9,9 +9,11 @@ int main(int argc, char** argv)
   std::string world_name = "";
   std::string robot_name = "";
   size_t robot_num = 0;
-  std::string robot_depth_image_topic_prefix = "";
-  std::string robot_rgb_image_topic_prefix = "";
-  std::string robot_camera_groud_truth_topic_name = "";
+  std::string camera_frame_topic_name = "";
+  std::string camera_depth_image_topic_prefix = "";
+  std::string camera_rgb_image_topic_prefix = "";
+  std::string camera_groud_truth_topic_name = "";
+  size_t pub_tf = 2;
 
   if(argc > 1)
   {
@@ -30,25 +32,37 @@ int main(int argc, char** argv)
 
   if(argc > 4)
   {
-    robot_depth_image_topic_prefix = argv[4];
+    camera_frame_topic_name = argv[4];
   }
 
   if(argc > 5)
   {
-    robot_rgb_image_topic_prefix = argv[5];
+    camera_depth_image_topic_prefix = argv[5];
   }
 
   if(argc > 6)
   {
-    robot_camera_groud_truth_topic_name = argv[6];
+    camera_rgb_image_topic_prefix = argv[6];
+  }
+
+  if(argc > 7)
+  {
+    camera_groud_truth_topic_name = argv[7];
+  }
+
+  if(argc > 8)
+  {
+    pub_tf = atoi(argv[8]);
   }
 
   if(world_name == "" ||
       robot_name == "" ||
       robot_num == 0 ||
-      robot_depth_image_topic_prefix == "" ||
-      robot_rgb_image_topic_prefix == "" ||
-      robot_camera_groud_truth_topic_name == "")
+      camera_frame_topic_name == "" ||
+      camera_depth_image_topic_prefix == "" ||
+      camera_rgb_image_topic_prefix == "" ||
+      camera_groud_truth_topic_name == "" ||
+      pub_tf == 2)
   {
     std::cout << "input not valid!" << std::endl;
 
@@ -59,9 +73,11 @@ int main(int argc, char** argv)
       world_name,
       robot_name,
       robot_num,
-      robot_depth_image_topic_prefix,
-      robot_rgb_image_topic_prefix,
-      robot_camera_groud_truth_topic_name);
+      camera_frame_topic_name,
+      camera_depth_image_topic_prefix,
+      camera_rgb_image_topic_prefix,
+      camera_groud_truth_topic_name,
+      pub_tf);
 
   gsm_topic_sync.startSync();
 

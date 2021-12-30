@@ -14,16 +14,20 @@ bool GSMTopicSync::setRobotParam(
     const std::string &world_name,
     const std::string &robot_name,
     const size_t &robot_num,
-    const std::string& robot_depth_image_topic_prefix,
-    const std::string& robot_rgb_image_topic_prefix,
-    const std::string& robot_camera_groud_truth_topic_name)
+    const std::string& camera_frame_topic_name,
+    const std::string& camera_depth_image_topic_prefix,
+    const std::string& camera_rgb_image_topic_prefix,
+    const std::string& camera_groud_truth_topic_name,
+    const size_t& pub_tf)
 {
   world_name_ = world_name;
   robot_name_ = robot_name;
   robot_num_ = robot_num;
-  robot_depth_image_topic_prefix_ = robot_depth_image_topic_prefix;
-  robot_rgb_image_topic_prefix_ = robot_rgb_image_topic_prefix;
-  robot_camera_groud_truth_topic_name_ = robot_camera_groud_truth_topic_name;
+  camera_frame_topic_name_ = camera_frame_topic_name;
+  camera_depth_image_topic_prefix_ = camera_depth_image_topic_prefix;
+  camera_rgb_image_topic_prefix_ = camera_rgb_image_topic_prefix;
+  camera_groud_truth_topic_name_ = camera_groud_truth_topic_name;
+  pub_tf_ = pub_tf;
 
   return true;
 }
@@ -51,15 +55,15 @@ bool GSMTopicSync::startSync()
       for(size_t robot_idx = 0; robot_idx < robot_num_; ++robot_idx)
       {
         camera_depth_camera_info_sub_vec.emplace_back(new message_filters::Subscriber<CameraInfo>(
-              nh, robot_name_ + std::to_string(robot_idx) + robot_depth_image_topic_prefix_ + "camera_info", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + camera_depth_image_topic_prefix_ + "camera_info", sub_queue_size_));
         camera_depth_image_raw_sub_vec.emplace_back(new message_filters::Subscriber<Image>(
-              nh, robot_name_ + std::to_string(robot_idx) + robot_depth_image_topic_prefix_ + "image_raw", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + camera_depth_image_topic_prefix_ + "image_raw", sub_queue_size_));
         camera_rgb_camera_info_sub_vec.emplace_back(new message_filters::Subscriber<CameraInfo>(
-              nh, robot_name_ + std::to_string(robot_idx) + robot_rgb_image_topic_prefix_ + "camera_info", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + camera_rgb_image_topic_prefix_ + "camera_info", sub_queue_size_));
         camera_rgb_image_raw_sub_vec.emplace_back(new message_filters::Subscriber<Image>(
-              nh, robot_name_ + std::to_string(robot_idx) + robot_rgb_image_topic_prefix_ + "image_raw", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + camera_rgb_image_topic_prefix_ + "image_raw", sub_queue_size_));
         camera_ground_truth_sub_vec.emplace_back(new message_filters::Subscriber<Odometry>(
-              nh, robot_name_ + std::to_string(robot_idx) + "/" + robot_camera_groud_truth_topic_name_, sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + "/" + camera_groud_truth_topic_name_, sub_queue_size_));
 
         sync_vec.emplace_back(new Synchronizer<MySyncPolicy>(MySyncPolicy(sub_queue_size_),
                                                              *camera_depth_camera_info_sub_vec[robot_idx],
@@ -91,15 +95,15 @@ bool GSMTopicSync::startSync()
       for(size_t robot_idx = 0; robot_idx < robot_num_; ++robot_idx)
       {
         camera_depth_camera_info_sub_vec.emplace_back(new message_filters::Subscriber<CameraInfo>(
-              nh, robot_name_ + std::to_string(robot_idx) + robot_depth_image_topic_prefix_ + "camera_info", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + camera_depth_image_topic_prefix_ + "camera_info", sub_queue_size_));
         camera_depth_image_raw_sub_vec.emplace_back(new message_filters::Subscriber<Image>(
-              nh, robot_name_ + std::to_string(robot_idx) + robot_depth_image_topic_prefix_ + "image_raw", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + camera_depth_image_topic_prefix_ + "image_raw", sub_queue_size_));
         camera_rgb_camera_info_sub_vec.emplace_back(new message_filters::Subscriber<CameraInfo>(
-              nh, robot_name_ + std::to_string(robot_idx) + robot_rgb_image_topic_prefix_ + "camera_info", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + camera_rgb_image_topic_prefix_ + "camera_info", sub_queue_size_));
         camera_rgb_image_raw_sub_vec.emplace_back(new message_filters::Subscriber<Image>(
-              nh, robot_name_ + std::to_string(robot_idx) + robot_rgb_image_topic_prefix_ + "image_raw", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + camera_rgb_image_topic_prefix_ + "image_raw", sub_queue_size_));
         camera_ground_truth_sub_vec.emplace_back(new message_filters::Subscriber<Odometry>(
-              nh, robot_name_ + std::to_string(robot_idx) + "/" + robot_camera_groud_truth_topic_name_, sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + "/" + camera_groud_truth_topic_name_, sub_queue_size_));
         
         sync_vec.emplace_back(new MySyncPolicy(*camera_depth_camera_info_sub_vec[robot_idx],
                                                *camera_depth_image_raw_sub_vec[robot_idx],
@@ -140,25 +144,24 @@ void GSMTopicSync::unionCallback(
   camera_rgb_camera_info_copy.header.stamp = current_time;
   camera_rgb_image_raw_copy.header.stamp = current_time;
 
-  // double camera_position_x = camera_ground_truth->pose.pose.position.x;
-  // double camera_position_y = camera_ground_truth->pose.pose.position.y;
-  // double camera_position_z = camera_ground_truth->pose.pose.position.z;
+  double camera_position_x = camera_ground_truth->pose.pose.position.x;
+  double camera_position_y = camera_ground_truth->pose.pose.position.y;
+  double camera_position_z = camera_ground_truth->pose.pose.position.z;
 
-  // tf2::Quaternion q_map_to_baselink;
-  // tf2::convert(camera_ground_truth->pose.pose.orientation, q_map_to_baselink);
+  tf2::Quaternion q_map_to_camera;
+  tf2::convert(camera_ground_truth->pose.pose.orientation, q_map_to_camera);
 
-  // geometry_msgs::TransformStamped transformStamped_map_to_baselink;
-  // transformStamped_map_to_baselink.header.frame_id = world_name_;
-  // transformStamped_map_to_baselink.child_frame_id = robot_name_ + std::to_string(robot_idx) + "/base_link";
-  // transformStamped_map_to_baselink.transform.translation.x = camera_position_x;
-  // transformStamped_map_to_baselink.transform.translation.y = camera_position_y;
-  // transformStamped_map_to_baselink.transform.translation.z = camera_position_z;
-  // transformStamped_map_to_baselink.transform.rotation.x = q_map_to_baselink.x();
-  // transformStamped_map_to_baselink.transform.rotation.y = q_map_to_baselink.y();
-  // transformStamped_map_to_baselink.transform.rotation.z = q_map_to_baselink.z();
-  // transformStamped_map_to_baselink.transform.rotation.w = q_map_to_baselink.w();
-  // transformStamped_map_to_baselink.header.stamp = current_time;
-  // tf_pub_.sendTransform(transformStamped_map_to_baselink);
+  geometry_msgs::TransformStamped transformStamped_map_to_camera;
+  transformStamped_map_to_camera.header.frame_id = world_name_;
+  transformStamped_map_to_camera.child_frame_id = robot_name_ + std::to_string(robot_idx) + "/" + camera_frame_topic_name_;
+  transformStamped_map_to_camera.transform.translation.x = camera_position_x;
+  transformStamped_map_to_camera.transform.translation.y = camera_position_y;
+  transformStamped_map_to_camera.transform.translation.z = camera_position_z;
+  transformStamped_map_to_camera.transform.rotation.x = q_map_to_camera.x();
+  transformStamped_map_to_camera.transform.rotation.y = q_map_to_camera.y();
+  transformStamped_map_to_camera.transform.rotation.z = q_map_to_camera.z();
+  transformStamped_map_to_camera.transform.rotation.w = q_map_to_camera.w();
+  transformStamped_map_to_camera.header.stamp = current_time;
 
   // tf2::Quaternion q_baselink_to_camera;
   // q_baselink_to_camera.setEuler(PI / 2.0, 0, -PI / 2.0);
@@ -181,6 +184,10 @@ void GSMTopicSync::unionCallback(
     return;
   }
   last_pub_camera_data_time_ = current_time;
+  if(pub_tf_ == 1)
+  {
+    tf_pub_.sendTransform(transformStamped_map_to_camera);
+  }
   camera_depth_camera_info_pub_.publish(camera_depth_camera_info_copy);
   camera_depth_image_raw_pub_.publish(camera_depth_image_raw_copy);
   camera_rgb_camera_info_pub_.publish(camera_rgb_camera_info_copy);

@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
 
 <launch>
-
   <arg name="world_name" default="map"/>
   <arg name="robot_name" default="fetch_"/>
   <arg name="robot_num" default="3"/>
-  <arg name="robot_depth_image_topic_prefix" default="/head_camera/depth_registered/"/>
-  <arg name="robot_rgb_image_topic_prefix" default="/head_camera/rgb/"/>
-  <arg name="robot_camera_groud_truth_topic_name" default="kinect_camera_ground_truth"/>
+  <arg name="camera_frame_topic_name" default="head_camera_rgb_optical_frame"/>
+  <arg name="camera_depth_image_topic_prefix" default="/head_camera/depth_registered/"/>
+  <arg name="camera_rgb_image_topic_prefix" default="/head_camera/rgb/"/>
+  <arg name="camera_groud_truth_topic_name" default="kinect_camera_ground_truth"/>
+  <arg name="pub_tf" default="0"/>
 
   <node name="GSMTopicSync_node" pkg="gsm_topic_sync" type="gsm_topic_sync_node" output="screen"
-    args="$(arg world_name) $(arg robot_name) $(arg robot_num) $(arg robot_depth_image_topic_prefix) $(arg robot_rgb_image_topic_prefix) $(arg robot_camera_groud_truth_topic_name)"/>
-        
+    args="$(arg world_name) $(arg robot_name) $(arg robot_num) $(arg camera_frame_topic_name) $(arg camera_depth_image_topic_prefix) $(arg camera_rgb_image_topic_prefix) $(arg camera_groud_truth_topic_name) $(arg pub_tf)"/>
 </launch>
+

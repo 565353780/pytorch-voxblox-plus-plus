@@ -39,9 +39,11 @@ public:
       const std::string& world_name,
       const std::string& robot_name,
       const size_t& robot_num,
-      const std::string& robot_depth_image_topic_prefix,
-      const std::string& robot_rgb_image_topic_prefix,
-      const std::string& robot_camera_groud_truth_topic_name);
+      const std::string& camera_frame_topic_name,
+      const std::string& camera_depth_image_topic_prefix,
+      const std::string& camera_rgb_image_topic_prefix,
+      const std::string& camera_groud_truth_topic_name,
+      const size_t& pub_tf);
 
   bool startSync();
 
@@ -75,9 +77,11 @@ private:
     std::string world_name_;
     size_t robot_num_;
     std::string robot_name_;
-    std::string robot_depth_image_topic_prefix_;
-    std::string robot_rgb_image_topic_prefix_;
-    std::string robot_camera_groud_truth_topic_name_;
+    std::string camera_frame_topic_name_;
+    std::string camera_depth_image_topic_prefix_;
+    std::string camera_rgb_image_topic_prefix_;
+    std::string camera_groud_truth_topic_name_;
+    size_t pub_tf_;
 
     ros::Time last_pub_camera_data_time_;
 };
