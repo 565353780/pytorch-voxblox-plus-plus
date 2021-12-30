@@ -33,5 +33,6 @@
   <build_depend>mask_rcnn_ros</build_depend>
   <build_depend>depth_segmentation</build_depend>
   <build_depend>occupancy_grid_publisher</build_depend>
+  <build_depend>pointcloud2_to_object_vec_converter</build_depend>
   <build_depend>robot_position_loader</build_depend>
 </package>
