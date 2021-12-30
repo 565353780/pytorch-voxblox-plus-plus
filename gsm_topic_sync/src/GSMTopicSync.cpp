@@ -13,20 +13,23 @@ bool GSMTopicSync::setPubTopic()
 bool GSMTopicSync::setRobotParam(
     const std::string &world_name,
     const std::string &robot_name,
-    const size_t &robot_num)
+    const size_t &robot_num,
+    const std::string& robot_depth_image_topic_prefix,
+    const std::string& robot_rgb_image_topic_prefix,
+    const std::string& robot_camera_groud_truth_topic_name_)
 {
   world_name_ = world_name;
   robot_name_ = robot_name;
   robot_num_ = robot_num;
+  robot_depth_image_topic_prefix_ = robot_depth_image_topic_prefix;
+  robot_rgb_image_topic_prefix_ = robot_rgb_image_topic_prefix;
+  robot_camera_groud_truth_topic_name_ = robot_camera_groud_truth_topic_name_;
 
   return true;
 }
 
 bool GSMTopicSync::startSync()
 {
-  const std::string robot_depth_image_prefix = "/head_camera/depth_registered/";
-  const std::string robot_rgb_image_prefix = "/head_camera/rgb/";
-
   //0 : ApproximateTime
   //1 : TimeSynchronizer
   size_t sync_mode = 1;
@@ -48,15 +51,15 @@ bool GSMTopicSync::startSync()
       for(size_t robot_idx = 0; robot_idx < robot_num_; ++robot_idx)
       {
         camera_depth_camera_info_sub_vec.emplace_back(new message_filters::Subscriber<CameraInfo>(
-              nh, robot_name_ + std::to_string(robot_idx) + robot_depth_image_prefix + "camera_info", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + robot_depth_image_topic_prefix_ + "camera_info", sub_queue_size_));
         camera_depth_image_raw_sub_vec.emplace_back(new message_filters::Subscriber<Image>(
-              nh, robot_name_ + std::to_string(robot_idx) + robot_depth_image_prefix + "image_raw", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + robot_depth_image_topic_prefix_ + "image_raw", sub_queue_size_));
         camera_rgb_camera_info_sub_vec.emplace_back(new message_filters::Subscriber<CameraInfo>(
-              nh, robot_name_ + std::to_string(robot_idx) + robot_rgb_image_prefix + "camera_info", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + robot_rgb_image_topic_prefix_ + "camera_info", sub_queue_size_));
         camera_rgb_image_raw_sub_vec.emplace_back(new message_filters::Subscriber<Image>(
-              nh, robot_name_ + std::to_string(robot_idx) + robot_rgb_image_prefix + "image_raw", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + robot_rgb_image_topic_prefix_ + "image_raw", sub_queue_size_));
         camera_ground_truth_sub_vec.emplace_back(new message_filters::Subscriber<Odometry>(
-              nh, robot_name_ + std::to_string(robot_idx) + "/head_camera_ground_truth", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + "/" + robot_camera_groud_truth_topic_name_, sub_queue_size_));
 
         sync_vec.emplace_back(new Synchronizer<MySyncPolicy>(MySyncPolicy(sub_queue_size_),
                                                              *camera_depth_camera_info_sub_vec[robot_idx],
@@ -88,15 +91,15 @@ bool GSMTopicSync::startSync()
       for(size_t robot_idx = 0; robot_idx < robot_num_; ++robot_idx)
       {
         camera_depth_camera_info_sub_vec.emplace_back(new message_filters::Subscriber<CameraInfo>(
-              nh, robot_name_ + std::to_string(robot_idx) + robot_depth_image_prefix + "camera_info", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + robot_depth_image_topic_prefix_ + "camera_info", sub_queue_size_));
         camera_depth_image_raw_sub_vec.emplace_back(new message_filters::Subscriber<Image>(
-              nh, robot_name_ + std::to_string(robot_idx) + robot_depth_image_prefix + "image_raw", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + robot_depth_image_topic_prefix_ + "image_raw", sub_queue_size_));
         camera_rgb_camera_info_sub_vec.emplace_back(new message_filters::Subscriber<CameraInfo>(
-              nh, robot_name_ + std::to_string(robot_idx) + robot_rgb_image_prefix + "camera_info", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + robot_rgb_image_topic_prefix_ + "camera_info", sub_queue_size_));
         camera_rgb_image_raw_sub_vec.emplace_back(new message_filters::Subscriber<Image>(
-              nh, robot_name_ + std::to_string(robot_idx) + robot_rgb_image_prefix + "image_raw", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + robot_rgb_image_topic_prefix_ + "image_raw", sub_queue_size_));
         camera_ground_truth_sub_vec.emplace_back(new message_filters::Subscriber<Odometry>(
-              nh, robot_name_ + std::to_string(robot_idx) + "/head_camera_ground_truth", sub_queue_size_));
+              nh, robot_name_ + std::to_string(robot_idx) + "/" + robot_camera_groud_truth_topic_name_, sub_queue_size_));
         
         sync_vec.emplace_back(new MySyncPolicy(*camera_depth_camera_info_sub_vec[robot_idx],
                                                *camera_depth_image_raw_sub_vec[robot_idx],
