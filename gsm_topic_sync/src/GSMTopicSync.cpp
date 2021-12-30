@@ -180,6 +180,7 @@ void GSMTopicSync::unionCallback(
   {
     return;
   }
+  last_pub_camera_data_time_ = current_time;
   camera_depth_camera_info_pub_.publish(camera_depth_camera_info_copy);
   camera_depth_image_raw_pub_.publish(camera_depth_image_raw_copy);
   camera_rgb_camera_info_pub_.publish(camera_rgb_camera_info_copy);
