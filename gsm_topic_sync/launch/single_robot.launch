@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<launch>
+
+    <include file="$(find gsm_topic_sync)/launch/multi_robots.launch"/>
+        
+</launch>

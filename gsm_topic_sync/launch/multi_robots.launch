@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<launch>
+
+    <include file="$(find gsm_topic_sync)/launch/env.launch"/>
+
+    <arg name="robot_num" type = "int" default="1"/>
+
+    <include file="$(find gsm_topic_sync)/launch/tf_pub.launch">
+        <arg name="robot_num" type = "int" value="$(arg robot_num)"/>
+    </include>
+
+    <include file="$(find gsm_topic_sync)/launch/self_launch.launch">
+        <arg name="robot_num" type = "int" value="$(eval arg('robot_num') - 1)"/>
+    </include>
+
+    <include file="$(find gsm_node)/launch/vpp_pipeline.launch"/>
+        
+</launch>

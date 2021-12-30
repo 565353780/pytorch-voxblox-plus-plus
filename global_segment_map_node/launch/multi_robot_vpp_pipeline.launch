@@ -30,6 +30,12 @@
     <arg name="robot_name" default="$(arg robot_name)"/>
   </include>
 
+  <include file="$(find gsm_topic_sync)/launch/gsm_camera_data_pub.launch">                                                                                                                                                                          _  _ models/
+    <arg name="world_name" value="$(arg world_name)"/>                                                                                                                                                                                               _  _ scripts/
+    <arg name="robot_num" value="$(arg robot_num)"/>                                                                                                                                                                                                 _  _ urdf/
+    <arg name="robot_name" value="$(arg robot_name)"/>                                                                                                                                                                                               _  _ worlds/
+  </include>
+
   <include file="$(find occupancy_grid_publisher)/launch/pub_occupancy_grid.launch"/>
   <include file="$(find pointcloud2_to_object_vec_converter)/launch/PointCloud2ToObjectVecConverterServer.launch"/>
 

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <arg name="world_name" default="map"/>
+  <arg name="robot_name" default="fetch_"/>
+  <arg name="robot_num" default="3"/>
+
+  <node name="GSMTopicSync_node" pkg="gsm_topic_sync" type="gsm_topic_sync_node" output="screen"
+    args="$(arg world_name) $(arg robot_name) $(arg robot_num)"/>
+        
+</launch>

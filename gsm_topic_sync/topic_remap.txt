@@ -1,0 +1,9 @@
+    <remap from="/camera/depth/camera_info" to="/arm_camera/depth_registered/camera_info" />
+    <remap from="/camera/depth/image_raw" to="/arm_camera/depth_registered/image_raw" />
+    <remap from="/camera/rgb/camera_info" to="/arm_camera/rgb/camera_info" />
+    <remap from="/camera/rgb/image_raw" to="/arm_camera/rgb/image_raw" />
+
+    <remap from="/arm_camera/depth_registered/camera_info" to="/camera/depth/camera_info" />
+    <remap from="/arm_camera/depth_registered/image_raw" to="/camera/depth/image_raw" />
+    <remap from="/arm_camera/rgb/camera_info" to="/camera/rgb/camera_info" />
+    <remap from="/arm_camera/rgb/image_raw" to="/camera/rgb/image_raw" />
