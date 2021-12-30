@@ -15,15 +15,15 @@ export CATKIN_WS=~/catkin_ws\" >> ~/.bashrc"
 mkdir -p $CATKIN_WS/src && cd $CATKIN_WS
 catkin init
 catkin config --extend /opt/ros/$ROS_VERSION --merge-devel
-catkin config --cmake-args -DCMAKE_CXX_STANDARD=14 -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=Yes
+catkin config --cmake-args -DCMAKE_CXX_STANDARD=17 -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=Yes
 wstool init src
 ```
 
 ## Clone git package
 ```bash
 cd src
-git clone ssh://git@chLi:30001/ustc/voxblox-plusplus.git
-wstool merge -t . voxblox-plusplus/voxblox-plusplus_https.rosinstall
+git clone https://github.com/565353780/voxblox-plus-plus.git
+wstool merge -t . voxblox-plus-plus/voxblox-plus-plus_https.rosinstall
 wstool update
 ```
 
@@ -33,3 +33,4 @@ catkin build gsm_node
 ```
 
 ## Enjoy it~
+
