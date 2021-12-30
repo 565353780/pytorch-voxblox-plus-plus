@@ -29,6 +29,8 @@ public:
     pub_rate_ = 100;
 
     setPubTopic();
+
+    last_pub_camera_data_time_ = ros::Time();
   }
 
   bool setPubTopic();
@@ -76,5 +78,7 @@ private:
     std::string robot_depth_image_topic_prefix_;
     std::string robot_rgb_image_topic_prefix_;
     std::string robot_camera_groud_truth_topic_name_;
+
+    ros::Time last_pub_camera_data_time_;
 };
 

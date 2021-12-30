@@ -176,6 +176,10 @@ void GSMTopicSync::unionCallback(
   // transformStamped_baselink_to_camera.header.stamp = current_time;
   // tf_pub_.sendTransform(transformStamped_baselink_to_camera);
 
+  if(current_time == last_pub_camera_data_time_)
+  {
+    return;
+  }
   camera_depth_camera_info_pub_.publish(camera_depth_camera_info_copy);
   camera_depth_image_raw_pub_.publish(camera_depth_image_raw_copy);
   camera_rgb_camera_info_pub_.publish(camera_rgb_camera_info_copy);
