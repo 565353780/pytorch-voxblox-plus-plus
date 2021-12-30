@@ -6,11 +6,13 @@
   <arg name="sensor_name" default="primesense" />
   <arg name="visualize" default="true" />
   <arg name="world_name" default="map"/>
-  <arg name="robot_num" default="3"/>
   <arg name="robot_name" default="fetch_"/>
-  <arg name="robot_depth_image_topic_prefix" default="/head_camera/depth_registered/"/>
-  <arg name="robot_rgb_image_topic_prefix" default="/head_camera/rgb/"/>
-  <arg name="robot_camera_groud_truth_topic_name" default="kinect_camera_ground_truth"/>
+  <arg name="robot_num" default="3"/>
+  <arg name="camera_frame_topic_name" default="head_camera_rgb_optical_frame"/>
+  <arg name="camera_depth_image_topic_prefix" default="/head_camera/depth_registered/"/>
+  <arg name="camera_rgb_image_topic_prefix" default="/head_camera/rgb/"/>
+  <arg name="camera_groud_truth_topic_name" default="head_camera_ground_truth"/>
+  <arg name="pub_tf" default="0"/>
 
   <include file="$(find mask_rcnn_ros)/launch/mask_rcnn_node.launch">
     <arg name="sensor_name" value="$(arg sensor_name)" />
@@ -37,9 +39,11 @@
     <arg name="world_name" value="$(arg world_name)"/>
     <arg name="robot_num" default="$(arg robot_num)"/>
     <arg name="robot_name" default="$(arg robot_name)"/>
-    <arg name="robot_depth_image_topic_prefix" value="$(arg robot_depth_image_topic_prefix)"/>
-    <arg name="robot_rgb_image_topic_prefix" value="$(arg robot_rgb_image_topic_prefix)"/>
-    <arg name="robot_camera_groud_truth_topic_name" value="$(arg robot_camera_groud_truth_topic_name)"/>
+    <arg name="camera_frame_topic_name" default="$(arg camera_frame_topic_name)"/>
+    <arg name="camera_depth_image_topic_prefix" value="$(arg camera_depth_image_topic_prefix)"/>
+    <arg name="camera_rgb_image_topic_prefix" value="$(arg camera_rgb_image_topic_prefix)"/>
+    <arg name="camera_groud_truth_topic_name" value="$(arg camera_groud_truth_topic_name)"/>
+    <arg name="pub_tf" default="$(arg pub_tf)"/>
   </include>
 
   <include file="$(find occupancy_grid_publisher)/launch/pub_occupancy_grid.launch"/>
