@@ -30,5 +30,8 @@
     <arg name="robot_name" default="$(arg robot_name)"/>
   </include>
 
+  <include file="$(find occupancy_grid_publisher)/launch/pub_occupancy_grid.launch"/>
+  <include file="$(find pointcloud2_to_object_vec_converter)/launch/PointCloud2ToObjectVecConverterServer.launch"/>
+
 </launch>
 

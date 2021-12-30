@@ -19,7 +19,5 @@
     <arg name="scene_name" value="$(arg scene_name)" />
     <arg name="visualize" value="$(arg visualize)" />
   </include>
-
-  <include file="$(find occupancy_grid_publisher)/launch/pub_occupancy_grid.launch"/>
 </launch>
 
