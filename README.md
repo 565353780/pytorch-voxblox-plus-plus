@@ -30,6 +30,9 @@ wstool update
 ## Build the project
 ```bash
 catkin build gsm_node
+cd ..
+cp src/voxblox-plus-plus/catkin_init.bash
+./catkin_init.bash --none
 ```
 
 ## Enjoy it~
