@@ -527,8 +527,8 @@ void Controller::segmentPointCloudCallback(
   received_first_message_ = true;
   last_segment_msg_timestamp_ = segment_point_cloud_msg->header.stamp;
 
-  // processSegment(segment_point_cloud_msg);
-  // return;
+  processSegment(segment_point_cloud_msg);
+  return;
 
   robot_position_loader::GetRobotBBox3DVec get_robot_bbox_vec_serve;
   if(!robot_position_loader_client_.call(get_robot_bbox_vec_serve))
