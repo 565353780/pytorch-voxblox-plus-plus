@@ -16,14 +16,14 @@ bool GSMTopicSync::setRobotParam(
     const size_t &robot_num,
     const std::string& robot_depth_image_topic_prefix,
     const std::string& robot_rgb_image_topic_prefix,
-    const std::string& robot_camera_groud_truth_topic_name_)
+    const std::string& robot_camera_groud_truth_topic_name)
 {
   world_name_ = world_name;
   robot_name_ = robot_name;
   robot_num_ = robot_num;
   robot_depth_image_topic_prefix_ = robot_depth_image_topic_prefix;
   robot_rgb_image_topic_prefix_ = robot_rgb_image_topic_prefix;
-  robot_camera_groud_truth_topic_name_ = robot_camera_groud_truth_topic_name_;
+  robot_camera_groud_truth_topic_name_ = robot_camera_groud_truth_topic_name;
 
   return true;
 }
