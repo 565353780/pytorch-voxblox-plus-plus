@@ -139,6 +139,7 @@ void GSMTopicSync::unionCallback(
   sensor_msgs::Image camera_rgb_image_raw_copy = *camera_rgb_image_raw;
 
   ros::Time current_time = camera_ground_truth->header.stamp;
+
   camera_depth_camera_info_copy.header.stamp = current_time;
   camera_depth_image_raw_copy.header.stamp = current_time;
   camera_rgb_camera_info_copy.header.stamp = current_time;
@@ -163,21 +164,20 @@ void GSMTopicSync::unionCallback(
   transformStamped_map_to_camera.transform.rotation.w = q_map_to_camera.w();
   transformStamped_map_to_camera.header.stamp = current_time;
 
-  // tf2::Quaternion q_baselink_to_camera;
-  // q_baselink_to_camera.setEuler(PI / 2.0, 0, -PI / 2.0);
+  tf2::Quaternion q_baselink_to_camera;
+  q_baselink_to_camera.setEuler(PI / 2.0, 0, -PI / 2.0);
 
-  // geometry_msgs::TransformStamped transformStamped_baselink_to_camera;
-  // transformStamped_baselink_to_camera.header.frame_id = robot_name_ + std::to_string(robot_idx);
-  // transformStamped_baselink_to_camera.child_frame_id = robot_name_ + "frame_" + std::to_string(robot_idx);
-  // transformStamped_baselink_to_camera.transform.translation.x = 0;
-  // transformStamped_baselink_to_camera.transform.translation.y = 0;
-  // transformStamped_baselink_to_camera.transform.translation.z = 0;
-  // transformStamped_baselink_to_camera.transform.rotation.x = q_baselink_to_camera.x();
-  // transformStamped_baselink_to_camera.transform.rotation.y = q_baselink_to_camera.y();
-  // transformStamped_baselink_to_camera.transform.rotation.z = q_baselink_to_camera.z();
-  // transformStamped_baselink_to_camera.transform.rotation.w = q_baselink_to_camera.w();
-  // transformStamped_baselink_to_camera.header.stamp = current_time;
-  // tf_pub_.sendTransform(transformStamped_baselink_to_camera);
+  geometry_msgs::TransformStamped transformStamped_baselink_to_camera;
+  transformStamped_baselink_to_camera.header.frame_id = robot_name_ + std::to_string(robot_idx) + "/" + camera_frame_topic_name_;
+  transformStamped_baselink_to_camera.child_frame_id = robot_name_ + "frame_" + std::to_string(robot_idx) + "/robot_camera_frame";
+  transformStamped_baselink_to_camera.transform.translation.x = 0;
+  transformStamped_baselink_to_camera.transform.translation.y = 0;
+  transformStamped_baselink_to_camera.transform.translation.z = 0;
+  transformStamped_baselink_to_camera.transform.rotation.x = q_baselink_to_camera.x();
+  transformStamped_baselink_to_camera.transform.rotation.y = q_baselink_to_camera.y();
+  transformStamped_baselink_to_camera.transform.rotation.z = q_baselink_to_camera.z();
+  transformStamped_baselink_to_camera.transform.rotation.w = q_baselink_to_camera.w();
+  transformStamped_baselink_to_camera.header.stamp = current_time;
 
   if(current_time == last_pub_camera_data_time_)
   {
@@ -187,6 +187,11 @@ void GSMTopicSync::unionCallback(
   if(pub_tf_ == 1)
   {
     tf_pub_.sendTransform(transformStamped_map_to_camera);
+
+    if(robot_name_ == "kinect_camera_")
+    {
+      tf_pub_.sendTransform(transformStamped_baselink_to_camera);
+    }
   }
   camera_depth_camera_info_pub_.publish(camera_depth_camera_info_copy);
   camera_depth_image_raw_pub_.publish(camera_depth_image_raw_copy);
