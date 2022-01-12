@@ -81,9 +81,6 @@ class MaskRCNNNode(object):
             if msg is not None:
                 np_image = self._cv_bridge.imgmsg_to_cv2(msg, 'bgr8')
 
-                cv2.imshow("np_image", np_image)
-                cv2.waitKey(1)
-
                 # Run detection
                 result_dict = self.detector.detect_image(np_image)
 
@@ -103,8 +100,6 @@ class MaskRCNNNode(object):
                 # Visualize results
                 if self._visualization:
                     cv_result = self._visualize_plt(result, np_image)
-                    cv2.imshow("np_image_result", cv_result)
-                    cv2.waitKey(1)
                     image_msg = self._cv_bridge.cv2_to_imgmsg(cv_result, 'bgr8')
                     vis_pub.publish(image_msg)
 
