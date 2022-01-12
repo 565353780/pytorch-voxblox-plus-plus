@@ -366,8 +366,6 @@ void LabelTsdfIntegrator::decideLabelPointClouds(
       // Loop through all the segments.
       if ((*segment_it)->instance_label_ != 0u)
       {
-        LOG(WARNING) << "Start loop through all the segments for "
-          << "increaseLabelInstanceCount";
         // It's a segment with a current frame instance.
         auto global_instance_it = current_to_global_instance_map_.find(
             (*segment_it)->instance_label_);
@@ -379,8 +377,6 @@ void LabelTsdfIntegrator::decideLabelPointClouds(
         }
         else
         {
-          LOG(WARNING) << "global_instance_it not in current_to_global_instance_map_, "
-            << "start getInstanceLabel";
           // Current frame instance doesn't map to any global instance.
           // Get the global instance with max count.
           InstanceLabel instance_label =
@@ -397,7 +393,6 @@ void LabelTsdfIntegrator::decideLabelPointClouds(
           }
           else
           {
-            LOG(WARNING) << "instance_label is 0u, start create new global instance";
             // Create new global instance.
             InstanceLabel fresh_instance = getFreshInstance();
             current_to_global_instance_map_.emplace(

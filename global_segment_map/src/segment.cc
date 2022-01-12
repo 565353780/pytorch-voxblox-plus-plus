@@ -92,24 +92,6 @@ Segment::Segment(
     }
   }
 
-  if(semantic_label_ != 0 && instance_label_ != 0)
-  {
-    LOG(WARNING) << "pointcloud.points.size() = " <<
-      point_cloud.points.size();
-    LOG(WARNING) << "the input semantic and instance label list is :";
-    for(auto label_pair : semantic_label_vec)
-    {
-      LOG(WARNING) << "semantic : " << label_pair.first
-        << " , " << "num : " << label_pair.second;
-    }
-    for(auto label_pair : instance_label_vec)
-    {
-      LOG(WARNING) << "instance : " << label_pair.first
-        << " , " << "num : " << label_pair.second;
-    }
-    LOG(WARNING) << "================";
-  }
-
   points_C_.reserve(point_cloud.points.size());
   colors_.reserve(point_cloud.points.size());
 

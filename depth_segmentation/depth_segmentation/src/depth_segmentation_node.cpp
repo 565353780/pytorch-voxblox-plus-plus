@@ -274,12 +274,6 @@ class DepthSegmentationNode {
       pcl::PointCloud<PointSurfelLabel>::Ptr scene_pcl(
           new pcl::PointCloud<PointSurfelLabel>);
 
-      // FIXME : segment.instance_label always = 0!
-      std::cout << "publish_segments :\n";
-
-      size_t zero_num = 0;
-      size_t not_zero_num = 0;
-
       for (depth_segmentation::Segment segment : segments)
       {
         CHECK_GT(segment.points.size(), 0u);
@@ -297,15 +291,6 @@ class DepthSegmentationNode {
             semantic_label = *(segment.semantic_label.begin());
           }
 
-          if(instance_label == 0)
-          {
-            ++zero_num;
-          }
-          else
-          {
-            ++not_zero_num;
-          }
-
           fillPoint(segment.points[i], segment.normals[i],
                     segment.original_colors[i], semantic_label, instance_label,
                     &point_pcl);
@@ -319,8 +304,6 @@ class DepthSegmentationNode {
         pcl2_msg.header.frame_id = header.frame_id;
         point_cloud2_segment_pub_.publish(pcl2_msg);
       }
-
-      std::cout << "zero_num = " << zero_num << " ; not_zero_num = " << not_zero_num << std::endl;
 
       if (params_.visualize_segmented_scene)
       {

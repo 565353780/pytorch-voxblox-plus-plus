@@ -413,11 +413,7 @@ void Controller::processSegment(
   }
 
   CHECK_NOTNULL(segment);
-  if(segment->instance_label_ != 0)
-  {
-    LOG(WARNING) << "segment.instance_label_ = "
-      << segment->instance_label_;
-  }
+
   segments_to_integrate_.push_back(segment);
   ptcloud_timer.Stop();
 
@@ -545,30 +541,6 @@ void Controller::segmentPointCloudCallback(
   }
   received_first_message_ = true;
   last_segment_msg_timestamp_ = segment_point_cloud_msg->header.stamp;
-
-  // FIXME : pcl::fromROSMsg(segment_point_cloud_msg).points[0].instance_label always = 0!
-  pcl::PointCloud<voxblox::PointSemanticInstanceType>
-      point_cloud_semantic_instance;
-  pcl::fromROSMsg(*segment_point_cloud_msg, point_cloud_semantic_instance);
-
-  size_t zero_num = 0;
-  size_t not_zero_num = 0;
-  for(size_t i = 0; i < point_cloud_semantic_instance.points.size(); ++i)
-  {
-    if(point_cloud_semantic_instance.points[i].instance_label == 0)
-    {
-      ++zero_num;
-    }
-    else
-    {
-      ++not_zero_num;
-    }
-  }
-  if(not_zero_num > 0)
-  {
-    std::cout << "Controller::segmentPointCloudCallback :\n";
-    std::cout << "zero num = " << zero_num << " ; not zero num = " << not_zero_num << std::endl;
-  }
 
   processSegment(segment_point_cloud_msg);
   return;
