@@ -365,13 +365,14 @@ class DepthSegmentationNode {
 #ifdef MASKRCNNROS_AVAILABLE
   void semanticInstanceSegmentationFromRosMsg(
       const mask_rcnn_ros::Result::ConstPtr& segmentation_msg,
-      depth_segmentation::SemanticInstanceSegmentation*
-          semantic_instance_segmentation) {
+      depth_segmentation::SemanticInstanceSegmentation* semantic_instance_segmentation)
+  {
     semantic_instance_segmentation->masks.reserve(
         segmentation_msg->masks.size());
     semantic_instance_segmentation->labels.reserve(
         segmentation_msg->masks.size());
-    for (size_t i = 0u; i < segmentation_msg->masks.size(); ++i) {
+    for (size_t i = 0u; i < segmentation_msg->masks.size(); ++i)
+    {
       cv_bridge::CvImagePtr cv_mask_image;
       cv_mask_image = cv_bridge::toCvCopy(segmentation_msg->masks[i],
                                           sensor_msgs::image_encodings::MONO8);

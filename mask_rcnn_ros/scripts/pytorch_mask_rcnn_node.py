@@ -56,7 +56,7 @@ class MaskRCNNNode(object):
         self._publish_rate = rospy.get_param('~publish_rate', 100)
 
         model_path = "/home/chli/model_final_a3ec72.pkl"
-        config_file = "/home/chli/vpp_ws/src/mask_rcnn_ros/configs/COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x.yaml"
+        config_file = "/home/chli/vpp_ws/src/voxblox-plus-plus/mask_rcnn_ros/configs/COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x.yaml"
         self.detector = Detectron2Detector()
         self.detector.loadModel(model_path, config_file)
         return
@@ -95,7 +95,7 @@ class MaskRCNNNode(object):
                 result["rois"] = np.array(trans_rois)
                 result["scores"] = result_dict["scores"]
                 result["class_ids"] = result_dict["pred_classes"]
-                result["masks"] = result_dict["pred_masks"].transpose(1, 2, 0)
+                result["masks"] = result_dict["pred_masks"].astype(np.uint8).transpose(1, 2, 0)
 
                 result_msg = self._build_result_msg(msg, result)
                 self._result_pub.publish(result_msg)
