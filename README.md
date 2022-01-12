@@ -11,6 +11,12 @@ export ROS_VERSION=noetic # (Ubuntu 16.04: kinetic, Ubuntu 18.04: melodic, Ubunt
 export CATKIN_WS=~/catkin_ws\" >> ~/.bashrc"
 ```
 
+## Download models
+```bash
+wget https://dl.fbaipublicfiles.com/detectron2/COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x/138205316/model_final_a3ec72.pkl
+https://gateway.infinitescript.com/?fileName=GRNet-ShapeNet.pth
+```
+
 ## Init ROS workspace
 ```bash
 mkdir -p $CATKIN_WS/src && cd $CATKIN_WS
