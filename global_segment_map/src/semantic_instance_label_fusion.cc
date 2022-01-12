@@ -57,27 +57,35 @@ InstanceLabel SemanticInstanceLabelFusion::getInstanceLabel(
   InstanceLabel instance_label = 0u;
   int max_count = 0;
   auto label_it = label_instance_count_.find(label);
-  if (label_it != label_instance_count_.end()) {
-    for (auto const& instance_count : label_it->second) {
-      if (instance_count.second > max_count && instance_count.first != 0u &&
-          assigned_instances.find(instance_count.first) ==
-              assigned_instances.end()) {
-        int frames_count = 0;
-        auto label_count_it = label_frames_count_.find(label);
-        if (label_count_it != label_frames_count_.end()) {
-          frames_count = label_count_it->second;
-        }
-        if (instance_count.second >
-            count_threshold_factor *
-                (float)(frames_count - instance_count.second)) {
-          instance_label = instance_count.first;
-          max_count = instance_count.second;
-        }
+
+  if (label_it == label_instance_count_.end())
+  {
+    // LOG(ERROR) << "No semantic class for label?";
+    return instance_label;
+  }
+
+  // LOG(ERROR) << "find label!";
+
+  for (auto const& instance_count : label_it->second)
+  {
+    if (instance_count.second > max_count &&
+        instance_count.first != 0u &&
+        assigned_instances.find(instance_count.first) == assigned_instances.end())
+    {
+      int frames_count = 0;
+      auto label_count_it = label_frames_count_.find(label);
+      if (label_count_it != label_frames_count_.end()) {
+        frames_count = label_count_it->second;
+      }
+      if (instance_count.second >
+          count_threshold_factor *
+              (float)(frames_count - instance_count.second)) {
+        instance_label = instance_count.first;
+        max_count = instance_count.second;
       }
     }
-  } else {
-    // LOG(ERROR) << "No semantic class for label?";
   }
+
   // TODO(margaritaG): handle this remeshing!!
   // auto prev_instance_it = label_instance_map_.find(label);
   //   if (prev_instance_it != label_instance_map_.end()) {

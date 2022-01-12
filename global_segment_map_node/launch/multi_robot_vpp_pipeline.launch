@@ -13,10 +13,10 @@
   <arg name="camera_groud_truth_topic_name" default="head_camera_ground_truth"/>
   <arg name="pub_tf" default="0"/>
 
-  <include file="$(find mask_rcnn_ros)/launch/mask_rcnn_node.launch">
-    <arg name="sensor_name" value="$(arg sensor_name)" />
-    <arg name="visualize" value="$(arg visualize)" />
-  </include>
+  <!-- <include file="$(find mask_rcnn_ros)/launch/mask_rcnn_node.launch"> -->
+    <!-- <arg name="sensor_name" value="$(arg sensor_name)" /> -->
+    <!-- <arg name="visualize" value="$(arg visualize)" /> -->
+  <!-- </include> -->
 
   <include file="$(find depth_segmentation)/launch/semantic_depth_segmentation.launch">
     <arg name="sensor_name" value="$(arg sensor_name)" />
@@ -30,19 +30,19 @@
 
   <include file="$(find robot_position_loader)/launch/RobotPositionLoaderServer.launch">
     <arg name="world_name" value="$(arg world_name)"/>
-    <arg name="robot_num" default="$(arg robot_num)"/>
-    <arg name="robot_name" default="$(arg robot_name)"/>
+    <arg name="robot_num" value="$(arg robot_num)"/>
+    <arg name="robot_name" value="$(arg robot_name)"/>
   </include>
 
   <include file="$(find gsm_topic_sync)/launch/gsm_camera_data_pub.launch">
     <arg name="world_name" value="$(arg world_name)"/>
-    <arg name="robot_num" default="$(arg robot_num)"/>
-    <arg name="robot_name" default="$(arg robot_name)"/>
-    <arg name="camera_frame_topic_name" default="$(arg camera_frame_topic_name)"/>
+    <arg name="robot_num" value="$(arg robot_num)"/>
+    <arg name="robot_name" value="$(arg robot_name)"/>
+    <arg name="camera_frame_topic_name" value="$(arg camera_frame_topic_name)"/>
     <arg name="camera_depth_image_topic_prefix" value="$(arg camera_depth_image_topic_prefix)"/>
     <arg name="camera_rgb_image_topic_prefix" value="$(arg camera_rgb_image_topic_prefix)"/>
     <arg name="camera_groud_truth_topic_name" value="$(arg camera_groud_truth_topic_name)"/>
-    <arg name="pub_tf" default="$(arg pub_tf)"/>
+    <arg name="pub_tf" value="$(arg pub_tf)"/>
   </include>
 
   <include file="$(find occupancy_grid_publisher)/launch/pub_occupancy_grid.launch"/>

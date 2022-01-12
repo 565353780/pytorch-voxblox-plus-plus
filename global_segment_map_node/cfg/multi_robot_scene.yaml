@@ -1,23 +1,45 @@
 world_frame_id: "map"
 
 voxblox:
-  voxel_size: 0.01
+  voxel_size: 0.02
   truncation_distance_factor: 5.0
-  voxel_carving_enabled: false
-  max_ray_length_m: 3
+  min_ray_length_m: 0.1
+  max_ray_length_m: 3.5
+
+gsm:
+  min_label_voxel_count: 10
+  label_propagation_td_factor: 1.0
+
+pairwise_confidence_merging:
+  enable_pairwise_confidence_merging: true
+  merging_min_overlap_ratio: 0.1
+  merging_min_frame_count: 2
 
 semantic_instance_segmentation:
   enable_semantic_instance_segmentation: true
+  class_tsdk: "coco80"
+
+publishers:
+  publish_scene_map: true
+  publish_scene_mesh: true
+  publish_object_bbox: true
 
 meshing:
   visualize: true
   update_mesh_every_n_sec: 2.0
-  publish_scene_mesh: false
+  mesh_filename: "vpp_mesh.ply"
   visualizer_parameters:
     camera_position: [-1.41162,    6.28602,   -0.300336,
                       -1.49346,    0.117437,   0.0843885,
                        0.0165199, -0.0624571, -0.997911]
     clip_distances: [1.79126, 8.86051]
 
+icp:
+  enable_icp: false
+  keep_track_of_icp_correction: true
+
 debug:
   verbose_log: true
+  multiple_visualizers: true
+  save_visualizer_frames: false
+

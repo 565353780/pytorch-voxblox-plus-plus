@@ -39,23 +39,28 @@ void LabelTsdfIntegrator::increaseLabelCountForSegment(
   CHECK_NOTNULL(candidates);
   CHECK_NOTNULL(merge_candidate_labels);
   auto label_it = candidates->find(label);
-  if (label_it != candidates->end()) {
-    auto segment_it = label_it->second.find(segment);
-    if (segment_it != label_it->second.end()) {
-      ++segment_it->second;
-
-      if (label_tsdf_config_.enable_pairwise_confidence_merging) {
-        checkForSegmentLabelMergeCandidate(label, segment_it->second,
-                                           segment_points_count,
-                                           merge_candidate_labels);
-      }
-    } else {
-      label_it->second.emplace(segment, 1u);
-    }
-  } else {
+  if (label_it == candidates->end())
+  {
     std::map<Segment*, size_t> segment_points_count;
     segment_points_count.emplace(segment, 1u);
     candidates->emplace(label, segment_points_count);
+    return;
+  }
+
+  auto segment_it = label_it->second.find(segment);
+  if (segment_it == label_it->second.end())
+  {
+    label_it->second.emplace(segment, 1u);
+    return;
+  }
+
+  ++segment_it->second;
+
+  if (label_tsdf_config_.enable_pairwise_confidence_merging)
+  {
+    checkForSegmentLabelMergeCandidate(label, segment_it->second,
+                                       segment_points_count,
+                                       merge_candidate_labels);
   }
 }
 
@@ -189,7 +194,8 @@ void LabelTsdfIntegrator::computeSegmentLabelCandidates(
   const int segment_points_count = segment->points_C_.size();
   std::unordered_set<Label> merge_candidate_labels;
 
-  for (const Point& point_C : segment->points_C_) {
+  for (const Point& point_C : segment->points_C_)
+  {
     const Point point_G = segment->T_G_C_ * point_C;
 
     // Get the corresponding voxel by 3D position in world frame.
@@ -199,26 +205,30 @@ void LabelTsdfIntegrator::computeSegmentLabelCandidates(
     Layer<TsdfVoxel>::BlockType::ConstPtr tsdf_block_ptr =
         layer_->getBlockPtrByCoordinates(point_G);
 
-    if (label_block_ptr != nullptr) {
-      const LabelVoxel& label_voxel =
-          label_block_ptr->getVoxelByCoordinates(point_G);
-      const TsdfVoxel& tsdf_voxel =
-          tsdf_block_ptr->getVoxelByCoordinates(point_G);
-      Label label = 0u;
-      label = getNextUnassignedLabel(label_voxel, assigned_labels);
-      if (label != 0u &&
-          std::abs(tsdf_voxel.distance) <
-              label_tsdf_config_.label_propagation_td_factor * voxel_size_) {
-        // Do not consider allocated but unobserved voxels
-        // which have label == 0.
-        candidate_label_exists = true;
-        increaseLabelCountForSegment(segment, label, segment_points_count,
-                                     candidates, &merge_candidate_labels);
-      }
+    if (label_block_ptr == nullptr)
+    {
+      continue;
+    }
+
+    const LabelVoxel& label_voxel =
+        label_block_ptr->getVoxelByCoordinates(point_G);
+    const TsdfVoxel& tsdf_voxel =
+        tsdf_block_ptr->getVoxelByCoordinates(point_G);
+    Label label = 0u;
+    label = getNextUnassignedLabel(label_voxel, assigned_labels);
+    if (label != 0u &&
+        std::abs(tsdf_voxel.distance) < label_tsdf_config_.label_propagation_td_factor * voxel_size_)
+    {
+      // Do not consider allocated but unobserved voxels
+      // which have label == 0.
+      candidate_label_exists = true;
+      increaseLabelCountForSegment(segment, label, segment_points_count,
+                                   candidates, &merge_candidate_labels);
     }
   }
 
-  if (label_tsdf_config_.enable_pairwise_confidence_merging) {
+  if (label_tsdf_config_.enable_pairwise_confidence_merging)
+  {
     std::vector<Label> merge_candidates;
     std::copy(merge_candidate_labels.begin(), merge_candidate_labels.end(),
               std::back_inserter(merge_candidates));
@@ -252,16 +262,20 @@ bool LabelTsdfIntegrator::getNextSegmentLabelPair(
   Segment* max_segment;
   std::map<voxblox::Segment*, size_t> segments_to_recompute;
 
+  // segment_label_pair.first = candidates[i]->second->first
   for (auto label_it = candidates->begin(); label_it != candidates->end();
-       ++label_it) {
+       ++label_it)
+  {
     for (auto segment_it = label_it->second.begin();
-         segment_it != label_it->second.end(); ++segment_it) {
+         segment_it != label_it->second.end(); ++segment_it)
+    {
       bool count_greater_than_max = segment_it->second > max_count;
       bool count_greater_than_min =
           segment_it->second > label_tsdf_config_.min_label_voxel_count;
       bool is_unlabelled =
           labelled_segments.find(segment_it->first) == labelled_segments.end();
-      if (count_greater_than_max && count_greater_than_min && is_unlabelled) {
+      if (count_greater_than_max && count_greater_than_min && is_unlabelled)
+      {
         max_count = segment_it->second;
         max_segment = segment_it->first;
         max_label = label_it->first;
@@ -308,7 +322,8 @@ void LabelTsdfIntegrator::decideLabelPointClouds(
   std::set<InstanceLabel> assigned_instances;
 
   while (getNextSegmentLabelPair(labelled_segments, &assigned_labels,
-                                 candidates, segment_merge_candidates, &pair)) {
+                                 candidates, segment_merge_candidates, &pair))
+  {
     Segment* segment = pair.first;
     CHECK_NOTNULL(segment);
     Label& label = pair.second;
@@ -318,43 +333,52 @@ void LabelTsdfIntegrator::decideLabelPointClouds(
     candidates->erase(label);
   }
 
-  for (auto merge_candidates : *segment_merge_candidates) {
+  for (auto merge_candidates : *segment_merge_candidates)
+  {
     increasePairwiseConfidenceCount(merge_candidates.second);
   }
 
   // For every segment that didn't get a label because
   // its label counts were too few, assign it an unseen label.
   for (auto segment_it = segments_to_integrate->begin();
-       segment_it != segments_to_integrate->end(); ++segment_it) {
-    if (labelled_segments.find(*segment_it) == labelled_segments.end()) {
+       segment_it != segments_to_integrate->end(); ++segment_it)
+  {
+    if (labelled_segments.find(*segment_it) == labelled_segments.end())
+    {
       Label fresh = getFreshLabel();
       (*segment_it)->label_ = fresh;
       labelled_segments.insert(*segment_it);
     }
   }
 
-  if (label_tsdf_config_.enable_semantic_instance_segmentation) {
+  if (label_tsdf_config_.enable_semantic_instance_segmentation)
+  {
     // Instance stuff.
     for (auto segment_it = labelled_segments.begin();
-         segment_it != labelled_segments.end(); ++segment_it) {
+         segment_it != labelled_segments.end(); ++segment_it)
+    {
       Label label = (*segment_it)->label_;
-      if ((*segment_it)->points_C_.size() > 0u) {
+      if ((*segment_it)->points_C_.size() > 0u)
+      {
         semantic_instance_label_fusion_ptr_->increaseLabelFramesCount(label);
       }
 
       // Loop through all the segments.
-      // TOSOLVE:But all segment_it.instance_label_ are 0u
-      if ((*segment_it)->instance_label_ != 0u) {
+      if ((*segment_it)->instance_label_ != 0u)
+      {
         LOG(WARNING) << "Start loop through all the segments for "
           << "increaseLabelInstanceCount";
         // It's a segment with a current frame instance.
         auto global_instance_it = current_to_global_instance_map_.find(
             (*segment_it)->instance_label_);
-        if (global_instance_it != current_to_global_instance_map_.end()) {
+        if (global_instance_it != current_to_global_instance_map_.end())
+        {
           // If current frame instance maps to a global instance, use it.
           semantic_instance_label_fusion_ptr_->increaseLabelInstanceCount(
               label, global_instance_it->second);
-        } else {
+        }
+        else
+        {
           LOG(WARNING) << "global_instance_it not in current_to_global_instance_map_, "
             << "start getInstanceLabel";
           // Current frame instance doesn't map to any global instance.
@@ -363,13 +387,16 @@ void LabelTsdfIntegrator::decideLabelPointClouds(
               semantic_instance_label_fusion_ptr_->getInstanceLabel(
                   label, assigned_instances);
 
-          if (instance_label != 0u) {
+          if (instance_label != 0u)
+          {
             current_to_global_instance_map_.emplace(
                 (*segment_it)->instance_label_, instance_label);
             semantic_instance_label_fusion_ptr_->increaseLabelInstanceCount(
                 label, instance_label);
             assigned_instances.emplace(instance_label);
-          } else {
+          }
+          else
+          {
             LOG(WARNING) << "instance_label is 0u, start create new global instance";
             // Create new global instance.
             InstanceLabel fresh_instance = getFreshInstance();
@@ -381,13 +408,16 @@ void LabelTsdfIntegrator::decideLabelPointClouds(
         }
         semantic_instance_label_fusion_ptr_->increaseLabelClassCount(
             label, (*segment_it)->semantic_label_);
-      } else {
+      }
+      else
+      {
         // It's a segment with no instance prediction in the current frame.
         // Get the global instance it maps to, and set it as assigned.
         InstanceLabel instance_label =
             semantic_instance_label_fusion_ptr_->getInstanceLabel(label);
         // TODO(grinvalm) : also pass assigned instances here?
-        if (instance_label != 0u) {
+        if (instance_label != 0u)
+        {
           assigned_instances.emplace(instance_label);
         }
         // TODO(margaritaG): handle this nicely or remove.

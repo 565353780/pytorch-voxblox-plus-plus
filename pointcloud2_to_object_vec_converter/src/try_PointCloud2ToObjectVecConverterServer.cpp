@@ -35,6 +35,13 @@ int main(int argc, char** argv)
       return -1;
     }
 
+    const std::vector<sensor_msgs::PointCloud2>& objects = new_get_object_vec_serve.response.objects;
+    std::cout << "get " << objects.size() << " objects\n";
+    for(const sensor_msgs::PointCloud2& pointcloud2 : objects)
+    {
+      std::cout << "object size = " << pointcloud2.data.size() << std::endl;
+    }
+
     ROS_INFO("Get response!");
 
     ros::Duration(1).sleep();

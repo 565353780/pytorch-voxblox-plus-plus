@@ -369,51 +369,64 @@ void Controller::processSegment(
   // Look up transform from camera frame to world frame.
   Transformation T_G_C;
   std::string from_frame = segment_point_cloud_msg->header.frame_id;
-  if (lookupTransform(from_frame, world_frame_,
-                      segment_point_cloud_msg->header.stamp, &T_G_C)) {
-    // Convert the PCL pointcloud into voxblox format.
-    // Horrible hack fix to fix color parsing colors in PCL.
-    for (size_t d = 0; d < segment_point_cloud_msg->fields.size(); ++d) {
-      if (segment_point_cloud_msg->fields[d].name == std::string("rgb")) {
-        segment_point_cloud_msg->fields[d].datatype =
-            sensor_msgs::PointField::FLOAT32;
-      }
-    }
-    timing::Timer ptcloud_timer("ptcloud_preprocess");
+  if (!lookupTransform(from_frame, world_frame_,
+                       segment_point_cloud_msg->header.stamp, &T_G_C))
+  {
+    return;
+  }
 
-    Segment* segment = nullptr;
-    if (enable_semantic_instance_segmentation_) {
-      pcl::PointCloud<voxblox::PointSemanticInstanceType>
-          point_cloud_semantic_instance;
-      pcl::fromROSMsg(*segment_point_cloud_msg, point_cloud_semantic_instance);
-      segment = new Segment(point_cloud_semantic_instance, T_G_C);
-    } else if (use_label_propagation_) {
-      // TODO(ntonci): maybe rename use_label_propagation_ to something like
-      // use_voxblox_plus_plus_lables_ or change the order and call it
-      // use_external_labels_
-      pcl::PointCloud<voxblox::PointType> point_cloud;
-      pcl::fromROSMsg(*segment_point_cloud_msg, point_cloud);
-      segment = new Segment(point_cloud, T_G_C);
-    } else {
-      pcl::PointCloud<voxblox::PointLabelType> point_cloud_label;
-      pcl::fromROSMsg(*segment_point_cloud_msg, point_cloud_label);
-      segment = new Segment(point_cloud_label, T_G_C);
-    }
-    CHECK_NOTNULL(segment);
-    if(segment->instance_label_ != 0)
+  // Convert the PCL pointcloud into voxblox format.
+  // Horrible hack fix to fix color parsing colors in PCL.
+  for (size_t d = 0; d < segment_point_cloud_msg->fields.size(); ++d)
+  {
+    if (segment_point_cloud_msg->fields[d].name == std::string("rgb"))
     {
-      LOG(WARNING) << "segment.instance_label_ = "
-        << segment->instance_label_;
+      segment_point_cloud_msg->fields[d].datatype =
+          sensor_msgs::PointField::FLOAT32;
     }
-    segments_to_integrate_.push_back(segment);
-    ptcloud_timer.Stop();
+  }
 
-    timing::Timer label_candidates_timer("compute_label_candidates");
+  timing::Timer ptcloud_timer("ptcloud_preprocess");
 
-    if (use_label_propagation_) {
-      integrator_->computeSegmentLabelCandidates(
-          segment, &segment_label_candidates, &segment_merge_candidates_);
-    }
+  Segment* segment = nullptr;
+  if (enable_semantic_instance_segmentation_)
+  {
+    pcl::PointCloud<voxblox::PointSemanticInstanceType>
+        point_cloud_semantic_instance;
+    pcl::fromROSMsg(*segment_point_cloud_msg, point_cloud_semantic_instance);
+    segment = new Segment(point_cloud_semantic_instance, T_G_C);
+  }
+  else if (use_label_propagation_)
+  {
+    // TODO(ntonci): maybe rename use_label_propagation_ to something like
+    // use_voxblox_plus_plus_lables_ or change the order and call it
+    // use_external_labels_
+    pcl::PointCloud<voxblox::PointType> point_cloud;
+    pcl::fromROSMsg(*segment_point_cloud_msg, point_cloud);
+    segment = new Segment(point_cloud, T_G_C);
+  }
+  else
+  {
+    pcl::PointCloud<voxblox::PointLabelType> point_cloud_label;
+    pcl::fromROSMsg(*segment_point_cloud_msg, point_cloud_label);
+    segment = new Segment(point_cloud_label, T_G_C);
+  }
+
+  CHECK_NOTNULL(segment);
+  if(segment->instance_label_ != 0)
+  {
+    LOG(WARNING) << "segment.instance_label_ = "
+      << segment->instance_label_;
+  }
+  segments_to_integrate_.push_back(segment);
+  ptcloud_timer.Stop();
+
+  timing::Timer label_candidates_timer("compute_label_candidates");
+
+  if (use_label_propagation_)
+  {
+    integrator_->computeSegmentLabelCandidates(
+        segment, &segment_label_candidates, &segment_merge_candidates_);
   }
 }
 
@@ -507,9 +520,11 @@ void Controller::integrateFrame(ros::Time msg_timestamp) {
 
 void Controller::segmentPointCloudCallback(
     const sensor_msgs::PointCloud2::Ptr& segment_point_cloud_msg) {
-  if (!integration_on_) {
+  if (!integration_on_)
+  {
     return;
   }
+
   // Message timestamps are used to detect when all
   // segment messages from a certain frame have arrived.
   // Since segments from the same frame all have the same timestamp,
@@ -517,15 +532,43 @@ void Controller::segmentPointCloudCallback(
   // TODO(grinvalm): need additional check for the last frame to be
   // integrated.
   if (received_first_message_ &&
-      last_segment_msg_timestamp_ != segment_point_cloud_msg->header.stamp) {
-    if (segments_to_integrate_.size() > 0u) {
+      last_segment_msg_timestamp_ != segment_point_cloud_msg->header.stamp)
+  {
+    if (segments_to_integrate_.size() > 0u)
+    {
       integrateFrame(segment_point_cloud_msg->header.stamp);
-    } else {
+    }
+    else
+    {
       LOG(INFO) << "No segments to integrate.";
     }
   }
   received_first_message_ = true;
   last_segment_msg_timestamp_ = segment_point_cloud_msg->header.stamp;
+
+  // FIXME : pcl::fromROSMsg(segment_point_cloud_msg).points[0].instance_label always = 0!
+  pcl::PointCloud<voxblox::PointSemanticInstanceType>
+      point_cloud_semantic_instance;
+  pcl::fromROSMsg(*segment_point_cloud_msg, point_cloud_semantic_instance);
+
+  size_t zero_num = 0;
+  size_t not_zero_num = 0;
+  for(size_t i = 0; i < point_cloud_semantic_instance.points.size(); ++i)
+  {
+    if(point_cloud_semantic_instance.points[i].instance_label == 0)
+    {
+      ++zero_num;
+    }
+    else
+    {
+      ++not_zero_num;
+    }
+  }
+  if(not_zero_num > 0)
+  {
+    std::cout << "Controller::segmentPointCloudCallback :\n";
+    std::cout << "zero num = " << zero_num << " ; not zero num = " << not_zero_num << std::endl;
+  }
 
   processSegment(segment_point_cloud_msg);
   return;

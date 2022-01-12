@@ -21,7 +21,11 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
 
   const sensor_msgs::PointCloud2 &current_map_pointcloud = get_map_request.response.map_cloud;
 
+  std::cout << "get map size: " << current_map_pointcloud.data.size() << std::endl;
+
   pointcloud2_to_object_vec_converter_.transPointCloud2ToObjects(current_map_pointcloud, objects);
+
+  std::cout << "trans to objects size : " << objects.size() << std::endl;
 
   res.objects = objects;
 
@@ -29,7 +33,7 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
 
   object_vec.point_cloud2_vec = objects;
 
-  objects_pub_.publish(object_vec);
+  // objects_pub_.publish(object_vec);
 
   return true;
 }

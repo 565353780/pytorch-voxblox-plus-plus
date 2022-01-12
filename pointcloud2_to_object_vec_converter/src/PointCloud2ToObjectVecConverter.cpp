@@ -318,8 +318,12 @@ bool PointCloud2ToObjectVecConverter::transPointCloud2ToObjects(
   sensor_msgs::PointCloud point_cloud;
   convertPointCloud2ToPointCloud(point_cloud2, point_cloud);
 
+  std::cout << "point_cloud size = " << point_cloud.points.size() << std::endl;
+
   std::vector<LabeledObject> instance_objects_vec;
   splitPointCloudChannelToLabeledObjects(point_cloud, 4, instance_objects_vec);
+
+  std::cout << "instance_objects_vec size = " << instance_objects_vec.size() << std::endl;
 
   for(const LabeledObject &instance_object : instance_objects_vec)
   {
