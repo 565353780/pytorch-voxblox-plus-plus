@@ -38,5 +38,13 @@ cp src/voxblox-plus-plus/catkin_init.bash ./
 ./catkin_init.bash --none
 ```
 
+## Dev
+```bash
+git clone git@github.com:565353780/pytorch-voxblox-plus-plus.git
+git clone git@github.com:565353780/multi-fetch-ros.git
+git clone git@github.com:565353780/grnet-detect-ros.git
+git clone git@github.com:565353780/tensorboard-logger-ros.git
+```
+
 ## Enjoy it~
 
