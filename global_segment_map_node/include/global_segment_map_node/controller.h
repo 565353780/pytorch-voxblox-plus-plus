@@ -84,6 +84,10 @@ class Controller {
   bool use_label_propagation_;
 
  protected:
+  bool removeRobotPoints(
+      const pcl::PointCloud<voxblox::PointSemanticInstanceType>& source_point_cloud,
+      pcl::PointCloud<voxblox::PointSemanticInstanceType>& point_cloud_without_robot);
+
   void processSegment(
       const sensor_msgs::PointCloud2::Ptr& segment_point_cloud_msg);
 

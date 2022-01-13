@@ -1,4 +1,5 @@
 #include "robot_position_loader/RobotPositionLoader.h"
+#include <ros/init.h>
 
 bool RobotPositionLoader::reset()
 {
@@ -25,8 +26,8 @@ bool RobotPositionLoader::updateRobotBBoxVec()
   const float x_up = 0.25;
   const float y_down = -0.25;
   const float y_up = 0.25;
-  const float z_down = -0.1;
-  const float z_up = 1.5;
+  const float z_down = -0.5;
+  const float z_up = 0.5;
 
   robot_bbox_vec_.resize(robot_num_);
 
@@ -38,30 +39,26 @@ bool RobotPositionLoader::updateRobotBBoxVec()
     return false;
   }
 
+  std::vector<ros::Subscriber<nav_msgs::Odometry>> robot_position_sub_vec;
   for(size_t i = 0; i < robot_num_; ++i)
   {
-    tf::StampedTransform current_tf;
+    const std::string current_robot_name = robot_name_ + std::to_string(i) + "/base_link";
+    const std::string current_robot_position_topic = current_robot_name + "_ground_truth";
+    robot_position_sub_vec.emplace_back(
+        ros::Subscriber<nav_msgs::Odometry>)
+  }
 
-    std::string current_robot_name = robot_name_ + std::to_string(i);
-    // if(current_robot_name.find("fetch") != std::string::npos)
-    {
-      current_robot_name += "/base_link";
-    }
+  std::vector<bool> robot_position_updated_vec;
+  robot_position_updated_vec.resize(robot_num_, false);
+  while(std::find(robot_position_updated_vec.begin(), robot_position_updated_vec.end(), false) !=
+      robot_position_updated_vec.end())
+  {
+    ros::spinOnce();
+  }
 
-    tf_listener_.waitForTransform(
-        world_name_, current_robot_name,
-        ros::Time(0), ros::Duration(10.0));
 
-    tf_listener_.lookupTransform(
-        world_name_, current_robot_name,
-        ros::Time(0),
-        current_tf);
-
-    const tf::Vector3 &current_robot_center = current_tf.getOrigin();
-    const float &current_robot_center_x = current_robot_center.x();
-    const float &current_robot_center_y = current_robot_center.y();
-    const float &current_robot_center_z = current_robot_center.z();
-
+  for(size_t i = 0; i <robot_num_; ++i)
+  {
     robot_position_loader::BBox3D &current_robot_bbox =
       robot_bbox_vec_[i];
     current_robot_bbox.x_min = current_robot_center_x + x_down;

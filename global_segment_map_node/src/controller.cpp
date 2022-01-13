@@ -364,6 +364,60 @@ void Controller::advertiseGetAlignedInstanceBoundingBoxService(
       &Controller::getAlignedInstanceBoundingBoxCallback, this);
 }
 
+bool Controller::removeRobotPoints(
+    const pcl::PointCloud<voxblox::PointSemanticInstanceType>& source_point_cloud,
+    pcl::PointCloud<voxblox::PointSemanticInstanceType>& point_cloud_without_robot)
+{
+  point_cloud_without_robot = source_point_cloud;
+
+  robot_position_loader::GetRobotBBox3DVec get_robot_bbox_vec_serve;
+  if(!robot_position_loader_client_.call(get_robot_bbox_vec_serve))
+  {
+    LOG(ERROR) << "Controller::segmentPointCloudCallback : " << std::endl <<
+      "call GetRobotBBox3DVec failed!" << std::endl;
+
+    return false;
+  }
+
+  const std::vector<robot_position_loader::BBox3D> &robot_bbox_vec =
+    get_robot_bbox_vec_serve.response.robot_bbox_vec;
+
+  if(robot_bbox_vec.size() == 0)
+  {
+    LOG(ERROR) << "Controller::segmentPointCloudCallback : " << std::endl <<
+      "robot_bbox_vec is empty!" << std::endl;
+
+    return false;
+  }
+
+  point_cloud_without_robot.points.clear();
+  for(const voxblox::PointSemanticInstanceType& source_point : source_point_cloud.points)
+  {
+    const float& point_x = source_point.x;
+    const float& point_y = source_point.y;
+    const float& point_z = source_point.z;
+
+    bool is_in_robot_bbox = false;
+    for(const robot_position_loader::BBox3D &robot_bbox : robot_bbox_vec)
+    {
+      if(robot_bbox.x_min <= source_point.x && source_point.x <= robot_bbox.x_max &&
+          robot_bbox.y_min <= source_point.y && source_point.y <= robot_bbox.y_max &&
+          robot_bbox.z_min <= source_point.z && source_point.z <= robot_bbox.z_max)
+      {
+        is_in_robot_bbox = true;
+        break;
+      }
+    }
+
+    if(!is_in_robot_bbox)
+    {
+      point_cloud_without_robot.points.emplace_back(source_point);
+    }
+  }
+
+  return true;
+}
+
 void Controller::processSegment(
     const sensor_msgs::PointCloud2::Ptr& segment_point_cloud_msg) {
   // Look up transform from camera frame to world frame.
@@ -394,7 +448,15 @@ void Controller::processSegment(
     pcl::PointCloud<voxblox::PointSemanticInstanceType>
         point_cloud_semantic_instance;
     pcl::fromROSMsg(*segment_point_cloud_msg, point_cloud_semantic_instance);
-    segment = new Segment(point_cloud_semantic_instance, T_G_C);
+
+    pcl::PointCloud<voxblox::PointSemanticInstanceType>
+        point_cloud_semantic_instance_without_robot;
+
+    removeRobotPoints(
+        point_cloud_semantic_instance,
+        point_cloud_semantic_instance_without_robot);
+
+    segment = new Segment(point_cloud_semantic_instance_without_robot, T_G_C);
   }
   else if (use_label_propagation_)
   {
@@ -543,84 +605,6 @@ void Controller::segmentPointCloudCallback(
   last_segment_msg_timestamp_ = segment_point_cloud_msg->header.stamp;
 
   processSegment(segment_point_cloud_msg);
-  return;
-
-  robot_position_loader::GetRobotBBox3DVec get_robot_bbox_vec_serve;
-  if(!robot_position_loader_client_.call(get_robot_bbox_vec_serve))
-  {
-    LOG(ERROR) << "Controller::segmentPointCloudCallback : " << std::endl <<
-      "call GetRobotBBox3DVec failed!" << std::endl;
-
-    processSegment(segment_point_cloud_msg);
-
-    return;
-  }
-
-  const std::vector<robot_position_loader::BBox3D> &robot_bbox_vec =
-    get_robot_bbox_vec_serve.response.robot_bbox_vec;
-
-  if(robot_bbox_vec.size() == 0)
-  {
-    LOG(ERROR) << "Controller::segmentPointCloudCallback : " << std::endl <<
-      "robot_bbox_vec is empty!" << std::endl;
-
-    processSegment(segment_point_cloud_msg);
-
-    return;
-  }
-
-  sensor_msgs::PointCloud source_point_cloud;
-  sensor_msgs::PointCloud valid_point_cloud;
-  sensor_msgs::convertPointCloud2ToPointCloud(*segment_point_cloud_msg, source_point_cloud);
-
-  valid_point_cloud.header = source_point_cloud.header;
-
-  valid_point_cloud.channels.resize(source_point_cloud.channels.size());
-  for(size_t i = 0; i < source_point_cloud.channels.size(); ++i)
-  {
-    valid_point_cloud.channels[i].name = source_point_cloud.channels[i].name;
-  }
-
-  for(size_t i = 0; i < source_point_cloud.points.size(); ++i)
-  {
-    const geometry_msgs::Point32 &point = source_point_cloud.points[i];
-
-    bool is_in_robot_bbox = false;
-    for(const robot_position_loader::BBox3D &robot_bbox : robot_bbox_vec)
-    {
-      if(robot_bbox.x_min <= point.x && point.x <= robot_bbox.x_max &&
-          robot_bbox.y_min <= point.y && point.y <= robot_bbox.y_max &&
-          robot_bbox.z_min <= point.z && point.z <= robot_bbox.z_max)
-      {
-        is_in_robot_bbox = true;
-        break;
-      }
-    }
-
-    if(!is_in_robot_bbox)
-    {
-      valid_point_cloud.points.emplace_back(point);
-      for(size_t j = 0; j < source_point_cloud.channels.size(); ++j)
-      {
-        valid_point_cloud.channels[j].values.emplace_back(
-            source_point_cloud.channels[j].values[i]);
-      }
-    }
-  }
-
-  sensor_msgs::PointCloud2::Ptr segment_point_cloud_without_robot_msg =
-    boost::shared_ptr<sensor_msgs::PointCloud2>(new sensor_msgs::PointCloud2());
-
-  sensor_msgs::convertPointCloudToPointCloud2(
-      valid_point_cloud, *segment_point_cloud_without_robot_msg);
-
-  for(size_t i = 0; i < segment_point_cloud_msg->fields.size(); ++i)
-  {
-    segment_point_cloud_without_robot_msg->fields[i].datatype =
-      segment_point_cloud_msg->fields[i].datatype;
-  }
-
-  processSegment(segment_point_cloud_without_robot_msg);
 }
 
 void Controller::resetMeshIntegrators() {

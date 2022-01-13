@@ -4,8 +4,7 @@
 #include <iostream>
 #include <string>
 #include <ros/ros.h>
-#include <tf/transform_listener.h>
-#include <geometry_msgs/PointStamped.h>
+#include <nav_msgs/Odometry.h>
 
 #include "robot_position_loader/BBox3D.h"
 
@@ -45,8 +44,6 @@ private:
   std::string robot_name_;
 
   std::vector<robot_position_loader::BBox3D> robot_bbox_vec_;
-
-  tf::TransformListener tf_listener_;
 };
 
 #endif //ROBOT_POSITION_LOADER_H
