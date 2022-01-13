@@ -112,8 +112,9 @@ bool RobotPositionLoader::updateRobotPoseWithTimeStamp(
           stamp,
           current_tf);
 
-      geometry_msgs::Pose& current_robot_pose = robot_pose_vec_[i];
+      std::deque<geometry_msgs::Pose>& robot_pose_history = robot_pose_vec_[i];
 
+      geometry_msgs::Pose current_robot_pose;
       const tf::Vector3 &current_robot_position = current_tf.getOrigin();
       const tf::Quaternion& current_robot_orientation = current_tf.getRotation();
       current_robot_pose.position.x = current_robot_position.x();
@@ -123,6 +124,12 @@ bool RobotPositionLoader::updateRobotPoseWithTimeStamp(
       current_robot_pose.orientation.y = current_robot_orientation.y();
       current_robot_pose.orientation.z = current_robot_orientation.z();
       current_robot_pose.orientation.w = current_robot_orientation.w();
+
+      robot_pose_history.emplace_back(current_robot_pose);
+      if(robot_pose_history.size() > history_save_num_)
+      {
+        robot_pose_history.pop_front();
+      }
     }
     catch(...)
     {
@@ -184,7 +191,13 @@ bool RobotPositionLoader::updateRobotPose(
     return false;
   }
 
-  robot_pose_vec_[robot_idx] = get_model_state.response.pose;
+  std::deque<geometry_msgs::Pose>& robot_pose_history = robot_pose_vec_[robot_idx];
+
+  robot_pose_history.emplace_back(get_model_state.response.pose);
+  if(robot_pose_history.size() > history_save_num_)
+  {
+    robot_pose_history.pop_front();
+  }
 
   return true;
 }
@@ -218,22 +231,24 @@ bool RobotPositionLoader::updateRobotBBoxVec()
 
   for(size_t i = 0; i <robot_num_; ++i)
   {
-    const geometry_msgs::Pose& current_robot_pose = robot_pose_vec_[i];
+    const std::deque<geometry_msgs::Pose>& robot_pose_history = robot_pose_vec_[i];
 
-    robot_position_loader::BBox3D &current_robot_bbox =
-      robot_bbox_vec_[i];
-    current_robot_bbox.x_min = current_robot_pose.position.x + x_down;
-    current_robot_bbox.x_max = current_robot_pose.position.x + x_up;
-    current_robot_bbox.y_min = current_robot_pose.position.y + y_down;
-    current_robot_bbox.y_max = current_robot_pose.position.y + y_up;
-    current_robot_bbox.z_min = current_robot_pose.position.z + z_down;
-    current_robot_bbox.z_max = current_robot_pose.position.z + z_up;
+    for(const geometry_msgs::Pose& current_robot_pose : robot_pose_history)
+    {
+      robot_position_loader::BBox3D &current_robot_bbox =
+        robot_bbox_vec_[i];
+      current_robot_bbox.x_min = current_robot_pose.position.x + x_down;
+      current_robot_bbox.x_max = current_robot_pose.position.x + x_up;
+      current_robot_bbox.y_min = current_robot_pose.position.y + y_down;
+      current_robot_bbox.y_max = current_robot_pose.position.y + y_up;
+      current_robot_bbox.z_min = current_robot_pose.position.z + z_down;
+      current_robot_bbox.z_max = current_robot_pose.position.z + z_up;
 
-    // std::cout << "BBox for robot " << i << " :\n" <<
-      // "[" << current_robot_bbox.x_min << "," << current_robot_bbox.x_max << "]" <<
-      // "[" << current_robot_bbox.y_min << "," << current_robot_bbox.y_max << "]" <<
-      // "[" << current_robot_bbox.z_min << "," << current_robot_bbox.z_max << "]\n";
-
+      // std::cout << "BBox for robot " << i << " :\n" <<
+        // "[" << current_robot_bbox.x_min << "," << current_robot_bbox.x_max << "]" <<
+        // "[" << current_robot_bbox.y_min << "," << current_robot_bbox.y_max << "]" <<
+        // "[" << current_robot_bbox.z_min << "," << current_robot_bbox.z_max << "]\n";
+    }
   }
 
   return true;

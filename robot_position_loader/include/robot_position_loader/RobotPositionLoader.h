@@ -17,6 +17,7 @@ public:
   RobotPositionLoader() :
     get_model_state_client_(nh_.serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state"))
   {
+    history_save_num_ = 100;
   }
 
   bool reset();
@@ -63,7 +64,9 @@ private:
   size_t robot_num_;
   std::string robot_name_;
 
-  std::vector<geometry_msgs::Pose> robot_pose_vec_;
+  size_t history_save_num_;
+
+  std::vector<std::deque<geometry_msgs::Pose>> robot_pose_vec_;
   std::vector<robot_position_loader::BBox3D> robot_bbox_vec_;
 };
 
