@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <node pkg="view_point_extractor" name="ViewPointExtractorServer" type="view_point_extractor_node" output="screen">
+  </node>
+
+</launch>
+
