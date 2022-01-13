@@ -29,6 +29,9 @@ catkin config --cmake-args -DCMAKE_CXX_STANDARD=17 -DCMAKE_BUILD_TYPE=Release -D
 ```bash
 cd src
 git clone https://github.com/565353780/voxblox-plus-plus.git
+git clone https://github.com/565353780/multi-fetch-ros.git
+git clone https://github.com/565353780/grnet-detect-ros.git
+git clone https://github.com/565353780/tensorboard_logger_ros.git
 cd ..
 catkin build gsm_node
 cp src/voxblox-plus-plus/catkin_init.bash ./
