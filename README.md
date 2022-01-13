@@ -13,8 +13,13 @@ export CATKIN_WS=~/catkin_ws\" >> ~/.bashrc"
 
 ## Download models
 ```bash
-wget https://dl.fbaipublicfiles.com/detectron2/COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x/138205316/model_final_a3ec72.pkl
+wget https://dl.fbaipublicfiles.com/detectron2/COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x/138205316/model_final_a3ec72.pkl ~/.ros/
 https://gateway.infinitescript.com/?fileName=GRNet-ShapeNet.pth
+```
+
+and save them to
+```bash
+~/.ros/
 ```
 
 ## Init ROS workspace
