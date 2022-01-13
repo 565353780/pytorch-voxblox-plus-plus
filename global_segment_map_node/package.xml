@@ -35,6 +35,8 @@
 
   <build_depend>gsm_topic_sync</build_depend>
   <build_depend>occupancy_grid_publisher</build_depend>
+  <build_depend>farthest_sampling</build_depend>
+  <build_depend>view_point_extractor</build_depend>
   <build_depend>pointcloud2_to_object_vec_converter</build_depend>
   <build_depend>robot_position_loader</build_depend>
   <build_depend>multi-fetch-ros</build_depend>
