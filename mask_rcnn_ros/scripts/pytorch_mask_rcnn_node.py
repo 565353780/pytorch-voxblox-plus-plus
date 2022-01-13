@@ -56,7 +56,7 @@ class MaskRCNNNode(object):
         self._publish_rate = rospy.get_param('~publish_rate', 100)
 
         model_path = os.environ['HOME'] + "/.ros/model_final_a3ec72.pkl"
-        config_file = os.environ['HOME'] + "/.ros/mask_rcnn_R_101_FPN_3x.yaml"
+        config_file = os.environ['HOME'] + "/.ros/configs/COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x.yaml"
         self.detector = Detectron2Detector()
         self.detector.loadModel(model_path, config_file)
         return

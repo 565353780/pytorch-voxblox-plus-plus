@@ -39,7 +39,7 @@ catkin config --extend /opt/ros/$ROS_VERSION --merge-devel
 catkin config --cmake-args -DCMAKE_CXX_STANDARD=17 -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=Yes
 catkin build gsm_node
 cp src/pytorch-voxblox-plus-plus/catkin_init.bash ./
-cp src/pytorch-voxblox-plus-plus/mask_rcnn_ros/configs/COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x.yaml ~/.ros/
+cp -r src/pytorch-voxblox-plus-plus/mask_rcnn_ros/configs ~/.ros/
 ./catkin_init.bash --none
 ```
 
