@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import threading
 import numpy as np
-import cv2
 from cv_bridge import CvBridge
 import matplotlib.pyplot as plt
 
@@ -16,6 +16,7 @@ from mask_rcnn_ros.msg import Result
 
 from Detectron2Detector import Detectron2Detector
 
+home_path = os.environ['HOME'] + "/"
 RGB_TOPIC = '/camera/rgb/image_raw'
 
 # COCO Class names
@@ -55,8 +56,8 @@ class MaskRCNNNode(object):
 
         self._publish_rate = rospy.get_param('~publish_rate', 100)
 
-        model_path = "/home/chli/model_final_a3ec72.pkl"
-        config_file = "/home/chli/vpp_ws/src/voxblox-plus-plus/mask_rcnn_ros/configs/COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x.yaml"
+        model_path = home_path + ".ros/model_final_a3ec72.pkl"
+        config_file = home_path + ".ros/mask_rcnn_R_101_FPN_3x.yaml"
         self.detector = Detectron2Detector()
         self.detector.loadModel(model_path, config_file)
         return
