@@ -26,6 +26,8 @@ public:
 
   bool updateRobotPose();
 
+  bool showPosition();
+
 private:
   bool updateRobotPose(
       const size_t& robot_idx);

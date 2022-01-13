@@ -36,11 +36,9 @@ int main(int argc, char** argv)
     return -1;
   }
 
-  std::cout << "world_name = " << world_name << std::endl <<
-    "robot_num = " << robot_num << std::endl <<
-    "robot_name = " << robot_name << std::endl;
-
   robot_position_visualizer.setWorldAndRobotParam(world_name, robot_num, robot_name);
+
+  robot_position_visualizer.showPosition();
 
   return 1;
 }

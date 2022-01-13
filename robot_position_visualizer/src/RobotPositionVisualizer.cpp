@@ -45,6 +45,11 @@ bool RobotPositionVisualizer::updateRobotPose()
   return true;
 }
 
+bool RobotPositionVisualizer::showPosition()
+{
+  return true;
+}
+
 bool RobotPositionVisualizer::updateRobotPose(
     const size_t& robot_idx)
 {
