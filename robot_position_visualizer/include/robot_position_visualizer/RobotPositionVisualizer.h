@@ -2,6 +2,7 @@
 #define ROBOT_POSITION_VISUALIZER_H
 
 #include <iostream>
+#include <deque>
 #include <string>
 #include <ros/ros.h>
 #include <geometry_msgs/Pose.h>
