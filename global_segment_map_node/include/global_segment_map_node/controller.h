@@ -86,6 +86,7 @@ class Controller {
  protected:
   bool removeRobotPoints(
       const pcl::PointCloud<voxblox::PointSemanticInstanceType>& source_point_cloud,
+      const ros::Time& stamp,
       pcl::PointCloud<voxblox::PointSemanticInstanceType>& point_cloud_without_robot);
 
   void processSegment(

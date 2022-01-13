@@ -20,90 +20,6 @@ bool RobotPositionLoader::setWorldAndRobotParam(
   return true;
 }
 
-bool RobotPositionLoader::updateRobotBBoxVec()
-{
-  const float x_down = -0.25;
-  const float x_up = 0.25;
-  const float y_down = -0.25;
-  const float y_up = 0.25;
-  const float z_down = -0.5;
-  const float z_up = 0.5;
-
-  robot_bbox_vec_.resize(robot_num_);
-
-  if(robot_num_ == 0)
-  {
-    std::cout << "RobotPositionLoader::updateRobotBBoxVec : " << std::endl <<
-      "robot_num_ is 0!" << std::endl;
-
-    return false;
-  }
-
-  std::vector<ros::Subscriber<nav_msgs::Odometry>> robot_position_sub_vec;
-  for(size_t i = 0; i < robot_num_; ++i)
-  {
-    const std::string current_robot_name = robot_name_ + std::to_string(i) + "/base_link";
-    const std::string current_robot_position_topic = current_robot_name + "_ground_truth";
-    robot_position_sub_vec.emplace_back(
-        ros::Subscriber<nav_msgs::Odometry>)
-  }
-
-  std::vector<bool> robot_position_updated_vec;
-  robot_position_updated_vec.resize(robot_num_, false);
-  while(std::find(robot_position_updated_vec.begin(), robot_position_updated_vec.end(), false) !=
-      robot_position_updated_vec.end())
-  {
-    ros::spinOnce();
-  }
-
-
-  for(size_t i = 0; i <robot_num_; ++i)
-  {
-    robot_position_loader::BBox3D &current_robot_bbox =
-      robot_bbox_vec_[i];
-    current_robot_bbox.x_min = current_robot_center_x + x_down;
-    current_robot_bbox.x_max = current_robot_center_x + x_up;
-    current_robot_bbox.y_min = current_robot_center_y + y_down;
-    current_robot_bbox.y_max = current_robot_center_y + y_up;
-    current_robot_bbox.z_min = current_robot_center_z + z_down;
-    current_robot_bbox.z_max = current_robot_center_z + z_up;
-
-    // std::cout << "BBox for robot " << i << " :\n" <<
-      // "[" << current_robot_bbox.x_min << "," << current_robot_bbox.x_max << "]" <<
-      // "[" << current_robot_bbox.y_min << "," << current_robot_bbox.y_max << "]" <<
-      // "[" << current_robot_bbox.z_min << "," << current_robot_bbox.z_max << "]\n";
-
-  }
-
-  return true;
-}
-
-bool RobotPositionLoader::getRobotBBoxVec(
-    std::vector<robot_position_loader::BBox3D> &robot_bbox_vec)
-{
-  robot_bbox_vec.clear();
-
-  if(robot_num_ == 0)
-  {
-    std::cout << "RobotPositionLoader::getRobotBBoxVec : " << std::endl <<
-      "robot_num_ is 0!" << std::endl;
-
-    return false;
-  }
-
-  if(!updateRobotBBoxVec())
-  {
-    std::cout << "RobotPositionLoader::getRobotBBoxVec : " << std::endl <<
-      "updateRobotBBoxVec failed!" << std::endl;
-
-    return false;
-  }
-
-  robot_bbox_vec = robot_bbox_vec_;
-
-  return true;
-}
-
 bool RobotPositionLoader::isPointInRobotBBox(
     const float &x,
     const float &y,
@@ -128,6 +44,199 @@ bool RobotPositionLoader::isPointInRobotBBox(
   }
 
   return false;
+}
+
+bool RobotPositionLoader::updateRobotPose()
+{
+  if(robot_num_ == 0)
+  {
+    std::cout << "RobotPositionLoader::updateRobotPose :\n" <<
+      "robot_num_ is 0!\n";
+
+    return false;
+  }
+
+  robot_pose_vec_.resize(robot_num_);
+
+  for(size_t i = 0; i < robot_num_; ++i)
+  {
+    if(!updateRobotPose(i))
+    {
+      std::cout << "RobotPositionLoader::updateRobotPose :\n" <<
+        "updateRobotPose for robot " << i << " failed!\n";
+
+      return false;
+    }
+  }
+
+  if(!updateRobotBBoxVec())
+  {
+      std::cout << "RobotPositionLoaderServer::updateRobotPose :\n" <<
+        "updateRobotBBoxVec failed!\n";
+
+      return false;
+  }
+
+  return true;
+}
+
+bool RobotPositionLoader::updateRobotPoseWithTimeStamp(
+    const ros::Time& stamp)
+{
+  robot_bbox_vec_.resize(robot_num_);
+
+  if(robot_num_ == 0)
+  {
+    std::cout << "RobotPositionLoader::updateRobotPoseWithTimeStamp : " << std::endl <<
+      "robot_num_ is 0!" << std::endl;
+
+    return false;
+  }
+
+  robot_pose_vec_.resize(robot_num_);
+
+  for(size_t i = 0; i < robot_num_; ++i)
+  {
+    tf::StampedTransform current_tf;
+
+    const std::string current_robot_name = robot_name_ + std::to_string(i) + "/base_link";
+
+    try
+    {
+      tf_listener_.waitForTransform(
+          world_name_, current_robot_name,
+          stamp, ros::Duration(1.0));
+
+      tf_listener_.lookupTransform(
+          world_name_, current_robot_name,
+          stamp,
+          current_tf);
+
+      geometry_msgs::Pose& current_robot_pose = robot_pose_vec_[i];
+
+      const tf::Vector3 &current_robot_position = current_tf.getOrigin();
+      const tf::Quaternion& current_robot_orientation = current_tf.getRotation();
+      current_robot_pose.position.x = current_robot_position.x();
+      current_robot_pose.position.x = current_robot_position.y();
+      current_robot_pose.position.x = current_robot_position.z();
+      current_robot_pose.orientation.x = current_robot_orientation.x();
+      current_robot_pose.orientation.y = current_robot_orientation.y();
+      current_robot_pose.orientation.z = current_robot_orientation.z();
+      current_robot_pose.orientation.w = current_robot_orientation.w();
+    }
+    catch(...)
+    {
+      std::cout << "RobotPositionLoader::updateRobotPoseWithTimeStamp : " << std::endl <<
+        "waitForTransform failed!" << std::endl;
+
+      if(!updateRobotPose(i))
+      {
+        std::cout << "RobotPositionLoader::updateRobotPoseWithTimeStamp : " << std::endl <<
+          "updateRobotPose for robot " << i << " failed!" << std::endl;
+
+        return false;
+      }
+    }
+  }
+
+  if(!updateRobotBBoxVec())
+  {
+    std::cout << "RobotPositionLoader::updateRobotPoseWithTimeStamp : " << std::endl <<
+      "updateRobotBBoxVec failed!" << std::endl;
+
+    return false;
+  }
+
+  return true;
+}
+
+bool RobotPositionLoader::updateRobotPose(
+    const size_t& robot_idx)
+{
+  if(robot_num_ == 0)
+  {
+    std::cout << "RobotPositionLoader::updateRobotPose :\n" <<
+      "robot_num_ is 0!\n";
+
+    return false;
+  }
+
+  if(robot_pose_vec_.size() != robot_num_)
+  {
+    robot_pose_vec_.resize(robot_num_);
+  }
+
+  if(robot_idx >= robot_num_)
+  {
+    std::cout << "RobotPositionLoader::updateRobotPose :\n" <<
+      "robot_idx out of range!\n";
+
+    return false;
+  }
+
+  gazebo_msgs::GetModelState get_model_state;
+  get_model_state.request.model_name = robot_name_ + std::to_string(robot_idx);
+  if(!get_model_state_client_.call(get_model_state))
+  {
+    std::cout << "RobotPositionLoader::updateRobotPose :\n" <<
+      "robot " << robot_idx << " call get_model_state failed!\n";
+
+    return false;
+  }
+
+  robot_pose_vec_[robot_idx] = get_model_state.response.pose;
+
+  return true;
+}
+
+bool RobotPositionLoader::updateRobotBBoxVec()
+{
+  const float x_down = -0.25;
+  const float x_up = 0.25;
+  const float y_down = -0.25;
+  const float y_up = 0.25;
+  const float z_down = -0.5;
+  const float z_up = 0.5;
+
+  robot_bbox_vec_.resize(robot_num_);
+
+  if(robot_num_ == 0)
+  {
+    std::cout << "RobotPositionLoader::updateRobotBBoxVec : " << std::endl <<
+      "robot_num_ is 0!" << std::endl;
+
+    return false;
+  }
+
+  if(robot_pose_vec_.size() != robot_num_)
+  {
+    std::cout << "RobotPositionLoader::updateRobotBBoxVec : " << std::endl <<
+      "robot_pose_vec.size() != robot_num_.size()!" << std::endl;
+
+    return false;
+  }
+
+  for(size_t i = 0; i <robot_num_; ++i)
+  {
+    const geometry_msgs::Pose& current_robot_pose = robot_pose_vec_[i];
+
+    robot_position_loader::BBox3D &current_robot_bbox =
+      robot_bbox_vec_[i];
+    current_robot_bbox.x_min = current_robot_pose.position.x + x_down;
+    current_robot_bbox.x_max = current_robot_pose.position.x + x_up;
+    current_robot_bbox.y_min = current_robot_pose.position.y + y_down;
+    current_robot_bbox.y_max = current_robot_pose.position.y + y_up;
+    current_robot_bbox.z_min = current_robot_pose.position.z + z_down;
+    current_robot_bbox.z_max = current_robot_pose.position.z + z_up;
+
+    // std::cout << "BBox for robot " << i << " :\n" <<
+      // "[" << current_robot_bbox.x_min << "," << current_robot_bbox.x_max << "]" <<
+      // "[" << current_robot_bbox.y_min << "," << current_robot_bbox.y_max << "]" <<
+      // "[" << current_robot_bbox.z_min << "," << current_robot_bbox.z_max << "]\n";
+
+  }
+
+  return true;
 }
 
 bool RobotPositionLoader::isPointInBBox(

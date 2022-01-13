@@ -39,7 +39,7 @@ icp:
   keep_track_of_icp_correction: true
 
 debug:
-  verbose_log: true
+  verbose_log: false
   multiple_visualizers: false
   save_visualizer_frames: false
 

@@ -366,11 +366,13 @@ void Controller::advertiseGetAlignedInstanceBoundingBoxService(
 
 bool Controller::removeRobotPoints(
     const pcl::PointCloud<voxblox::PointSemanticInstanceType>& source_point_cloud,
+    const ros::Time& stamp,
     pcl::PointCloud<voxblox::PointSemanticInstanceType>& point_cloud_without_robot)
 {
   point_cloud_without_robot = source_point_cloud;
 
   robot_position_loader::GetRobotBBox3DVec get_robot_bbox_vec_serve;
+  get_robot_bbox_vec_serve.request.stamp = stamp;
   if(!robot_position_loader_client_.call(get_robot_bbox_vec_serve))
   {
     LOG(ERROR) << "Controller::segmentPointCloudCallback : " << std::endl <<
@@ -454,6 +456,7 @@ void Controller::processSegment(
 
     removeRobotPoints(
         point_cloud_semantic_instance,
+        segment_point_cloud_msg->header.stamp,
         point_cloud_semantic_instance_without_robot);
 
     segment = new Segment(point_cloud_semantic_instance_without_robot, T_G_C);

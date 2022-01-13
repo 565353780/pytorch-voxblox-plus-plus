@@ -21,13 +21,16 @@ public:
       const std::string &robot_name);
 
 private:
+  bool updateRobotPose();
+
   bool getRobotBBoxVecCallback(
       robot_position_loader::GetRobotBBox3DVec::Request &req,
       robot_position_loader::GetRobotBBox3DVec::Response &res);
 
+private:
   ros::NodeHandle nh_;
-
   uint32_t queue_size_ = 1;
+
   ros::ServiceServer robot_position_loader_server_;
   ros::Publisher robot_bbox_vec_pub_;
 

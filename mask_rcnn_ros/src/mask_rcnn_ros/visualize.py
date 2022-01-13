@@ -87,9 +87,13 @@ def display_instances(image, boxes, masks, class_ids, class_names,
     """
     # Number of instances
     N = boxes.shape[0]
-    if not N:
-        print("\n*** No instances to display *** \n")
-    else:
+
+    #  if not N:
+        #  print("\n*** No instances to display *** \n")
+    #  else:
+        #  assert boxes.shape[0] == masks.shape[-1] == class_ids.shape[0]
+
+    if N:
         assert boxes.shape[0] == masks.shape[-1] == class_ids.shape[0]
 
     if not ax:
@@ -163,9 +167,13 @@ def display_instances_plt(image, boxes, masks, class_ids, class_names,
     """
     # Number of instances
     N = boxes.shape[0]
-    if not N:
-        print("\n*** No instances to display *** \n")
-    else:
+
+    #  if not N:
+        #  print("\n*** No instances to display *** \n")
+    #  else:
+        #  assert boxes.shape[0] == masks.shape[-1] == class_ids.shape[0]
+
+    if N:
         assert boxes.shape[0] == masks.shape[-1] == class_ids.shape[0]
 
     if not ax:

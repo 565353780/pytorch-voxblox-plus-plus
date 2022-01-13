@@ -24,8 +24,22 @@ bool RobotPositionLoaderServer::getRobotBBoxVecCallback(
     robot_position_loader::GetRobotBBox3DVec::Request &req,
     robot_position_loader::GetRobotBBox3DVec::Response &res)
 {
-  std::vector<robot_position_loader::BBox3D> robot_bbox_vec;
-  robot_position_loader_.getRobotBBoxVec(robot_bbox_vec);
+  if(!robot_position_loader_.updateRobotPose())
+  {
+    std::cout << "RobotPositionLoaderServer::getRobotBBoxVecCallback :\n" <<
+      "updateRobotPose failed!\n";
+    return false;
+  }
+
+  // if(!robot_position_loader_.updateRobotPoseWithTimeStamp(req.stamp))
+  // {
+    // std::cout << "RobotPositionLoaderServer::getRobotBBoxVecCallback :\n" <<
+      // "updateRobotPoseWithTimeStamp failed!\n";
+    // return false;
+  // }
+
+  const std::vector<robot_position_loader::BBox3D>& robot_bbox_vec =
+    robot_position_loader_.getRobotBBoxVec();
 
   res.robot_bbox_vec = robot_bbox_vec;
 
@@ -33,5 +47,4 @@ bool RobotPositionLoaderServer::getRobotBBoxVecCallback(
 
   return true;
 }
-
 
