@@ -3,6 +3,7 @@
 
 from math import cos, sin, pi
 import numpy as np
+import getch
 
 import rospy
 from tf import transformations
@@ -400,7 +401,7 @@ class RobotKeyboardController(object):
 
     def keyBoardControl(self, robot_name):
         while True:
-            keyboard_input = input()
+            keyboard_input = getch.getch()
             if keyboard_input == "q":
                 break
             if keyboard_input in self.move_key_list:
