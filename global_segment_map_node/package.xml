@@ -42,5 +42,8 @@
   <build_depend>multi-fetch-ros</build_depend>
   <build_depend>grnet-detect-ros</build_depend>
   <build_depend>tensorboard-logger-ros</build_depend>
+
   <build_depend>robot_position_visualizer</build_depend>
+  <build_depend>robot_keyboard_controller</build_depend>
+
 </package>
