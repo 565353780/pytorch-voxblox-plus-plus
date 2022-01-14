@@ -9,7 +9,7 @@ set -o pipefail
 
 package_names=()
 build_type=release
-cxx_standard=14
+cxx_standard=17
 all_packages=0
 while [ $# -ge 1 ]; do
     case "$1" in
@@ -80,11 +80,6 @@ for package_name in "${package_names[@]}"; do
         ln -sf "$catkin_ws_dir/build/$package_name/compile_commands.json" "$(catkin locate "$package_name")/"
     fi
 done
-
-mkdir -p src/.vim
-cp ~/dotfiles/vim/asynctasks/catkin_tasks.ini src/.tasks
-cp ~/dotfiles/clang_formats/ros-clang-format src/.clang-format
-cp ~/dotfiles/vim/vimrc/catkin-coc-settings.json src/.vim/coc-settings.json
 
 echo -e "\n"
 echo "======================================"
