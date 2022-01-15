@@ -11,7 +11,7 @@ python -m pip install 'git+https://github.com/facebookresearch/detectron2.git'
 
 ## Download models
 ```bash
-https://dl.fbaipublicfiles.com/detectron2/COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x/138205316/model_final_a3ec72.pkl ~/.ros/
+https://dl.fbaipublicfiles.com/detectron2/COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x/138205316/model_final_a3ec72.pkl
 https://gateway.infinitescript.com/?fileName=GRNet-ShapeNet.pth
 ```
 
