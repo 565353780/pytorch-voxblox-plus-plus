@@ -1,4 +1,4 @@
-# Voxblox++
+# Pytorch Voxblox Plus Plus
 
 ## Prepair the environment
 ```bash
@@ -6,7 +6,12 @@ sudo apt install python3-dev python3-pip python3-wstool protobuf-compiler dh-aut
 pip3 install -U numpy protobuf scipy scikit-image ipython keras wrapt simplejson netaddr osrf-pycommon scipy pillow catkin_pkg rospkg opencv-python empy
 # pip3 install -U tensorflow-gpu==2.5.0 keras-nightly==2.5.0.dev2021032900 keras==2.4.3
 pip3 install -U tensorflow-gpu
+
 python -m pip install 'git+https://github.com/facebookresearch/detectron2.git'
+or
+cd ~
+git clone https://github.com/facebookresearch/detectron2.git
+python -m pip install -e detectron2
 ```
 
 ## Download models
