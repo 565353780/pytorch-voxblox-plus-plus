@@ -57,6 +57,10 @@ target_link_libraries(${PROJECT_NAME}_node
     ${catkin_LIBRARIES}
 )
 
+add_dependencies(${PROJECT_NAME}_node
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+)
+
 target_compile_features(${PROJECT_NAME}_node
   PRIVATE
     cxx_std_17
@@ -68,4 +72,8 @@ add_executable(try_${PROJECT_NAME}
 )
 
 target_link_libraries(try_${PROJECT_NAME} ${catkin_LIBRARIES})
+
+add_dependencies(try_${PROJECT_NAME}
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+)
 
