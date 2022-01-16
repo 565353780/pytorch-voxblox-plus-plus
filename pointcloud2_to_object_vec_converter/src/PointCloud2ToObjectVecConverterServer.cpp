@@ -65,7 +65,9 @@ bool PointCloud2ToObjectVecConverterServer::logTensorBoard(
 {
   tensorboard_logger_ros::ScalarToBool tensorboard_logger_serve;
 
-  tensorboard_logger_serve.request.scalar.name = "test_log";
+  // RUN_LOG PARAM
+  tensorboard_logger_serve.request.scalar.name =
+    "PointCloud2ToObjectVecConverterServer/object_num";
   tensorboard_logger_serve.request.scalar.step = log_idx_;
   tensorboard_logger_serve.request.scalar.value = object_num;
 
@@ -91,6 +93,9 @@ bool PointCloud2ToObjectVecConverterServer::logTensorBoard(
 bool PointCloud2ToObjectVecConverterServer::saveScene(
     const sensor_msgs::PointCloud2& scene)
 {
+  // RUN_LOG PARAM
+  const size_t save_duration = 10;
+
   // scene_point_cloud.channels[*].name =
   // [distance, weight, segment_label, semantic_class, instance_label]
   const size_t semantic_class_channel_idx = 3;
@@ -118,9 +123,12 @@ bool PointCloud2ToObjectVecConverterServer::saveScene(
     pcl_point_cloud.points[i].semantic_label = current_label;
   }
 
-  pcl::io::savePCDFileASCII(
-      log_prefix_ + "scene_" + std::to_string(log_idx_) + ".pcd",
-      pcl_point_cloud);
+  if(log_idx_ % save_duration == 0)
+  {
+    pcl::io::savePCDFileASCII(
+        log_prefix_ + "scene_" + std::to_string(log_idx_) + ".pcd",
+        pcl_point_cloud);
+  }
 
   return true;
 }

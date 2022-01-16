@@ -5,7 +5,8 @@
 
 int main(int argc, char** argv)
 {
-  const size_t sleep_duration = 120;
+  // RUN_LOG PARAM
+  const size_t sleep_duration = 10;
 
   ros::init(argc, argv, "try_PointCloud2ToObjectVecConverterServer");
 
