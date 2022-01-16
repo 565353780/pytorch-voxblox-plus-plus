@@ -5,6 +5,8 @@
 
 int main(int argc, char** argv)
 {
+  const size_t sleep_duration = 120;
+
   ros::init(argc, argv, "try_PointCloud2ToObjectVecConverterServer");
 
   ros::NodeHandle nh;
@@ -17,7 +19,7 @@ int main(int argc, char** argv)
   pointcloud2_to_object_vec_converter::PC2ToOBJS first_get_object_vec_serve;
   while(!try_pointcloud_to_objects_client.call(first_get_object_vec_serve))
   {
-    ros::Duration(10).sleep();
+    ros::Duration(sleep_duration).sleep();
   }
 
   while(true)
@@ -41,7 +43,7 @@ int main(int argc, char** argv)
 
     ROS_INFO("Get response!");
 
-    ros::Duration(10).sleep();
+    ros::Duration(sleep_duration).sleep();
   }
 
   return 1;
