@@ -5,6 +5,7 @@ project(
   LANGUAGES CXX)
 
 find_package(catkin REQUIRED COMPONENTS
+  std_msgs
   rospy
 )
 

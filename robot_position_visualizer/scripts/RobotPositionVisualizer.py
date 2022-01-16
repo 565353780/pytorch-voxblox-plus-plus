@@ -115,7 +115,89 @@ class RobotKeyboardController(object):
             robot_state_list.append(current_robot_state)
         return robot_state_list
 
-    def showPosition(self):
+    def showPosition2D(self):
+        image_width = 1600
+        image_height = 900
+        free_area_width = 50
+        x_min = -8
+        x_max = 7
+        y_min = -9
+        y_max = 9
+        point_size = 5
+        robot_color = (0, 0, 255)
+        boundary_color = (255, 255, 255)
+
+        valid_width = image_width - 2 * free_area_width
+        valid_height = image_height - 2 * free_area_width
+
+        if valid_width < 1 or valid_height < 1:
+            print("RobotPositionVisualizer::showPosition2D :")
+            print("free_area_width out of range!")
+            return False
+
+        x_diff = x_max - x_min
+        y_diff = y_max - y_min
+
+        if x_diff <= 0 or y_diff <= 0:
+            print("RobotPositionVisualizer::showPosition2D :")
+            print("x or y interval not valid!")
+            return False
+
+        boundary_polygon_in_world = [
+            [x_min, y_min],
+            [x_min, y_max],
+            [x_max, y_max],
+            [x_max, y_min],
+        ]
+
+        half_width = image_width / 2.0
+        half_height = image_height / 2.0
+        x_center = (x_min + x_max) / 2.0
+        y_center = (y_min + y_max) / 2.0
+
+        scale = min(
+            1.0 * valid_height / x_diff,
+            1.0 * valid_width / y_diff)
+
+        def getPointInImage(point_in_world):
+            point_in_image = [
+                int(free_area_width + scale * (point_in_world[0] - x_min)),
+                int(free_area_width + scale * (point_in_world[1] - y_min))
+            ]
+            return point_in_image
+
+        while True:
+            robot_state_list = self.getAllRobotState()
+            if robot_state_list is None:
+                print("RobotPositionVisualizer::showPosition2D :")
+                print("getAllRobotState failed!")
+                return False
+
+            image = np.zeros((image_height, image_width, 3), np.uint8)
+
+            boundary_polygon_in_image = []
+            for boundary_point_in_world in boundary_polygon_in_world:
+                boundary_point_in_image = getPointInImage(boundary_point_in_world)
+                boundary_polygon_in_image.append([boundary_point_in_image[1], boundary_point_in_image[0]])
+
+            cv2.polylines(image, [np.array(boundary_polygon_in_image)], True, boundary_color)
+
+            for robot_state in robot_state_list:
+                robot_x_in_world = robot_state.pose.position.x
+                robot_y_in_world = robot_state.pose.position.y
+
+                robot_position_in_world = [robot_x_in_world, robot_y_in_world]
+                robot_position_in_image = getPointInImage(robot_position_in_world)
+
+                cv2.circle(image, (robot_position_in_image[1], robot_position_in_image[0]), point_size, robot_color, 4)
+
+            cv2.imshow("RobotPositionVisualizer2D", image)
+
+            if ord('q') == cv2.waitKey(100):
+                break
+        return True
+
+    def showPosition3D(self):
         robot_color = [255, 0, 0]
 
         axis_pcd = o3d.geometry.TriangleMesh.create_coordinate_frame(
@@ -123,7 +205,7 @@ class RobotKeyboardController(object):
         point_cloud = o3d.geometry.PointCloud()
 
         vis = o3d.visualization.Visualizer()
-        vis.create_window(window_name="RobotPositionVisualizer")
+        vis.create_window(window_name="RobotPositionVisualizer3D")
         render_option = vis.get_render_option()
         render_option.background_color = np.array([0, 0, 0])
         render_option.point_size = 50
@@ -131,12 +213,9 @@ class RobotKeyboardController(object):
         vis.add_geometry(point_cloud)
 
         while True:
-            if ord('q') == cv2.waitKey(100):
-                break
-
             robot_state_list = self.getAllRobotState()
             if robot_state_list is None:
-                print("RobotPositionVisualizer::showPosition :")
+                print("RobotPositionVisualizer::showPosition3D :")
                 print("getAllRobotState failed!")
                 return False
 
@@ -157,6 +236,9 @@ class RobotKeyboardController(object):
             vis.update_geometry(point_cloud)
             vis.poll_events()
             vis.update_renderer()
+
+            if ord('q') == cv2.waitKey(100):
+                break
         return True
 
 if __name__ == "__main__":
@@ -165,5 +247,6 @@ if __name__ == "__main__":
 
     robot_keyboard_controller = RobotKeyboardController()
     robot_keyboard_controller.loadRobot(robot_name, robot_num)
-    robot_keyboard_controller.showPosition()
+    robot_keyboard_controller.showPosition2D()
+    #  robot_keyboard_controller.showPosition3D()
 
