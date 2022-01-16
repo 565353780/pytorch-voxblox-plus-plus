@@ -31,6 +31,14 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
 
   // objects_pub_.publish(object_vec);
 
+  if(!saveScene(current_map_pointcloud))
+  {
+    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback : " <<
+      "saveScene failed!" << std::endl;
+
+    return false;
+  }
+
   if(!saveObjectVec(objects))
   {
     std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback : " <<
@@ -38,6 +46,45 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
 
     return false;
   }
+
+  return true;
+}
+
+bool PointCloud2ToObjectVecConverterServer::saveScene(
+    const sensor_msgs::PointCloud2& scene)
+{
+  // scene_point_cloud.channels[*].name =
+  // [distance, weight, segment_label, semantic_class, instance_label]
+  const size_t semantic_class_channel_idx = 3;
+  pcl::PointCloud<PointCloudWithSemanticAndInstanceLabel> pcl_point_cloud;
+
+  sensor_msgs::PointCloud scene_point_cloud;
+  convertPointCloud2ToPointCloud(scene, scene_point_cloud);
+
+  pcl_point_cloud.width = scene_point_cloud.points.size();
+  pcl_point_cloud.height = 1;
+
+  pcl_point_cloud.points.resize(pcl_point_cloud.width * pcl_point_cloud.height);
+
+  for(size_t i = 0; i < scene_point_cloud.points.size(); ++i)
+  {
+    const float &current_x = scene_point_cloud.points[i].x;
+    const float &current_y = scene_point_cloud.points[i].y;
+    const float &current_z = scene_point_cloud.points[i].z;
+    const size_t &current_label =
+      scene_point_cloud.channels[semantic_class_channel_idx].values[i];
+
+    pcl_point_cloud.points[i].x = current_x;
+    pcl_point_cloud.points[i].y = current_y;
+    pcl_point_cloud.points[i].z = current_z;
+    pcl_point_cloud.points[i].semantic_label = current_label;
+  }
+
+  pcl::io::savePCDFileASCII(
+      log_prefix_ + "scene_" + std::to_string(scene_idx_) + ".pcd",
+      pcl_point_cloud);
+
+  ++scene_idx_;
 
   return true;
 }
@@ -50,7 +97,7 @@ bool PointCloud2ToObjectVecConverterServer::saveObjectVec(
     return true;
   }
 
-  system(("rm " + log_prefix_ + "*").c_str());
+  system(("rm " + log_prefix_ + "/object*").c_str());
 
   for(size_t i = 0; i < object_vec.size(); ++i)
   {
@@ -60,7 +107,7 @@ bool PointCloud2ToObjectVecConverterServer::saveObjectVec(
     pcl::fromROSMsg(object, pcl_point_cloud);
 
     pcl::io::savePCDFileASCII(
-        log_prefix_ + "object_" + std::to_string(i),
+        log_prefix_ + "object_" + std::to_string(i) + ".pcd",
         pcl_point_cloud);
   }
 

@@ -42,12 +42,16 @@ public:
     }
 
     log_prefix_ = log_prefix;
+    scene_idx_ = 0;
   }
 
 private:
   bool getObjectsFromPointCloud2Callback(
       pointcloud2_to_object_vec_converter::PC2ToOBJS::Request &req,
       pointcloud2_to_object_vec_converter::PC2ToOBJS::Response &res);
+
+  bool saveScene(
+      const sensor_msgs::PointCloud2& scene);
 
   bool saveObjectVec(
       const std::vector<sensor_msgs::PointCloud2>& object_vec);
@@ -64,6 +68,7 @@ private:
   PointCloud2ToObjectVecConverter pointcloud2_to_object_vec_converter_;
 
   std::string log_prefix_;
+  size_t scene_idx_;
 };
  
 #endif // POINTCLOUD2_TO_OBJECTVEC_CONVERTERSERVER_H
