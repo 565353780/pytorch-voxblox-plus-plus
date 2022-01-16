@@ -116,28 +116,10 @@ class RobotKeyboardController(object):
         return robot_state_list
 
     def showPosition(self):
-        x_bound_min = -8
-        x_bound_max = 8
-        y_bound_min = -10
-        y_bound_max = 7
-        z_bound_min = -1
-        z_bound_max = 5
         robot_color = [255, 0, 0]
-        bound_color = [0, 255, 0]
-
-        bound_point_list = [
-            [x_bound_min, y_bound_min, z_bound_min],
-            [x_bound_min, y_bound_min, z_bound_max],
-            [x_bound_min, y_bound_max, z_bound_min],
-            [x_bound_min, y_bound_max, z_bound_max],
-            [x_bound_max, y_bound_min, z_bound_min],
-            [x_bound_max, y_bound_min, z_bound_max],
-            [x_bound_max, y_bound_max, z_bound_min],
-            [x_bound_max, y_bound_max, z_bound_max]
-        ]
 
         axis_pcd = o3d.geometry.TriangleMesh.create_coordinate_frame(
-            size=0.5, origin=[0, 0, 0])
+            size=2.0, origin=[0, 0, 0])
         point_cloud = o3d.geometry.PointCloud()
 
         vis = o3d.visualization.Visualizer()
@@ -160,9 +142,6 @@ class RobotKeyboardController(object):
 
             points = []
             colors = []
-            for bound_point in bound_point_list:
-                points.append(bound_point)
-                colors.append(bound_color)
 
             for robot_state in robot_state_list:
                 points.append([
