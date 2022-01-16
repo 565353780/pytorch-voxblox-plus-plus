@@ -1,3 +1,12 @@
+#ifndef POINTCLOUD2_TO_OBJECTVEC_CONVERTERSERVER_H
+#define POINTCLOUD2_TO_OBJECTVEC_CONVERTERSERVER_H
+
+#include <iostream>
+#include <ctime>
+#include <fstream>
+#include <dirent.h>
+#include <cstdlib>
+
 #include "PointCloud2ToObjectVecConverter.h"
 
 #include <pointcloud2_to_object_vec_converter/PointCloud2Vec.h>
@@ -12,6 +21,27 @@ public:
                                   &PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback, this)),
     objects_pub_(nh_.advertise<pointcloud2_to_object_vec_converter::PointCloud2Vec>("pointcloud2_to_object_vec_converter/object_vec", queue_size_))
   {
+    std::string log_prefix =
+      std::string(std::getenv("HOME")) +
+      "/.ros/RUN_LOG/PointCloud2ToObjectVecConverterServer/";
+
+    std::time_t now = time(0);
+    tm* ltm = localtime(&now);
+    std::string log_date = std::to_string(1900 + ltm->tm_year) + "_";
+    log_date += std::to_string(1 + ltm->tm_mon) + "_";
+    log_date += std::to_string(ltm->tm_mday) + "_";
+    log_date += std::to_string(ltm->tm_hour) + "-";
+    log_date += std::to_string(ltm->tm_min) + "-";
+    log_date += std::to_string(ltm->tm_sec);
+
+    log_prefix += log_date + "/";
+
+    if(opendir(log_prefix.c_str()) == NULL)
+    {
+      system(("mkdir -p " + log_prefix).c_str());
+    }
+
+    log_prefix_ = log_prefix;
   }
 
 private:
@@ -19,6 +49,10 @@ private:
       pointcloud2_to_object_vec_converter::PC2ToOBJS::Request &req,
       pointcloud2_to_object_vec_converter::PC2ToOBJS::Response &res);
 
+  bool saveObjectVec(
+      const std::vector<sensor_msgs::PointCloud2>& object_vec);
+
+private:
   ros::NodeHandle nh_;
 
 	uint32_t queue_size_ = 1;
@@ -28,5 +62,8 @@ private:
   ros::Publisher objects_pub_;
 
   PointCloud2ToObjectVecConverter pointcloud2_to_object_vec_converter_;
+
+  std::string log_prefix_;
 };
  
+#endif // POINTCLOUD2_TO_OBJECTVEC_CONVERTERSERVER_H

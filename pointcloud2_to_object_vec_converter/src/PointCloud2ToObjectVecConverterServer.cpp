@@ -21,11 +21,7 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
 
   const sensor_msgs::PointCloud2 &current_map_pointcloud = get_map_request.response.map_cloud;
 
-  std::cout << "get map size: " << current_map_pointcloud.data.size() << std::endl;
-
   pointcloud2_to_object_vec_converter_.transPointCloud2ToObjects(current_map_pointcloud, objects);
-
-  std::cout << "trans to objects size : " << objects.size() << std::endl;
 
   res.objects = objects;
 
@@ -34,6 +30,39 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
   object_vec.point_cloud2_vec = objects;
 
   // objects_pub_.publish(object_vec);
+
+  if(!saveObjectVec(objects))
+  {
+    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback : " <<
+      "saveObjectVec failed!" << std::endl;
+
+    return false;
+  }
+
+  return true;
+}
+
+bool PointCloud2ToObjectVecConverterServer::saveObjectVec(
+    const std::vector<sensor_msgs::PointCloud2>& object_vec)
+{
+  if(object_vec.size() == 0)
+  {
+    return true;
+  }
+
+  system(("rm " + log_prefix_ + "*").c_str());
+
+  for(size_t i = 0; i < object_vec.size(); ++i)
+  {
+    const sensor_msgs::PointCloud2& object = object_vec[i];
+    pcl::PointCloud<PointCloudWithSemanticAndInstanceLabel> pcl_point_cloud;
+
+    pcl::fromROSMsg(object, pcl_point_cloud);
+
+    pcl::io::savePCDFileASCII(
+        log_prefix_ + "object_" + std::to_string(i),
+        pcl_point_cloud);
+  }
 
   return true;
 }
