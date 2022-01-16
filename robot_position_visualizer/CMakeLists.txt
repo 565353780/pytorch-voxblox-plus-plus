@@ -5,29 +5,13 @@ project(
   LANGUAGES CXX)
 
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  std_msgs
+  rospy
 )
 
 catkin_package()
 
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-)
-
-add_executable(${PROJECT_NAME}_node
-  src/RobotPositionVisualizer.cpp
-  src/RobotPositionVisualizer_node.cpp
-)
-
-target_link_libraries(${PROJECT_NAME}_node
-  PRIVATE
-    ${catkin_LIBRARIES}
-)
-
-target_compile_features(${PROJECT_NAME}_node
-  PRIVATE
-    cxx_std_17
+catkin_install_python(PROGRAMS
+  scripts/RobotPositionVisualizer.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

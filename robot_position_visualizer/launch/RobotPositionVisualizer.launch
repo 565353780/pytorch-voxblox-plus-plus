@@ -2,12 +2,7 @@
 
 <launch>
 
-  <arg name="world_name" default="map"/>
-  <arg name="robot_num" default="3"/>
-  <arg name="robot_name" default="fetch_"/>
-
-  <node pkg="robot_position_visualizer" name="RobotPositionVisualizer" type="robot_position_visualizer_node" output="screen"
-    args="$(arg world_name) $(arg robot_num) $(arg robot_name)"/>
+  <node pkg="robot_position_visualizer" name="RobotPositionVisualizer" type="robot_position_visualizer_node" output="screen">
 
 </launch>
 
