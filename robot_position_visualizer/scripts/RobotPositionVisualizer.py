@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from math import cos, sin, pi
+from math import cos, sin
+import cv2
 import numpy as np
 
 import rospy
 from tf import transformations
-from gazebo_msgs.msg import ModelState
 from gazebo_msgs.srv import GetModelState
 
 class RobotKeyboardController(object):
@@ -86,42 +86,76 @@ class RobotKeyboardController(object):
         forward_direction /= forward_direction_norm
         return forward_direction
 
-    def getBackDirection(self, robot_state):
-        forward_direction = self.getForwardDirection(robot_state)
-        if forward_direction is None:
-            print("RobotKeyboardController::getBackDirection :")
-            print("forward_direction is None!")
+    def getAllRobotState(self):
+        robot_state_list = []
+
+        if self.robot_name is None:
+            print("RobotPositionVisualizer::getAllRobotState :")
+            print("robot_name is None!")
             return None
-        back_direction = -forward_direction
-        return back_direction
 
-    def getLeftDirection(self, robot_state):
-        forward_direction = self.getForwardDirection(robot_state)
-        if forward_direction is None:
-            print("RobotKeyboardController::getLeftDirection :")
-            print("forward_direction is None!")
+        if self.robot_num is None:
+            print("RobotPositionVisualizer::getAllRobotState :")
+            print("robot_num is None!")
             return None
-        left_direction = [-forward_direction[1], forward_direction[0], forward_direction[2]]
-        return left_direction
 
-    def getRightDirection(self, robot_state):
-        forward_direction = self.getForwardDirection(robot_state)
-        if forward_direction is None:
-            print("RobotKeyboardController::getRightDirection :")
-            print("forward_direction is None!")
+        if self.robot_num < 1:
+            print("RobotPositionVisualizer::getAllRobotState :")
+            print("robot_num not valid!")
             return None
-        right_direction = [forward_direction[1], -forward_direction[0], forward_direction[2]]
-        return right_direction
 
-    def getUpDirection(self, robot_state):
-        up_direction = np.array([0, 0, 1])
-        return up_direction
-
-    def getDownDirection(self, robot_state):
-        down_direction = np.array([0, 0, -1])
-        return down_direction
+        for robot_idx in range(self.robot_num):
+            current_robot_full_name = self.robot_name + str(robot_idx)
+            current_robot_state = self.getRobotState(current_robot_full_name)
+            if current_robot_state is None:
+                print("RobotPositionVisualizer::getAllRobotState :")
+                print("getRobotState for " + current_robot_full_name + " failed!")
+                return None
+            robot_state_list.append(current_robot_state)
+        return robot_state_list
 
     def showPosition(self):
+        image_width = 1600
+        image_height = 900
+        robot_color = (0, 0, 255)
+
+        while True:
+            if ord('q') == cv2.waitKey(0):
+                break
+
+            robot_state_list = self.getAllRobotState()
+            if robot_state_list is None:
+                print("RobotPositionVisualizer::showPosition :")
+                print("getAllRobotState failed!")
+                return False
+
+            robot_position_list = []
+            for robot_state in robot_state_list:
+                robot_position_list.append(robot_state.pose.position)
+
+            x_min = robot_position_list[0].x
+            x_max = x_min
+            y_min = robot_position_list[0].y
+            y_max = y_min
+            z_min = robot_position_list[0].z
+            z_max = z_min
+            for robot_position in robot_position_list:
+                x_min = min(x_min, robot_position.x)
+                x_max = max(x_max, robot_position.x)
+                y_min = min(y_min, robot_position.y)
+                y_max = max(y_max, robot_position.y)
+                z_min = min(z_min, robot_position.z)
+                z_max = max(z_max, robot_position.z)
+
+            x_center = (x_min + x_max) / 2.0
+            y_center = (y_min + y_max) / 2.0
+            z_center = (z_min + z_max) / 2.0
+            center = [x_center, y_center, z_center]
+
+            image = np.zeros((image_width, image_height, 3), np.uint8)
+            image.fill(255)
+
+            cv2.imshow("RobotPositionVisualizer", image)
         return True
 
 if __name__ == "__main__":
