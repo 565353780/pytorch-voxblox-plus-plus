@@ -13,15 +13,12 @@ int main(int argc, char** argv)
 
   ROS_INFO("Start call pointcloud_to_objects_server service...");
 
-  pointcloud2_to_object_vec_converter::PC2ToOBJS get_object_vec_serve;
-  if(!try_pointcloud_to_objects_client.call(get_object_vec_serve))
+  ROS_INFO("Start wait pointcloud2_to_object_vec_converter_server...");
+  pointcloud2_to_object_vec_converter::PC2ToOBJS first_get_object_vec_serve;
+  while(!try_pointcloud_to_objects_client.call(first_get_object_vec_serve))
   {
-    std::cout << "call pointcloud2_to_object_vec_converter_server failed!" << std::endl;
-
-    return -1;
+    ros::Duration(10).sleep();
   }
-
-  std::cout << "Get pointcloud2_to_object_vec_converter_server response!" << std::endl;
 
   while(true)
   {
@@ -32,7 +29,7 @@ int main(int argc, char** argv)
     {
       std::cout << "call pointcloud2_to_object_vec_converter_server failed!" << std::endl;
 
-      return -1;
+      return 0;
     }
 
     const std::vector<sensor_msgs::PointCloud2>& objects = new_get_object_vec_serve.response.objects;
@@ -44,9 +41,9 @@ int main(int argc, char** argv)
 
     ROS_INFO("Get response!");
 
-    ros::Duration(1).sleep();
+    ros::Duration(10).sleep();
   }
 
-  return 0;
+  return 1;
 }
 
