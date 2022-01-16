@@ -2,7 +2,7 @@
 
 <launch>
 
-  <node pkg="robot_position_visualizer" name="RobotPositionVisualizer" type="robot_position_visualizer_node" output="screen">
+  <node pkg="robot_position_visualizer" name="RobotPositionVisualizer" type="RobotPositionVisualizer.py" output="screen"/>
 
 </launch>
 

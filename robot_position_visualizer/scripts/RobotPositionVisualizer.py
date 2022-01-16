@@ -4,6 +4,7 @@
 from math import cos, sin
 import cv2
 import numpy as np
+import open3d as o3d
 
 import rospy
 from tf import transformations
@@ -115,12 +116,40 @@ class RobotKeyboardController(object):
         return robot_state_list
 
     def showPosition(self):
-        image_width = 1600
-        image_height = 900
-        robot_color = (0, 0, 255)
+        x_bound_min = -8
+        x_bound_max = 8
+        y_bound_min = -10
+        y_bound_max = 7
+        z_bound_min = -1
+        z_bound_max = 5
+        robot_color = [255, 0, 0]
+        bound_color = [0, 255, 0]
+
+        bound_point_list = [
+            [x_bound_min, y_bound_min, z_bound_min],
+            [x_bound_min, y_bound_min, z_bound_max],
+            [x_bound_min, y_bound_max, z_bound_min],
+            [x_bound_min, y_bound_max, z_bound_max],
+            [x_bound_max, y_bound_min, z_bound_min],
+            [x_bound_max, y_bound_min, z_bound_max],
+            [x_bound_max, y_bound_max, z_bound_min],
+            [x_bound_max, y_bound_max, z_bound_max]
+        ]
+
+        axis_pcd = o3d.geometry.TriangleMesh.create_coordinate_frame(
+            size=0.5, origin=[0, 0, 0])
+        point_cloud = o3d.geometry.PointCloud()
+
+        vis = o3d.visualization.Visualizer()
+        vis.create_window(window_name="RobotPositionVisualizer")
+        render_option = vis.get_render_option()
+        render_option.background_color = np.array([0, 0, 0])
+        render_option.point_size = 50
+        vis.add_geometry(axis_pcd)
+        vis.add_geometry(point_cloud)
 
         while True:
-            if ord('q') == cv2.waitKey(0):
+            if ord('q') == cv2.waitKey(100):
                 break
 
             robot_state_list = self.getAllRobotState()
@@ -129,38 +158,31 @@ class RobotKeyboardController(object):
                 print("getAllRobotState failed!")
                 return False
 
-            robot_position_list = []
+            points = []
+            colors = []
+            for bound_point in bound_point_list:
+                points.append(bound_point)
+                colors.append(bound_color)
+
             for robot_state in robot_state_list:
-                robot_position_list.append(robot_state.pose.position)
+                points.append([
+                    robot_state.pose.position.x,
+                    robot_state.pose.position.y,
+                    robot_state.pose.position.z
+                ])
+                colors.append(robot_color)
 
-            x_min = robot_position_list[0].x
-            x_max = x_min
-            y_min = robot_position_list[0].y
-            y_max = y_min
-            z_min = robot_position_list[0].z
-            z_max = z_min
-            for robot_position in robot_position_list:
-                x_min = min(x_min, robot_position.x)
-                x_max = max(x_max, robot_position.x)
-                y_min = min(y_min, robot_position.y)
-                y_max = max(y_max, robot_position.y)
-                z_min = min(z_min, robot_position.z)
-                z_max = max(z_max, robot_position.z)
+            point_cloud.points = o3d.utility.Vector3dVector(np.array(points))
+            point_cloud.colors = o3d.utility.Vector3dVector(np.array(colors) / 255.0)
 
-            x_center = (x_min + x_max) / 2.0
-            y_center = (y_min + y_max) / 2.0
-            z_center = (z_min + z_max) / 2.0
-            center = [x_center, y_center, z_center]
-
-            image = np.zeros((image_width, image_height, 3), np.uint8)
-            image.fill(255)
-
-            cv2.imshow("RobotPositionVisualizer", image)
+            vis.update_geometry(point_cloud)
+            vis.poll_events()
+            vis.update_renderer()
         return True
 
 if __name__ == "__main__":
     robot_name = "kinect_camera_"
-    robot_num = 3
+    robot_num = 1
 
     robot_keyboard_controller = RobotKeyboardController()
     robot_keyboard_controller.loadRobot(robot_name, robot_num)
