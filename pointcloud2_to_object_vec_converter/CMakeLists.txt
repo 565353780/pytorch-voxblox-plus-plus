@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   genmsg
   vpp_msgs
   message_generation
+  tensorboard_logger_ros
 )
 
 find_package(PCL REQUIRED)

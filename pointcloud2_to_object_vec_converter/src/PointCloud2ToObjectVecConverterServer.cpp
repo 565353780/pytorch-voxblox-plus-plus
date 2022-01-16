@@ -47,6 +47,44 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
     return false;
   }
 
+  if(!logTensorBoard(objects.size()))
+  {
+    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback : " <<
+      "logTensorBoard failed!" << std::endl;
+
+    return false;
+  }
+
+  ++log_idx_;
+
+  return true;
+}
+
+bool PointCloud2ToObjectVecConverterServer::logTensorBoard(
+    const size_t& object_num)
+{
+  tensorboard_logger_ros::ScalarToBool tensorboard_logger_serve;
+
+  tensorboard_logger_serve.request.scalar.name = "test_log";
+  tensorboard_logger_serve.request.scalar.step = log_idx_;
+  tensorboard_logger_serve.request.scalar.value = object_num;
+
+  if (!tensorboard_logger_client_.call(tensorboard_logger_serve))
+  {
+    std::cout << "PointCloud2ToObjectVecConverterServer::logTensorBoard :\n" <<
+      "call tensorboard_logger_server failed!\n";
+
+    return false;
+  }
+
+  if(!tensorboard_logger_serve.response.success)
+  {
+    std::cout << "PointCloud2ToObjectVecConverterServer::logTensorBoard :\n" <<
+      "tensorboard_logger_server log failed!\n";
+
+    return false;
+  }
+
   return true;
 }
 
@@ -81,10 +119,8 @@ bool PointCloud2ToObjectVecConverterServer::saveScene(
   }
 
   pcl::io::savePCDFileASCII(
-      log_prefix_ + "scene_" + std::to_string(scene_idx_) + ".pcd",
+      log_prefix_ + "scene_" + std::to_string(log_idx_) + ".pcd",
       pcl_point_cloud);
-
-  ++scene_idx_;
 
   return true;
 }
