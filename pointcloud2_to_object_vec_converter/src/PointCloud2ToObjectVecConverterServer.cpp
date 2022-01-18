@@ -98,8 +98,7 @@ bool PointCloud2ToObjectVecConverterServer::saveScene(
 
   // scene_point_cloud.channels[*].name =
   // [distance, weight, segment_label, semantic_class, instance_label]
-  const size_t semantic_class_channel_idx = 3;
-  pcl::PointCloud<PointCloudWithSemanticAndInstanceLabel> pcl_point_cloud;
+  pcl::PointCloud<PointWithSemanticAndInstanceLabel> pcl_point_cloud;
 
   sensor_msgs::PointCloud scene_point_cloud;
   convertPointCloud2ToPointCloud(scene, scene_point_cloud);
@@ -111,16 +110,23 @@ bool PointCloud2ToObjectVecConverterServer::saveScene(
 
   for(size_t i = 0; i < scene_point_cloud.points.size(); ++i)
   {
-    const float &current_x = scene_point_cloud.points[i].x;
-    const float &current_y = scene_point_cloud.points[i].y;
-    const float &current_z = scene_point_cloud.points[i].z;
-    const size_t &current_label =
-      scene_point_cloud.channels[semantic_class_channel_idx].values[i];
+    const float& current_x = scene_point_cloud.points[i].x;
+    const float& current_y = scene_point_cloud.points[i].y;
+    const float& current_z = scene_point_cloud.points[i].z;
+    const float& current_distance = scene_point_cloud.channels[0].values[i];
+    const float& current_weight = scene_point_cloud.channels[1].values[i];
+    const std::uint16_t& current_segment_label = scene_point_cloud.channels[2].values[i];
+    const std::uint8_t& current_semantic_label = scene_point_cloud.channels[3].values[i];
+    const size_t& current_instance_label = scene_point_cloud.channels[4].values[i];
 
     pcl_point_cloud.points[i].x = current_x;
     pcl_point_cloud.points[i].y = current_y;
     pcl_point_cloud.points[i].z = current_z;
-    pcl_point_cloud.points[i].semantic_label = current_label;
+    pcl_point_cloud.points[i].distance = current_distance;
+    pcl_point_cloud.points[i].weight = current_weight;
+    pcl_point_cloud.points[i].segment_label = current_segment_label;
+    pcl_point_cloud.points[i].semantic_label = current_semantic_label;
+    pcl_point_cloud.points[i].instance_label = current_instance_label;
   }
 
   if(log_idx_ % save_duration == 0)
@@ -146,7 +152,7 @@ bool PointCloud2ToObjectVecConverterServer::saveObjectVec(
   for(size_t i = 0; i < object_vec.size(); ++i)
   {
     const sensor_msgs::PointCloud2& object = object_vec[i];
-    pcl::PointCloud<PointCloudWithSemanticAndInstanceLabel> pcl_point_cloud;
+    pcl::PointCloud<PointWithSemanticAndInstanceLabel> pcl_point_cloud;
 
     pcl::fromROSMsg(object, pcl_point_cloud);
 

@@ -20,6 +20,28 @@
 #include <pcl/point_cloud.h>
 #include <pcl_conversions/pcl_conversions.h>
 
+// create a new point type for using pcl to generate sensor_msgs::PointCloud2::data
+struct PointWithSemanticAndInstanceLabel
+{
+  PCL_ADD_POINT4D
+
+  float distance;
+  float weight;
+  std::uint16_t segment_label;
+  std::uint8_t semantic_label;
+  std::uint16_t instance_label;
+
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+}EIGEN_ALIGN16;
+
+POINT_CLOUD_REGISTER_POINT_STRUCT(PointWithSemanticAndInstanceLabel,
+                                  (float, x, x)(float, y, y)(float, z, z)
+                                  (float, distance, distance)
+                                  (float, weight, weight)
+                                  (std::uint16_t, segment_label, segment_label)
+                                  (std::uint8_t, semantic_label, semantic_label)
+                                  (std::uint16_t, instance_label, instance_label))
+
 struct BBox
 {
   bool is_valid = false;
@@ -32,27 +54,23 @@ struct BBox
 
 struct LabeledObject
 {
-  size_t point_num = 0;
-  size_t label = 0;
+  size_t instance_label = 0;
 
-  std::vector<size_t> index;
-  std::vector<float> x;
-  std::vector<float> y;
-  std::vector<float> z;
+  std::vector<PointWithSemanticAndInstanceLabel> points;
 
   bool reset();
 
   bool setLabel(
-      const size_t &new_label);
+      const size_t &new_instance_label);
 
   bool addPoint(
-      const size_t &point_index,
       const float &point_x,
       const float &point_y,
-      const float &point_z);
-
-  bool isIndexInThis(
-      const size_t &point_index);
+      const float &point_z,
+      const float &point_distance,
+      const float &point_weight,
+      const std::uint16_t &segment_label,
+      const std::uint8_t &semantic_label);
 
   bool getBBox(
       BBox &bbox);
@@ -76,20 +94,6 @@ struct LabeledObject
       const float &point_y,
       const float &point_z);
 };
-
-// create a new point type for using pcl to generate sensor_msgs::PointCloud2::data
-struct PointCloudWithSemanticAndInstanceLabel
-{
-  PCL_ADD_POINT4D
-
-  std::uint8_t semantic_label;
-
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-}EIGEN_ALIGN16;
-
-POINT_CLOUD_REGISTER_POINT_STRUCT(PointCloudWithSemanticAndInstanceLabel,
-                                  (float, x, x)(float, y, y)(float, z, z)
-                                  (std::uint8_t, semantic_label, semantic_label))
 
 class PointCloud2ToObjectVecConverter
 {
@@ -126,9 +130,8 @@ private:
       const geometry_msgs::Point32 &point2);
 
   bool splitPointCloudChannelToLabeledObjects(
-      const sensor_msgs::PointCloud &point_cloud,
-      const size_t &channel_index,
-      std::vector<LabeledObject> &labeled_objects_vec);
+      const sensor_msgs::PointCloud& point_cloud,
+      std::vector<LabeledObject>& labeled_objects_vec);
 
   bool getSemanticLabelOfInstance(
       const LabeledObject &instance_labeled_object,
