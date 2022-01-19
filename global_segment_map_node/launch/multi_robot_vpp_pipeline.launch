@@ -48,5 +48,6 @@
   <include file="$(find occupancy_grid_publisher)/launch/pub_occupancy_grid.launch"/>
   <include file="$(find pointcloud2_to_object_vec_converter)/launch/PointCloud2ToObjectVecConverterServer.launch"/>
   <include file="$(find tensorboard_logger_ros)/launch/TensorBoardLoggerServer.launch"/>
+  <include file="$(find robot_move_state_manager)/launch/RobotMoveStateManager.launch"/>
 </launch>
 
