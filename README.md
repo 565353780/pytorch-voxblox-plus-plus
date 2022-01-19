@@ -31,6 +31,7 @@ mkdir -p vpp_ws/src
 cd vpp_ws/src
 git clone https://github.com/565353780/pytorch-voxblox-plus-plus.git
 git clone https://github.com/565353780/multi-fetch-ros.git
+git clone https://github.com/565353780/robot-manage-ros.git
 git clone https://github.com/565353780/grnet-detect-ros.git
 git clone https://github.com/565353780/tensorboard_logger_ros.git
 cd ..
@@ -53,6 +54,7 @@ cp -r src/pytorch-voxblox-plus-plus/mask_rcnn_ros/configs ~/.ros/
 ```bash
 git clone git@github.com:565353780/pytorch-voxblox-plus-plus.git
 git clone git@github.com:565353780/multi-fetch-ros.git
+git clone git@github.com:565353780/robot-manage-ros.git
 git clone git@github.com:565353780/grnet-detect-ros.git
 git clone git@github.com:565353780/tensorboard-logger-ros.git
 ```

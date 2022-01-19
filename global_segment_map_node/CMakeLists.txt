@@ -1,13 +1,14 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(gsm_node)
 
-add_definitions(-std=c++14)
+add_definitions(-std=c++17)
 if (NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   add_definitions(-fext-numeric-literals)
 endif()
 
 find_package(catkin REQUIRED COMPONENTS
-  robot_position_loader)
+  robot_position_loader
+)
 
 find_package(catkin_simple REQUIRED)
 

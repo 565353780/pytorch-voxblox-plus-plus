@@ -30,6 +30,7 @@
   <depend>voxblox_msgs</depend>
   <depend>voxblox_ros</depend>
   <depend>vpp_msgs</depend>
+  <depend>robot_position_loader</depend>
   <build_depend>mask_rcnn_ros</build_depend>
   <build_depend>depth_segmentation</build_depend>
 
@@ -38,12 +39,8 @@
   <build_depend>farthest_sampling</build_depend>
   <build_depend>view_point_extractor</build_depend>
   <build_depend>pointcloud2_to_object_vec_converter</build_depend>
-  <build_depend>robot_position_loader</build_depend>
-  <build_depend>multi-fetch-ros</build_depend>
   <build_depend>grnet-detect-ros</build_depend>
+  <build_depend>multi-fetch-ros</build_depend>
+  <build_depend>robot-manage-ros</build_depend>
   <build_depend>tensorboard-logger-ros</build_depend>
-
-  <build_depend>robot_position_visualizer</build_depend>
-  <build_depend>robot_keyboard_controller</build_depend>
-
 </package>
