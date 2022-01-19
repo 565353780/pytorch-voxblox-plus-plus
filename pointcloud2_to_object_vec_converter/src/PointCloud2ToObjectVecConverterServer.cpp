@@ -31,6 +31,11 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
 
   // objects_pub_.publish(object_vec);
 
+  if(objects.size() == 0)
+  {
+    return true;
+  }
+
   if(!saveScene(current_map_pointcloud))
   {
     std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback : " <<
