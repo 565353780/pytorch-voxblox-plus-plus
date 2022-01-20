@@ -1,10 +1,10 @@
-#include "occupancy_grid_publisher/OccupancyGridPublisher.h"
+#include "occupancy_grid_publisher/OccupancyGridPublisherServer.h"
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "OccupancyGridPublisher");
+  ros::init(argc, argv, "OccupancyGridPublisherServer");
 
-  OccupancyGridPublisher occupancy_grid_publisher;
+  OccupancyGridPublisherServer occupancy_grid_publisher_server;
 
   ros::spin();
 

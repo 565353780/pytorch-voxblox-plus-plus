@@ -53,14 +53,16 @@ private:
       pointcloud2_to_object_vec_converter::PC2ToOBJS::Request &req,
       pointcloud2_to_object_vec_converter::PC2ToOBJS::Response &res);
 
-  bool logTensorBoard(
-      const size_t& object_num);
-
   bool saveScene(
       const sensor_msgs::PointCloud2& scene);
 
   bool saveObjectVec(
       const std::vector<sensor_msgs::PointCloud2>& object_vec);
+
+  bool logTensorBoard(
+      const std::string& name,
+      const size_t& step,
+      const float& value);
 
 private:
   ros::NodeHandle nh_;

@@ -18,6 +18,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(${PROJECT_NAME}_node
   src/OccupancyGridPublisher.cpp
+  src/OccupancyGridPublisherServer.cpp
   src/OccupancyGridPublisher_node.cpp
 )
 

@@ -19,9 +19,9 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
   // objects[*].channels[*].name = [semantic_label]
   std::vector<sensor_msgs::PointCloud2> objects;
 
-  const sensor_msgs::PointCloud2 &current_map_pointcloud = get_map_request.response.map_cloud;
+  const sensor_msgs::PointCloud2 &current_map_pointcloud2 = get_map_request.response.map_cloud;
 
-  pointcloud2_to_object_vec_converter_.transPointCloud2ToObjects(current_map_pointcloud, objects);
+  pointcloud2_to_object_vec_converter_.transPointCloud2ToObjects(current_map_pointcloud2, objects);
 
   res.objects = objects;
 
@@ -36,9 +36,9 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
     return true;
   }
 
-  if(!saveScene(current_map_pointcloud))
+  if(!saveScene(current_map_pointcloud2))
   {
-    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback : " <<
+    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
       "saveScene failed!" << std::endl;
 
     return false;
@@ -46,51 +46,24 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
 
   if(!saveObjectVec(objects))
   {
-    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback : " <<
+    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
       "saveObjectVec failed!" << std::endl;
 
     return false;
   }
 
-  if(!logTensorBoard(objects.size()))
+  if(!logTensorBoard(
+        "PointCloud2ToObjectVecConverterServer/object_num",
+        log_idx_,
+        objects.size()))
   {
-    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback : " <<
-      "logTensorBoard failed!" << std::endl;
+    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
+      "logTensorBoard for object_num failed!" << std::endl;
 
     return false;
   }
 
   ++log_idx_;
-
-  return true;
-}
-
-bool PointCloud2ToObjectVecConverterServer::logTensorBoard(
-    const size_t& object_num)
-{
-  tensorboard_logger_ros::ScalarToBool tensorboard_logger_serve;
-
-  // RUN_LOG PARAM
-  tensorboard_logger_serve.request.scalar.name =
-    "PointCloud2ToObjectVecConverterServer/object_num";
-  tensorboard_logger_serve.request.scalar.step = log_idx_;
-  tensorboard_logger_serve.request.scalar.value = object_num;
-
-  if (!tensorboard_logger_client_.call(tensorboard_logger_serve))
-  {
-    std::cout << "PointCloud2ToObjectVecConverterServer::logTensorBoard :\n" <<
-      "call tensorboard_logger_server failed!\n";
-
-    return false;
-  }
-
-  if(!tensorboard_logger_serve.response.success)
-  {
-    std::cout << "PointCloud2ToObjectVecConverterServer::logTensorBoard :\n" <<
-      "tensorboard_logger_server log failed!\n";
-
-    return false;
-  }
 
   return true;
 }
@@ -164,6 +137,37 @@ bool PointCloud2ToObjectVecConverterServer::saveObjectVec(
     pcl::io::savePCDFileASCII(
         log_prefix_ + "object_" + std::to_string(i) + ".pcd",
         pcl_point_cloud);
+  }
+
+  return true;
+}
+
+bool PointCloud2ToObjectVecConverterServer::logTensorBoard(
+    const std::string& name,
+    const size_t& step,
+    const float& value)
+{
+  tensorboard_logger_ros::ScalarToBool tensorboard_logger_serve;
+
+  // RUN_LOG PARAM
+  tensorboard_logger_serve.request.scalar.name = name;
+  tensorboard_logger_serve.request.scalar.step = step;
+  tensorboard_logger_serve.request.scalar.value = value;
+
+  if (!tensorboard_logger_client_.call(tensorboard_logger_serve))
+  {
+    std::cout << "PointCloud2ToObjectVecConverterServer::logTensorBoard :\n" <<
+      "call tensorboard_logger_server failed!\n";
+
+    return false;
+  }
+
+  if(!tensorboard_logger_serve.response.success)
+  {
+    std::cout << "PointCloud2ToObjectVecConverterServer::logTensorBoard :\n" <<
+      "tensorboard_logger_server log failed!\n";
+
+    return false;
   }
 
   return true;

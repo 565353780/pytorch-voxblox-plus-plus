@@ -36,39 +36,16 @@ bool OccupancyGridPublisher::initOccupancyGrid()
   return true;
 }
 
-bool OccupancyGridPublisher::addPointCloud2DiffCallback(
-    const sensor_msgs::PointCloud2ConstPtr point_cloud2_diff)
+bool OccupancyGridPublisher::addPointCloudDiff(
+    const sensor_msgs::PointCloud& pointcloud_diff,
+    const tf::StampedTransform& camera_to_map_transform)
 {
-  return addPointCloud2Diff(*point_cloud2_diff);
-}
-
-bool OccupancyGridPublisher::addPointCloud2Diff(
-    const sensor_msgs::PointCloud2& pointcloud2_diff)
-{
-  sensor_msgs::PointCloud point_cloud_diff;
-  sensor_msgs::convertPointCloud2ToPointCloud(pointcloud2_diff, point_cloud_diff);
-
-  occupancy_grid_.header = point_cloud_diff.header;
+  occupancy_grid_.header = pointcloud_diff.header;
   occupancy_grid_.header.frame_id = "gsm_occupancy_grid";
-  occupancy_grid_.info.map_load_time = point_cloud_diff.header.stamp;
-
-  ros::Time get_tf_time = point_cloud_diff.header.stamp;
-
-  tf::StampedTransform camera_to_map_transform;
-  try
-  {
-    tf_listener_.lookupTransform("map", point_cloud_diff.header.frame_id,
-        get_tf_time, camera_to_map_transform);
-  }
-  catch(tf::TransformException ex)
-  {
-    ROS_WARN("%s", ex.what());
-    ros::Duration(1).sleep();
-    return true;
-  }
+  occupancy_grid_.info.map_load_time = pointcloud_diff.header.stamp;
 
   std::vector<geometry_msgs::Point32> trans_diff_point_vec;
-  for(geometry_msgs::Point32& diff_point : point_cloud_diff.points)
+  for(const geometry_msgs::Point32& diff_point : pointcloud_diff.points)
   {
     const tf::Vector3 trans_diff_vec3 = camera_to_map_transform(tf::Vector3(
           diff_point.x, diff_point.y, diff_point.z));
@@ -175,28 +152,6 @@ bool OccupancyGridPublisher::addPointCloud2Diff(
   occupancy_grid_.header.frame_id = "map";
 
   last_occupancy_grid_ = occupancy_grid_;
-
-  // geometry_msgs::TransformStamped transform_map_to_occupancy_grid;
-  // transform_map_to_occupancy_grid.header.frame_id = "map";
-  // transform_map_to_occupancy_grid.child_frame_id = occupancy_grid_.header.frame_id;
-  // transform_map_to_occupancy_grid.transform.translation.x = 0;
-  // transform_map_to_occupancy_grid.transform.translation.y = 0;
-  // transform_map_to_occupancy_grid.transform.translation.z = 0;
-  // transform_map_to_occupancy_grid.transform.rotation.x = 0;
-  // transform_map_to_occupancy_grid.transform.rotation.y = 0;
-  // transform_map_to_occupancy_grid.transform.rotation.z = 0;
-  // transform_map_to_occupancy_grid.transform.rotation.w = 1;
-  // transform_map_to_occupancy_grid.header.stamp = occupancy_grid_.header.stamp;
-
-  if(occupancy_grid_.header.stamp == last_pub_tf_time_)
-  {
-    return true;
-  }
-
-  occupancy_grid_publisher_.publish(occupancy_grid_);
-  // tf_pub_.sendTransform(transform_map_to_occupancy_grid);
-
-  last_pub_tf_time_ = occupancy_grid_.header.stamp;
 
   return true;
 }
