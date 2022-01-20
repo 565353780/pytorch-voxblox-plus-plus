@@ -39,8 +39,50 @@ bool OccupancyGridPublisher::initOccupancyGrid()
 bool OccupancyGridPublisher::addPointCloud2DiffCallback(
     const sensor_msgs::PointCloud2ConstPtr point_cloud2_diff)
 {
+  pointcloud2_diff_queue_.push(*point_cloud2_diff);
+
+  return true;
+}
+
+float OccupancyGridPublisher::getPointDist2ToPointVec(
+    const Point2D& point,
+    const std::vector<Point2D>& point_vec)
+{
+  float min_dist2_to_point_vec = std::numeric_limits<float>::max();
+
+  if(point_vec.size() == 0)
+  {
+    return min_dist2_to_point_vec;
+  }
+
+  for(const Point2D& exist_point : point_vec)
+  {
+    const float current_point_x_diff = point.x - exist_point.x;
+    const float current_point_y_diff = point.y - exist_point.y;
+
+    const float current_dist =
+      current_point_x_diff * current_point_x_diff +
+      current_point_y_diff * current_point_y_diff;
+
+    min_dist2_to_point_vec = std::min(min_dist2_to_point_vec, current_dist);
+  }
+
+  return min_dist2_to_point_vec;
+}
+
+bool OccupancyGridPublisher::startAddPointCloud2Diff()
+{
+  add_pointcloud2_diff_future_ = std::async(
+      std::launch::async, &OccupancyGridPublisher::addPointCloud2DiffFuture, this);
+
+  return true;
+}
+
+bool OccupancyGridPublisher::addPointCloud2Diff(
+    const sensor_msgs::PointCloud2& pointcloud2_diff)
+{
   sensor_msgs::PointCloud point_cloud_diff;
-  sensor_msgs::convertPointCloud2ToPointCloud(*point_cloud2_diff, point_cloud_diff);
+  sensor_msgs::convertPointCloud2ToPointCloud(pointcloud2_diff, point_cloud_diff);
 
   occupancy_grid_.header = point_cloud_diff.header;
   occupancy_grid_.header.frame_id = "gsm_occupancy_grid";
@@ -175,29 +217,21 @@ bool OccupancyGridPublisher::addPointCloud2DiffCallback(
   return true;
 }
 
-float OccupancyGridPublisher::getPointDist2ToPointVec(
-    const Point2D& point,
-    const std::vector<Point2D>& point_vec)
+bool OccupancyGridPublisher::addPointCloud2DiffFuture()
 {
-  float min_dist2_to_point_vec = std::numeric_limits<float>::max();
-
-  if(point_vec.size() == 0)
+  while(true)
   {
-    return min_dist2_to_point_vec;
+    if(pointcloud2_diff_queue_.size() == 0)
+    {
+      continue;
+    }
+
+    addPointCloud2Diff(pointcloud2_diff_queue_.front());
+    pointcloud2_diff_queue_.pop();
+    std::cout << "OccupancyGridPublisher::addPointCloud2DiffFuture :\n" <<
+      pointcloud2_diff_queue_.size() << std::endl;
   }
 
-  for(const Point2D& exist_point : point_vec)
-  {
-    const float current_point_x_diff = point.x - exist_point.x;
-    const float current_point_y_diff = point.y - exist_point.y;
-
-    const float current_dist =
-      current_point_x_diff * current_point_x_diff +
-      current_point_y_diff * current_point_y_diff;
-
-    min_dist2_to_point_vec = std::min(min_dist2_to_point_vec, current_dist);
-  }
-
-  return min_dist2_to_point_vec;
+  return true;
 }
 

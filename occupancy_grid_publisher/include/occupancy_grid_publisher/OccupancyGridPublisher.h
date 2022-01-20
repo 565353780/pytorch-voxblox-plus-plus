@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <algorithm>
+#include <future>
+#include <queue>
 
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud.h>
@@ -30,6 +32,8 @@ public:
     occupancy_grid_publisher_(nh_.advertise<nav_msgs::OccupancyGrid>("map", queue_size_))
   {
     initOccupancyGrid();
+
+    startAddPointCloud2Diff();
   }
 
 private:
@@ -40,6 +44,13 @@ private:
   float getPointDist2ToPointVec(
       const Point2D& point,
       const std::vector<Point2D>& point_vec);
+
+  bool startAddPointCloud2Diff();
+
+  bool addPointCloud2Diff(
+      const sensor_msgs::PointCloud2& pointcloud2_diff);
+
+  bool addPointCloud2DiffFuture();
 
   ros::NodeHandle nh_;
   std::uint32_t queue_size_ = 1;
@@ -53,6 +64,9 @@ private:
   float robot_height_max_ = std::numeric_limits<float>::max();
   unsigned unknown_padding_size_ = 20;
   float point_dist2_min_ = 0.05 * 0.05;
+
+  std::future<bool> add_pointcloud2_diff_future_;
+  std::queue<sensor_msgs::PointCloud2> pointcloud2_diff_queue_;
 
   float current_x_min_;
   float current_x_max_;
