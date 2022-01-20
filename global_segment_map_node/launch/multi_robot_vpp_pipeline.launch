@@ -45,7 +45,7 @@
     <arg name="pub_tf" value="$(arg pub_tf)"/>
   </include>
 
-  <include file="$(find occupancy_grid_publisher)/launch/pub_occupancy_grid.launch"/>
+  <include file="$(find occupancy_grid_publisher)/launch/OccupancyGridPublisherServer.launch"/>
   <include file="$(find grnet_detect)/launch/grnet_service.launch"/>
 
   <include file="$(find pointcloud2_to_object_vec_converter)/launch/PointCloud2ToObjectVecConverterServer.launch"/>

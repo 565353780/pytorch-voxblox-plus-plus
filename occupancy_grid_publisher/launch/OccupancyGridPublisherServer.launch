@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <node pkg="occupancy_grid_publisher" name="OccupancyGridPublisherServer" type="occupancy_grid_publisher_node" output="screen"/>
+
+</launch>
