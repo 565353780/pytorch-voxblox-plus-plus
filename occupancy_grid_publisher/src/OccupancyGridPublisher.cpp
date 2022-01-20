@@ -39,7 +39,11 @@ bool OccupancyGridPublisher::initOccupancyGrid()
 bool OccupancyGridPublisher::addPointCloud2DiffCallback(
     const sensor_msgs::PointCloud2ConstPtr point_cloud2_diff)
 {
-  pointcloud2_diff_queue_.push(*point_cloud2_diff);
+
+  // pointcloud2_diff_queue_.push(*point_cloud2_diff);
+  // std::cout << "queue size = " << pointcloud2_diff_queue_.size() << std::endl;
+
+  addPointCloud2Diff(*point_cloud2_diff);
 
   return true;
 }
@@ -219,9 +223,11 @@ bool OccupancyGridPublisher::addPointCloud2Diff(
 
 bool OccupancyGridPublisher::addPointCloud2DiffFuture()
 {
+  std::cout << "OccupancyGridPublisher::addPointCloud2DiffFuture :\n" <<
+    "in!!!!!!!\n";
   while(true)
   {
-    if(pointcloud2_diff_queue_.size() == 0)
+    if(pointcloud2_diff_queue_.empty())
     {
       continue;
     }

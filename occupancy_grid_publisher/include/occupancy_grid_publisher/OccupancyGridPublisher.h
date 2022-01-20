@@ -33,7 +33,7 @@ public:
   {
     initOccupancyGrid();
 
-    startAddPointCloud2Diff();
+    // startAddPointCloud2Diff();
   }
 
 private:
@@ -63,7 +63,7 @@ private:
   float robot_height_min_ = 0.1;
   float robot_height_max_ = std::numeric_limits<float>::max();
   unsigned unknown_padding_size_ = 20;
-  float point_dist2_min_ = 0.05 * 0.05;
+  float point_dist2_min_ = 0.025 * 0.025;
 
   std::future<bool> add_pointcloud2_diff_future_;
   std::queue<sensor_msgs::PointCloud2> pointcloud2_diff_queue_;
