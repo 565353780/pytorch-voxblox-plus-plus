@@ -37,6 +37,10 @@ private:
 
   bool addPointCloud2DiffCallback(const sensor_msgs::PointCloud2ConstPtr point_cloud2_diff);
 
+  float getPointDist2ToPointVec(
+      const Point2D& point,
+      const std::vector<Point2D>& point_vec);
+
   ros::NodeHandle nh_;
   std::uint32_t queue_size_ = 1;
 
@@ -45,9 +49,10 @@ private:
   tf::TransformListener tf_listener_;
   tf2_ros::TransformBroadcaster tf_pub_;
 
-  double robot_height_min_ = 0.01;
-  double robot_height_max_ = std::numeric_limits<double>::max();
+  float robot_height_min_ = 0.1;
+  float robot_height_max_ = std::numeric_limits<float>::max();
   unsigned unknown_padding_size_ = 20;
+  float point_dist2_min_ = 0.05 * 0.05;
 
   float current_x_min_;
   float current_x_max_;

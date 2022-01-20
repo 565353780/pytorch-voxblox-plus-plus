@@ -93,10 +93,18 @@ bool OccupancyGridPublisher::addPointCloud2DiffCallback(
     new_point.y = point.y();
     if (point.z() >= robot_height_min_ && point.z() <= robot_height_max_)
     {
+      if(getPointDist2ToPointVec(new_point, obstacle_point2d_vec_) < point_dist2_min_)
+      {
+        continue;
+      }
       obstacle_point2d_vec_.emplace_back(new_point);
     }
     else
     {
+      if(getPointDist2ToPointVec(new_point, free_point2d_vec_) < point_dist2_min_)
+      {
+        continue;
+      }
       free_point2d_vec_.emplace_back(new_point);
     }
   }
@@ -165,5 +173,31 @@ bool OccupancyGridPublisher::addPointCloud2DiffCallback(
   last_pub_tf_time_ = occupancy_grid_.header.stamp;
 
   return true;
+}
+
+float OccupancyGridPublisher::getPointDist2ToPointVec(
+    const Point2D& point,
+    const std::vector<Point2D>& point_vec)
+{
+  float min_dist2_to_point_vec = std::numeric_limits<float>::max();
+
+  if(point_vec.size() == 0)
+  {
+    return min_dist2_to_point_vec;
+  }
+
+  for(const Point2D& exist_point : point_vec)
+  {
+    const float current_point_x_diff = point.x - exist_point.x;
+    const float current_point_y_diff = point.y - exist_point.y;
+
+    const float current_dist =
+      current_point_x_diff * current_point_x_diff +
+      current_point_y_diff * current_point_y_diff;
+
+    min_dist2_to_point_vec = std::min(min_dist2_to_point_vec, current_dist);
+  }
+
+  return min_dist2_to_point_vec;
 }
 

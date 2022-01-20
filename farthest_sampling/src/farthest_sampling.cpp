@@ -142,7 +142,7 @@ void samplePointCloudsCuda(const std::vector<pcl::PointCloud<pcl::PointXYZ>>& in
 
   if (need_sampling_point_cloud_num > 1)
   {
-    std::cout << "output indices check : " << std::endl;
+    std::cout << "samplePointCloudsCuda : output indices check : " << std::endl;
     for (size_t i = 0; i < need_sampling_point_cloud_num; ++i)
     {
       std::cout << output_indices[i * sampling_point_num + 1] << " , ";
