@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   vpp_msgs
   tf
   tf2_ros
+  tensorboard_logger_ros
 )
 
 catkin_package()

@@ -25,6 +25,10 @@ bool OccupancyGridPublisherServer::addPointCloud2DiffCallback(
         pointcloud_diff,
         camera_to_map_transform))
   {
+    std::cout << "OccupancyGridPublisherServer::addPointCloud2DiffCallback :\n" <<
+      "addPointCloudDiff failed!\n";
+
+    return false;
   }
 
   const nav_msgs::OccupancyGrid& occupancy_grid =
@@ -51,6 +55,80 @@ bool OccupancyGridPublisherServer::addPointCloud2DiffCallback(
   // tf_pub_.sendTransform(transform_map_to_occupancy_grid);
 
   last_pub_tf_time_ = occupancy_grid.header.stamp;
+
+  if(clock() - start_clock_ < log_idx_)
+  {
+    return true;
+  }
+
+  const size_t obstacle_pixel_num_ = occupancy_grid_publisher_.getObstaclePixelNum();
+  const size_t free_pixel_num_ = occupancy_grid_publisher_.getFreePixelNum();
+
+  if(!logTensorBoard(
+        "OccupancyGridPublisherServer/obstacle_area",
+        log_idx_,
+        obstacle_pixel_num_))
+  {
+    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
+      "logTensorBoard for obstacle_area failed!" << std::endl;
+
+    return false;
+  }
+
+  if(!logTensorBoard(
+        "OccupancyGridPublisherServer/free_area",
+        log_idx_,
+        free_pixel_num_))
+  {
+    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
+      "logTensorBoard for free_area failed!" << std::endl;
+
+    return false;
+  }
+
+  if(!logTensorBoard(
+        "OccupancyGridPublisherServer/scene_area",
+        log_idx_,
+        obstacle_pixel_num_ + free_pixel_num_))
+  {
+    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
+      "logTensorBoard for scene_area failed!" << std::endl;
+
+    return false;
+  }
+
+  ++log_idx_;
+
+  return true;
+}
+
+bool OccupancyGridPublisherServer::logTensorBoard(
+    const std::string& name,
+    const size_t& step,
+    const float& value)
+{
+  tensorboard_logger_ros::ScalarToBool tensorboard_logger_serve;
+
+  // RUN_LOG PARAM
+  tensorboard_logger_serve.request.scalar.name = name;
+  tensorboard_logger_serve.request.scalar.step = step;
+  tensorboard_logger_serve.request.scalar.value = value;
+
+  if (!tensorboard_logger_client_.call(tensorboard_logger_serve))
+  {
+    std::cout << "PointCloud2ToObjectVecConverterServer::logTensorBoard :\n" <<
+      "call tensorboard_logger_server failed!\n";
+
+    return false;
+  }
+
+  if(!tensorboard_logger_serve.response.success)
+  {
+    std::cout << "PointCloud2ToObjectVecConverterServer::logTensorBoard :\n" <<
+      "tensorboard_logger_server log failed!\n";
+
+    return false;
+  }
 
   return true;
 }

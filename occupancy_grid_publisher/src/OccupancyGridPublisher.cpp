@@ -119,8 +119,7 @@ bool OccupancyGridPublisher::addPointCloudDiff(
         break;
       }
 
-      occupancy_grid_.data[new_idx] =
-        last_occupancy_grid_.data[col_start + col];
+      occupancy_grid_.data[new_idx] = last_occupancy_grid_.data[col_start + col];
     }
   }
 
@@ -142,10 +141,12 @@ bool OccupancyGridPublisher::addPointCloudDiff(
     if(trans_diff_point.z >= robot_height_min_ && trans_diff_point.z <= robot_height_max_)
     {
       occupancy_grid_.data[idx] = 100;
+      ++obstacle_pixel_num_;
     }
     else
     {
       occupancy_grid_.data[idx] = 1;
+      ++free_pixel_num_;
     }
   }
 

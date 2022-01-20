@@ -19,6 +19,9 @@ public:
   OccupancyGridPublisher()
   {
     initOccupancyGrid();
+
+    obstacle_pixel_num_ = 0;
+    free_pixel_num_ = 0;
   }
 
   bool addPointCloudDiff(
@@ -28,6 +31,16 @@ public:
   const nav_msgs::OccupancyGrid& getOccupancyGrid()
   {
     return occupancy_grid_;
+  }
+
+  const size_t& getObstaclePixelNum()
+  {
+    return obstacle_pixel_num_;
+  }
+
+  const size_t& getFreePixelNum()
+  {
+    return free_pixel_num_;
   }
 
 private:
@@ -41,6 +54,9 @@ private:
   float current_x_max_;
   float current_y_min_;
   float current_y_max_;
+
+  size_t obstacle_pixel_num_;
+  size_t free_pixel_num_;
 
   nav_msgs::OccupancyGrid last_occupancy_grid_;
   nav_msgs::OccupancyGrid occupancy_grid_;
