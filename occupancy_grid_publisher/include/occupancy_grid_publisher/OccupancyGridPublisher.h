@@ -45,8 +45,8 @@ private:
   tf::TransformListener tf_listener_;
   tf2_ros::TransformBroadcaster tf_pub_;
 
-  double robot_height_min_ = 0.2;
-  double robot_height_max_ = 1.2;
+  double robot_height_min_ = 0.1;
+  double robot_height_max_ = std::numeric_limits<double>::max();
   unsigned unknown_padding_size_ = 20;
 
   float current_x_min_;
