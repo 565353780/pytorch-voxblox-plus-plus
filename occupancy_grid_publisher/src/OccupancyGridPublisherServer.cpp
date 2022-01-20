@@ -56,7 +56,7 @@ bool OccupancyGridPublisherServer::addPointCloud2DiffCallback(
 
   last_pub_tf_time_ = occupancy_grid.header.stamp;
 
-  if(clock() - start_clock_ < log_idx_)
+  if((clock() - start_clock_) / CLOCKS_PER_SEC < log_idx_)
   {
     return true;
   }

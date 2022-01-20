@@ -20,7 +20,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 add_executable(${PROJECT_NAME}_node
   src/OccupancyGridPublisher.cpp
   src/OccupancyGridPublisherServer.cpp
-  src/OccupancyGridPublisher_node.cpp
+  src/OccupancyGridPublisherServer_node.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}_node
