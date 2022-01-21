@@ -30,14 +30,14 @@
 
   <include file="$(find robot_position_loader)/launch/RobotPositionLoaderServer.launch">
     <arg name="world_name" value="$(arg world_name)"/>
-    <arg name="robot_num" value="$(arg robot_num)"/>
     <arg name="robot_name" value="$(arg robot_name)"/>
+    <arg name="robot_num" value="$(arg robot_num)"/>
   </include>
 
   <include file="$(find gsm_topic_sync)/launch/gsm_camera_data_pub.launch">
     <arg name="world_name" value="$(arg world_name)"/>
-    <arg name="robot_num" value="$(arg robot_num)"/>
     <arg name="robot_name" value="$(arg robot_name)"/>
+    <arg name="robot_num" value="$(arg robot_num)"/>
     <arg name="camera_frame_topic_name" value="$(arg camera_frame_topic_name)"/>
     <arg name="camera_depth_image_topic_prefix" value="$(arg camera_depth_image_topic_prefix)"/>
     <arg name="camera_rgb_image_topic_prefix" value="$(arg camera_rgb_image_topic_prefix)"/>
@@ -52,7 +52,15 @@
   <include file="$(find view_point_extractor)/launch/ViewPointExtractorServer.launch"/>
 
   <include file="$(find tensorboard_logger_ros)/launch/TensorBoardLoggerServer.launch"/>
-  <include file="$(find robot_move_state_manager)/launch/RobotMoveStateManager.launch"/>
+
+  <include file="$(find robot_move_state_manager)/launch/RobotMoveStateManager.launch">
+    <arg name="robot_name" value="$(arg robot_name)"/>
+    <arg name="robot_num" value="$(arg robot_num)"/>
+  </include>
+  <include file="$(find robot_position_visualizer)/launch/RobotPositionVisualizer.launch">
+    <arg name="robot_name" value="$(arg robot_name)"/>
+    <arg name="robot_num" value="$(arg robot_num)"/>
+  </include>
 
   <node name="view_point_extractor" pkg="view_point_extractor" type="try_view_point_extractor" output="screen"/>
 </launch>
