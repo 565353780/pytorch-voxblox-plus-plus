@@ -4,14 +4,15 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
     pointcloud2_to_object_vec_converter::PC2ToOBJS::Request &req,
     pointcloud2_to_object_vec_converter::PC2ToOBJS::Response &res)
 {
-  ROS_INFO("Start pointcloud_to_objects serve!");
+  std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
+    "Start pointcloud_to_objects serve!\n";
 
   vpp_msgs::GetMap get_map_request;
 
   if(!get_map_client_.call(get_map_request))
   {
-    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback : " <<
-      "call get_map failed!" << std::endl;
+    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
+      "call get_map failed!\n";
 
     return false;
   }
@@ -39,7 +40,7 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
   if(!saveScene(current_map_pointcloud2))
   {
     std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
-      "saveScene failed!" << std::endl;
+      "saveScene failed!\n";
 
     return false;
   }
@@ -47,7 +48,7 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
   if(!saveObjectVec(objects))
   {
     std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
-      "saveObjectVec failed!" << std::endl;
+      "saveObjectVec failed!\n";
 
     return false;
   }
@@ -58,7 +59,7 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
         objects.size()))
   {
     std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
-      "logTensorBoard for object_num failed!" << std::endl;
+      "logTensorBoard for object_num failed!\n";
 
     return false;
   }
@@ -125,7 +126,7 @@ bool PointCloud2ToObjectVecConverterServer::saveObjectVec(
     return true;
   }
 
-  system(("rm " + log_prefix_ + "/object*").c_str());
+  system(("rm " + log_prefix_ + "object*").c_str());
 
   for(size_t i = 0; i < object_vec.size(); ++i)
   {

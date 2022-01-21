@@ -10,32 +10,32 @@ bool ViewPointExtractor::getMultiView(
 {
   view_point_vec.clear();
 
-  std::cout << "Start call pointcloud2_to_object_vec_converter to get objects..." << std::endl;
+  std::cout << "ViewPointExtractor::getMultiView :\n" <<
+    "Start call pointcloud2_to_object_vec_converter to get objects...";
   // objects[*].channels[*].name = [semantic_label]
   std::vector<sensor_msgs::PointCloud2> objects;
   if(!getObjects(objects))
   {
-    std::cout << "ViewPointExtractor::getMultiView : " <<
-      "get objects failed!" << std::endl;
+    std::cout << "ViewPointExtractor::getMultiView :\n" <<
+      "get objects failed!\n";
 
     return false;
   }
-  std::cout << "Finish call pointcloud2_to_object_vec_converter to get objects!" << std::endl;
+  std::cout << "SUCCESS!\n";
 
   if(objects.size() == 0)
   {
-    std::cout << "ViewPointExtractor::getMultiView : " <<
-      "No object found! Please get view_ponit_vec later." << std::endl;
+    std::cout << "ViewPointExtractor::getMultiView :\n" <<
+      "no object found! please get view_ponit_vec later.\n";
 
     return true;
   }
-  std::cout << "Got " << objects.size() << " objects!" << std::endl;
 
   std::vector<sensor_msgs::PointCloud> trans_objects;
   if(!transPointCloud2VecToPointCloudVec(objects, trans_objects))
   {
-    std::cout << "ViewPointExtractor::getMultiView : " <<
-      "trans pointcloud2 to pointcloud failed!" << std::endl;
+    std::cout << "ViewPointExtractor::getMultiView :\n" <<
+      "trans pointcloud2 to pointcloud failed!\n";
 
     return false;
   }
@@ -48,30 +48,35 @@ bool ViewPointExtractor::getMultiView(
   }
   std::vector<size_t> object_point_num_more_to_less_vec;
   sortVecIndexByMoreToLess(object_point_num_vec, object_point_num_more_to_less_vec);
-  for(size_t i = 0; i < object_point_num_more_to_less_vec.size(); ++i)
-  {
-    std::cout << "object[" << i << "] : size = "
-      << trans_objects[object_point_num_more_to_less_vec[i]].points.size()
-      << ", semantic = "
-      << coco_names_vec_[trans_objects[object_point_num_more_to_less_vec[i]].channels[0].values[0]]
-      << std::endl;
-  }
 
-  std::cout << "Start get sampling point cloud vec..." << std::endl;
+  // std::cout << "ViewPointExtractor::getMultiView :\n" <<
+    // "Got " << objects.size() << " objects!\n";
+  // for(size_t i = 0; i < object_point_num_more_to_less_vec.size(); ++i)
+  // {
+    // std::cout << "object[" << i << "] : size = "
+      // << trans_objects[object_point_num_more_to_less_vec[i]].points.size()
+      // << ", semantic = "
+      // << coco_names_vec_[trans_objects[object_point_num_more_to_less_vec[i]].channels[0].values[0]]
+      // << std::endl;
+  // }
+
+  std::cout << "ViewPointExtractor::getMultiView :\n" <<
+    "Start get sampling point cloud vec...";
   std::vector<sensor_msgs::PointCloud> sampling_point_cloud_vec;
   getSamplingPointCloudVec(trans_objects, sampling_point_cloud_vec, grnet_input_pointcloud_size_);
 
   std::vector<sensor_msgs::PointCloud2> sampling_point_cloud2_vec;
   transPointCloudVecToPointCloud2Vec(sampling_point_cloud_vec, sampling_point_cloud2_vec);
-  std::cout << "Finish get sampling point cloud vec!" << std::endl;
+  std::cout << "SUCCESS!\n";
 
-  std::cout << "Start call grnet_detect to get full point cloud2 vec..." << std::endl;
+  std::cout << "ViewPointExtractor::getMultiView :\n" <<
+    "Start call grnet_detect to get full point cloud2 vec...";
   std::vector<sensor_msgs::PointCloud2> full_point_cloud2_vec;
   if(!getFullPointCloud2VecFromPartialPointCloud2Vec(sampling_point_cloud2_vec, full_point_cloud2_vec))
   {
     return false;
   }
-  std::cout << "Finish call grnet_detect to get full_point_cloud2!" << std::endl;
+  std::cout << "SUCCESS!\n";
 
   std::vector<sensor_msgs::PointCloud> trans_full_point_cloud_vec;
   transPointCloud2VecToPointCloudVec(full_point_cloud2_vec, trans_full_point_cloud_vec);
@@ -82,7 +87,8 @@ bool ViewPointExtractor::getMultiView(
   const size_t view_point_similar_time = 1;
   const size_t object_disappear_count_max = 1;
 
-  std::cout << "Start Search Valid ViewPoints..." << std::endl;
+  std::cout << "ViewPointExtractor::getMultiView :\n" <<
+    "Start search valid viewpoints...";
   object_saver_.resetObjectHistoryMatchState();
 
   for(size_t i = 0; i < trans_full_point_cloud_vec.size(); ++i)
@@ -139,7 +145,7 @@ bool ViewPointExtractor::getMultiView(
   }
 
   object_saver_.updateObjectHistory(object_disappear_count_max);
-  std::cout << "Finish Search Valid ViewPoints..." << std::endl;
+  std::cout << "SUCCESS!\n";
 
   if(false)
   {
@@ -197,8 +203,8 @@ bool ViewPointExtractor::sortVecIndexByMoreToLess(
 
   if(source_vec.size() == 0)
   {
-    std::cout << "ViewPointExtractor::sortVecIndexByMoreToLess : " <<
-      "source_vec is empty!" << std::endl;
+    std::cout << "ViewPointExtractor::sortVecIndexByMoreToLess :\n" <<
+      "source_vec is empty!n";
     return true;
   }
 
@@ -235,13 +241,11 @@ bool ViewPointExtractor::getObjects(std::vector<sensor_msgs::PointCloud2> &objec
 
   if(!pointcloud_to_objects_client_.call(get_objects_from_pointcloud_serve))
   {
-    std::cout << "ViewPointExtractor::getObjects : " <<
-      "get objects failed!" << std::endl;
+    std::cout << "ViewPointExtractor::getObjects :\n" <<
+      "get objects failed!\n";
 
     return false;
   }
-
-  std::cout << "Get Objects from pointcloud2_to_object_vec_converter!" << std::endl;
 
   objects = get_objects_from_pointcloud_serve.response.objects;
 
@@ -257,8 +261,8 @@ bool ViewPointExtractor::transPointCloud2VecToPointCloudVec(
   {
     if(!sensor_msgs::convertPointCloud2ToPointCloud(point_cloud2_vec[i], point_cloud_vec[i]))
     {
-      std::cout << "ViewPointExtractor::transPointCloud2VecToPointCloudVec : " <<
-        "trans point_cloud2[" << i << "] failed!" << std::endl;
+      std::cout << "ViewPointExtractor::transPointCloud2VecToPointCloudVec :\n" <<
+        "trans point_cloud2[" << i << "] failed!\n";
 
       return false;
     }
@@ -276,8 +280,8 @@ bool ViewPointExtractor::transPointCloudVecToPointCloud2Vec(
   {
     if(!sensor_msgs::convertPointCloudToPointCloud2(point_cloud_vec[i], point_cloud2_vec[i]))
     {
-      std::cout << "ViewPointExtractor::transPointCloudVecToPointCloud2Vec : " <<
-        "trans point_cloud[" << i << "] failed!" << std::endl;
+      std::cout << "ViewPointExtractor::transPointCloudVecToPointCloud2Vec :\n" <<
+        "trans point_cloud[" << i << "] failed!\n";
 
       return false;
     }
@@ -299,7 +303,8 @@ bool ViewPointExtractor::getSamplingPointCloud(
 
   if(sampling_point_num == 0)
   {
-    std::cout << "Sampling point num is 0, do nothing in sampling process." << std::endl;
+    std::cout << "ViewPointExtractor::getSamplingPointCloud :\n" <<
+      "sampling point num is 0, do nothing in sampling process.\n";
     sampling_point_cloud.points.clear();
     sampling_point_cloud.channels.clear();
     sampling_point_cloud.header = source_point_cloud.header;
@@ -321,8 +326,6 @@ bool ViewPointExtractor::getSamplingPointCloud(
 
     size_t new_remained_point_index;
     float max_dist_to_remained_points = 0;
-
-    // std::cout << "running at " << i+1 << "/" << sampling_point_num << " episosde" << std::endl;
 
     for(size_t j = 0; j < source_point_cloud.points.size(); ++j)
     {
@@ -375,8 +378,8 @@ bool ViewPointExtractor::getSamplingPointCloudVec(
 {
   if(source_point_cloud_vec.size() == 0)
   {
-    std::cout << "ViewPointExtractor::getSamplingPointCloudVec : " <<
-      "source_point_cloud_vec is empty!" << std::endl;
+    std::cout << "ViewPointExtractor::getSamplingPointCloudVec :\n" <<
+      "source_point_cloud_vec is empty!\n";
 
     return true;
   }
@@ -444,8 +447,8 @@ bool ViewPointExtractor::getFullPointCloud2FromPartialPointCloud2(
 
   if(!grnet_detector_client_.call(get_full_pointcloud_serve))
   {
-    std::cout << "ViewPointExtractor::getFullPointCloud2FromPartialPointCloud2 : " <<
-      "call grnet_detector failed!" << std::endl;
+    std::cout << "ViewPointExtractor::getFullPointCloud2FromPartialPointCloud2 :\n" <<
+      "call grnet_detector failed!\n";
 
     return false;
   }
@@ -465,8 +468,8 @@ bool ViewPointExtractor::getFullPointCloud2VecFromPartialPointCloud2Vec(
   {
     if(!getFullPointCloud2FromPartialPointCloud2(partial_point_cloud2_vec[i], full_point_cloud2_vec[i]))
     {
-      std::cout << "ViewPointExtractor::getFullPointCloud2VecFromPartialPointCloud2Vec : " <<
-        "get full pointcloud2 from partial pointcloud2 failed!" << std::endl;
+      std::cout << "ViewPointExtractor::getFullPointCloud2VecFromPartialPointCloud2Vec :\n" <<
+        "get full pointcloud2 from partial pointcloud2 failed!\n";
 
       return false;
     }
@@ -482,12 +485,14 @@ bool ViewPointExtractor::getMaxDistFullPointPosition(
 {
   if(partial_point_cloud.points.size() == 0)
   {
-    std::cout << "ViewPointExtractor::getMaxDistSumFullPoint : input partial_point_cloud is empty!" << std::endl;
+    std::cout << "ViewPointExtractor::getMaxDistSumFullPoint :\n" <<
+      "input partial_point_cloud is empty!\n";
     return false;
   }
   if(full_point_cloud.points.size() == 0)
   {
-    std::cout << "ViewPointExtractor::getMaxDistSumFullPoint : input full_point_cloud is empty!" << std::endl;
+    std::cout << "ViewPointExtractor::getMaxDistSumFullPoint :\n" <<
+      "input full_point_cloud is empty!" << std::endl;
     return false;
   }
 
@@ -550,7 +555,8 @@ bool ViewPointExtractor::getNextBestViewPointDirection(
 {
   if(point_cloud.points.size() == 0)
   {
-    std::cout << "ViewPointExtractor::getMaxDistSumFullPoint : input partial_point_cloud is empty!" << std::endl;
+    std::cout << "ViewPointExtractor::getMaxDistSumFullPoint :\n" <<
+      "input partial_point_cloud is empty!" << std::endl;
     return false;
   }
 
@@ -593,12 +599,14 @@ bool ViewPointExtractor::getNextBestViewPoint(
 
   if(partial_point_cloud.points.size() == 0)
   {
-    std::cout << "ViewPointExtractor::getNextBestViewPoint : input partial_point_cloud is empty!" << std::endl;
+    std::cout << "ViewPointExtractor::getNextBestViewPoint :\n" <<
+      "input partial_point_cloud is empty!" << std::endl;
     return false;
   }
   if(full_point_cloud.points.size() == 0)
   {
-    std::cout << "ViewPointExtractor::getNextBestViewPoint : input full_point_cloud is empty!" << std::endl;
+    std::cout << "ViewPointExtractor::getNextBestViewPoint :\n" <<
+      "input full_point_cloud is empty!" << std::endl;
     return false;
   }
 

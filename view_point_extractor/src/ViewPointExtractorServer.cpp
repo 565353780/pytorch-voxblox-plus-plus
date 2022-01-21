@@ -4,14 +4,15 @@ bool ViewPointExtractorServer::getViewPointVecCallback(
     view_point_extractor::PC2ToViewPointVec::Request &req,
     view_point_extractor::PC2ToViewPointVec::Response &res)
 {
-  std::cout << "Start ViewPointExtractor serve!" << std::endl;
+  std::cout << "ViewPointExtractorServer::getViewPointVecCallback :\n" <<
+    "Start ViewPointExtractor serve!\n";
 
   const clock_t start_clock = clock();
 
   std::vector<view_point_extractor::ViewPoint> view_point_vec;
   view_point_extractor_.getMultiView(view_point_vec);
 
-  time_spend_ = clock() - start_clock;
+  time_spend_ = (clock() - start_clock) / CLOCKS_PER_SEC;
 
   res.view_point_vec = view_point_vec;
 
