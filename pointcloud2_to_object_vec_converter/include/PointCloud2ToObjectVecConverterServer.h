@@ -66,7 +66,6 @@ private:
 
 private:
   ros::NodeHandle nh_;
-
 	uint32_t queue_size_ = 1;
 
   ros::ServiceClient get_map_client_;

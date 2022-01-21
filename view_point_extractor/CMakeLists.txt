@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   grnet_detect
   pointcloud2_to_object_vec_converter
   farthest_sampling
+  tensorboard_logger_ros
 )
 
 find_package(PCL REQUIRED)

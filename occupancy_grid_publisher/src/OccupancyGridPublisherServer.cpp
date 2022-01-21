@@ -116,7 +116,7 @@ bool OccupancyGridPublisherServer::logTensorBoard(
 
   if (!tensorboard_logger_client_.call(tensorboard_logger_serve))
   {
-    std::cout << "PointCloud2ToObjectVecConverterServer::logTensorBoard :\n" <<
+    std::cout << "OccupancyGridPublisherServer::logTensorBoard :\n" <<
       "call tensorboard_logger_server failed!\n";
 
     return false;
@@ -124,7 +124,7 @@ bool OccupancyGridPublisherServer::logTensorBoard(
 
   if(!tensorboard_logger_serve.response.success)
   {
-    std::cout << "PointCloud2ToObjectVecConverterServer::logTensorBoard :\n" <<
+    std::cout << "OccupancyGridPublisherServer::logTensorBoard :\n" <<
       "tensorboard_logger_server log failed!\n";
 
     return false;
