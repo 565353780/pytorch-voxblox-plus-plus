@@ -54,6 +54,6 @@
   <include file="$(find tensorboard_logger_ros)/launch/TensorBoardLoggerServer.launch"/>
   <include file="$(find robot_move_state_manager)/launch/RobotMoveStateManager.launch"/>
 
-  <node name="pointcloud2_to_object_vec_converter" pkg="pointcloud2_to_object_vec_converter" type="try_pointcloud2_to_object_vec_converter" output="screen"/>
+  <node name="view_point_extractor" pkg="view_point_extractor" type="try_view_point_extractor" output="screen"/>
 </launch>
 
