@@ -37,10 +37,18 @@ public:
   {
     return obstacle_pixel_num_;
   }
+  float getObstacleArea()
+  {
+    return obstacle_pixel_num_ * pixel_area_;
+  }
 
   const size_t& getFreePixelNum()
   {
     return free_pixel_num_;
+  }
+  float getFreeArea()
+  {
+    return free_pixel_num_ * pixel_area_;
   }
 
 private:
@@ -49,6 +57,7 @@ private:
   float robot_height_min_ = 0.1;
   float robot_height_max_ = std::numeric_limits<float>::max();
   unsigned unknown_padding_size_ = 20;
+  float pixel_area_ = 0.05 * 0.05;
 
   float current_x_min_;
   float current_x_max_;

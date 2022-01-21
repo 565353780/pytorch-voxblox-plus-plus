@@ -61,13 +61,13 @@ bool OccupancyGridPublisherServer::addPointCloud2DiffCallback(
     return true;
   }
 
-  const size_t obstacle_pixel_num_ = occupancy_grid_publisher_.getObstaclePixelNum();
-  const size_t free_pixel_num_ = occupancy_grid_publisher_.getFreePixelNum();
+  const float obstacle_area = occupancy_grid_publisher_.getObstacleArea();
+  const float free_area = occupancy_grid_publisher_.getFreeArea();
 
   if(!logTensorBoard(
         "OccupancyGridPublisherServer/obstacle_area",
         log_idx_,
-        obstacle_pixel_num_))
+        obstacle_area))
   {
     std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
       "logTensorBoard for obstacle_area failed!" << std::endl;
@@ -78,7 +78,7 @@ bool OccupancyGridPublisherServer::addPointCloud2DiffCallback(
   if(!logTensorBoard(
         "OccupancyGridPublisherServer/free_area",
         log_idx_,
-        free_pixel_num_))
+        free_area))
   {
     std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
       "logTensorBoard for free_area failed!" << std::endl;
@@ -89,7 +89,7 @@ bool OccupancyGridPublisherServer::addPointCloud2DiffCallback(
   if(!logTensorBoard(
         "OccupancyGridPublisherServer/scene_area",
         log_idx_,
-        obstacle_pixel_num_ + free_pixel_num_))
+        obstacle_area + free_area))
   {
     std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
       "logTensorBoard for scene_area failed!" << std::endl;
