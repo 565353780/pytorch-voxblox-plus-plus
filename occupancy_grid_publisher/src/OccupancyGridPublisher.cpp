@@ -145,7 +145,7 @@ bool OccupancyGridPublisher::addPointCloudDiff(
     }
     else
     {
-      occupancy_grid_.data[idx] = 1;
+      occupancy_grid_.data[idx] = 0;
       ++free_pixel_num_;
     }
   }
