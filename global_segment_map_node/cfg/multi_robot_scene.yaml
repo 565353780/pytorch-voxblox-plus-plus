@@ -7,7 +7,7 @@ voxblox:
   max_ray_length_m: 3.5
 
 gsm:
-  min_label_voxel_count: 10
+  min_label_voxel_count: 2
   label_propagation_td_factor: 1.0
 
 pairwise_confidence_merging:
