@@ -2,12 +2,20 @@
 
 ## Prepair the environment
 ```bash
-sudo apt install python3-dev python3-pip python3-wstool protobuf-compiler dh-autoreconf ccache libpcl1-dev libpcl-dev libcgal-dev python3-catkin-tools libprotobuf-dev
-sudo apt install ros-noetic-tf2-sensor-msgs ros-noetic-voxel-grid ros-noetic-nav-core ros-noetic-clear-costmap-recovery ros-noetic-move-base-msgs ros-noetic-rotate-recovery ros-noetic-octomap
-pip3 install -U numpy protobuf scipy scikit-image ipython keras wrapt simplejson netaddr osrf-pycommon scipy pillow catkin_pkg rospkg opencv-python empy open3d easydict tensorflow-gpu argparse easydict h5py matplotlib numpy opencv-python pyexr scipy tensorboardX==1.2 transforms3d tqdm ninja pygments open3d==0.10.0.0
+sudo apt install python3-dev python3-pip python3-wstool protobuf-compiler \
+  dh-autoreconf ccache libpcl1-dev libpcl-dev libcgal-dev python3-catkin-tools \
+  libprotobuf-dev ros-noetic-tf2-sensor-msgs ros-noetic-voxel-grid \
+  ros-noetic-nav-core ros-noetic-clear-costmap-recovery ros-noetic-move-base-msgs \
+  ros-noetic-rotate-recovery ros-noetic-octomap
+pip3 install -U numpy protobuf scipy scikit-image ipython keras wrapt simplejson \
+  netaddr osrf-pycommon scipy pillow catkin_pkg rospkg opencv-python empy open3d \
+  easydict tensorflow-gpu argparse easydict h5py matplotlib numpy opencv-python \
+  pyexr scipy transforms3d tqdm ninja pygments
+pip3 install tensorboardX==1.2 open3d==0.10.0.0
 
 # pip3 install -U tensorflow-gpu==2.5.0 keras-nightly==2.5.0.dev2021032900 keras==2.4.3
-pip3 install torch==1.10.1+cu113 torchvision==0.11.2+cu113 torchaudio==0.10.1+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
+pip3 install torch==1.10.1+cu113 torchvision==0.11.2+cu113 torchaudio==0.10.1+cu113 \
+  -f https://download.pytorch.org/whl/cu113/torch_stable.html
 
 mkdir ~/github
 cd ~/github
