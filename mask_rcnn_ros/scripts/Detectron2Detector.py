@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import cv2
-import numpy as np
-import torch
 from detectron2.config import get_cfg
 from detectron2.engine.defaults import DefaultPredictor
 
@@ -59,8 +57,8 @@ class Detectron2Detector(object):
         return result_dict
 
 if __name__ == "__main__":
-    model_path = "/home/chli/model_final_a3ec72.pkl"
-    config_file = "../configs/COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x.yaml"
+    model_path = "/home/chli/.ros/model_final_a3ec72.pkl"
+    config_file = "/home/chli/.ros/configs/COCO-InstanceSegmentation/mask_rcnn_R_101_FPN_3x.yaml"
 
     detectron2_detector = Detectron2Detector()
     detectron2_detector.loadModel(model_path, config_file)
