@@ -64,6 +64,17 @@ python setup.py install --user
 cd ../../../../..
 ```
 
+## Run
+```bash
+source devel/setup.zsh
+roslaunch gsm_node vpp_pipeline.launch
+```
+
+### For Multi Robot
+```bash
+roslaunch gsm_node multi_robot_vpp_pipeline.launch
+```
+
 ## Dev
 ```bash
 git clone git@github.com:565353780/pytorch-voxblox-plus-plus.git
