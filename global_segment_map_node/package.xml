@@ -33,6 +33,7 @@
   <depend>robot_position_loader</depend>
   <build_depend>mask_rcnn_ros</build_depend>
   <build_depend>depth_segmentation</build_depend>
+  <build_depend>vpp_cv_test</build_depend>
 
   <build_depend>gsm_topic_sync</build_depend>
   <build_depend>occupancy_grid_publisher</build_depend>

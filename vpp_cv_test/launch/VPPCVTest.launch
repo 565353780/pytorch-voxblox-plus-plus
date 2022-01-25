@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <arg name="video_path" default=""/>
+
+  <node pkg="vpp_cv_test" name="VPPCVTest" type="vpp_cv_test.py" output="screen">
+    <rosparam param="/video_path" subst_value="True">$(arg video_path)</rosparam>
+  </node>
+
+</launch>
+
