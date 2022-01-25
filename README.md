@@ -2,18 +2,15 @@
 
 ## Prepair the environment
 ```bash
-sudo apt install python3-dev python3-pip python3-wstool protobuf-compiler dh-autoreconf ccache libpcl1-dev libpcl-dev
-sudo apt install ros-noetic-tf2-sensor-msgs ros-noetic-voxel-grid ros-noetic-nav-core ros-noetic-clear-costmap-recovery ros-noetic-move-base-msgs ros-noetic-rotate-recovery
-pip3 install -U numpy protobuf scipy scikit-image ipython keras wrapt simplejson netaddr osrf-pycommon scipy pillow catkin_pkg rospkg opencv-python empy
-
-pip3 install torch==1.10.1+cu113 torchvision==0.11.2+cu113 torchaudio==0.10.1+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
+sudo apt install python3-dev python3-pip python3-wstool protobuf-compiler dh-autoreconf ccache libpcl1-dev libpcl-dev libcgal-dev python3-catkin-tools libprotobuf-dev
+sudo apt install ros-noetic-tf2-sensor-msgs ros-noetic-voxel-grid ros-noetic-nav-core ros-noetic-clear-costmap-recovery ros-noetic-move-base-msgs ros-noetic-rotate-recovery ros-noetic-octomap
+pip3 install -U numpy protobuf scipy scikit-image ipython keras wrapt simplejson netaddr osrf-pycommon scipy pillow catkin_pkg rospkg opencv-python empy open3d easydict tensorflow-gpu argparse easydict h5py matplotlib numpy opencv-python pyexr scipy tensorboardX==1.2 transforms3d tqdm ninja pygments open3d==0.10.0.0
 
 # pip3 install -U tensorflow-gpu==2.5.0 keras-nightly==2.5.0.dev2021032900 keras==2.4.3
-pip3 install -U tensorflow-gpu
+pip3 install torch==1.10.1+cu113 torchvision==0.11.2+cu113 torchaudio==0.10.1+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
 
-python -m pip install 'git+https://github.com/facebookresearch/detectron2.git'
-or
-cd ~
+mkdir ~/github
+cd ~/github
 git clone https://github.com/facebookresearch/detectron2.git
 python -m pip install -e detectron2
 ```
@@ -45,13 +42,26 @@ cd ..
 ```bash
 cd vpp_ws
 export ROS_VERSION=noetic # (Ubuntu 16.04: kinetic, Ubuntu 18.04: melodic, Ubuntu 20.04 noetic)
-catkin init
+cp src/pytorch-voxblox-plus-plus/catkin_init.bash ./
+./catkin_init.bash --none
 catkin config --extend /opt/ros/$ROS_VERSION --merge-devel
 catkin config --cmake-args -DCMAKE_CXX_STANDARD=17 -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=Yes
 catkin build gsm_node
-cp src/pytorch-voxblox-plus-plus/catkin_init.bash ./
 cp -r src/pytorch-voxblox-plus-plus/mask_rcnn_ros/configs ~/.ros/
-./catkin_init.bash --none
+
+cd grnet-detect-ros/grnet_detect/src/GRNetDetector/extensions/chamfer_dist
+python setup.py install --user
+
+cd ../cubic_feature_sampling
+python setup.py install --user
+
+cd ../gridding
+python setup.py install --user
+
+cd ../gridding_loss
+python setup.py install --user
+
+cd ../../../../..
 ```
 
 ## Dev
