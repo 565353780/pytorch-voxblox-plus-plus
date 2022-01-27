@@ -4,15 +4,15 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
     pointcloud2_to_object_vec_converter::PC2ToOBJS::Request &req,
     pointcloud2_to_object_vec_converter::PC2ToOBJS::Response &res)
 {
-  std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
-    "Start pointcloud_to_objects serve!\n";
+  // std::cout << "[INFO][PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback]\n" <<
+    // "\t start pointcloud_to_objects serve!\n";
 
   vpp_msgs::GetMap get_map_request;
 
   if(!get_map_client_.call(get_map_request))
   {
-    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
-      "call get_map failed!\n";
+    std::cout << "[ERROR][PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback]\n" <<
+      "\t call get_map failed!\n";
 
     return false;
   }
@@ -39,16 +39,16 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
 
   if(!saveScene(current_map_pointcloud2))
   {
-    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
-      "saveScene failed!\n";
+    std::cout << "[ERROR][PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback]\n" <<
+      "\t saveScene failed!\n";
 
     return false;
   }
 
   if(!saveObjectVec(objects))
   {
-    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
-      "saveObjectVec failed!\n";
+    std::cout << "[ERROR][PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback]\n" <<
+      "\t saveObjectVec failed!\n";
 
     return false;
   }
@@ -58,8 +58,8 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
         log_idx_,
         objects.size()))
   {
-    std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
-      "logTensorBoard for object_num failed!\n";
+    std::cout << "[ERROR][PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback]\n" <<
+      "\t logTensorBoard for object_num failed!\n";
 
     return false;
   }
@@ -157,16 +157,16 @@ bool PointCloud2ToObjectVecConverterServer::logTensorBoard(
 
   if (!tensorboard_logger_client_.call(tensorboard_logger_serve))
   {
-    std::cout << "PointCloud2ToObjectVecConverterServer::logTensorBoard :\n" <<
-      "call tensorboard_logger_server failed!\n";
+    std::cout << "[ERROR][PointCloud2ToObjectVecConverterServer::logTensorBoard]\n" <<
+      "\t call tensorboard_logger_server failed!\n";
 
     return false;
   }
 
   if(!tensorboard_logger_serve.response.success)
   {
-    std::cout << "PointCloud2ToObjectVecConverterServer::logTensorBoard :\n" <<
-      "tensorboard_logger_server log failed!\n";
+    std::cout << "[ERROR][PointCloud2ToObjectVecConverterServer::logTensorBoard]\n" <<
+      "\t tensorboard_logger_server log failed!\n";
 
     return false;
   }

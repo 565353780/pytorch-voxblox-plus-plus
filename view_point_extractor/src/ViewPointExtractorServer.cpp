@@ -4,8 +4,8 @@ bool ViewPointExtractorServer::getViewPointVecCallback(
     view_point_extractor::PC2ToViewPointVec::Request &req,
     view_point_extractor::PC2ToViewPointVec::Response &res)
 {
-  std::cout << "ViewPointExtractorServer::getViewPointVecCallback :\n" <<
-    "Start ViewPointExtractor serve!\n";
+  // std::cout << "[INFO][ViewPointExtractorServer::getViewPointVecCallback]\n" <<
+    // "Start ViewPointExtractor serve!\n";
 
   const clock_t start_clock = clock();
 
@@ -23,10 +23,8 @@ bool ViewPointExtractorServer::getViewPointVecCallback(
         log_idx_,
         time_spend_))
   {
-    std::cout << "ViewPointExtractorServer::getViewPointVecCallback :\n" <<
-      "logTensorBoard for viewpoint_extract_time failed!\n";
-
-    return false;
+    std::cout << "[ERROR][ViewPointExtractorServer::getViewPointVecCallback]\n" <<
+      "\t logTensorBoard for viewpoint_extract_time failed!\n";
   }
 
   if(!logTensorBoard(
@@ -34,10 +32,8 @@ bool ViewPointExtractorServer::getViewPointVecCallback(
         log_idx_,
         view_point_vec.size()))
   {
-    std::cout << "ViewPointExtractorServer::getViewPointVecCallback :\n" <<
-      "logTensorBoard for viewpoint_num failed!\n";
-
-    return false;
+    std::cout << "[ERROR][ViewPointExtractorServer::getViewPointVecCallback]\n" <<
+      "\t logTensorBoard for viewpoint_num failed!\n";
   }
 
   ++log_idx_;
@@ -59,16 +55,16 @@ bool ViewPointExtractorServer::logTensorBoard(
 
   if (!tensorboard_logger_client_.call(tensorboard_logger_serve))
   {
-    std::cout << "ViewPointExtractorServer::logTensorBoard :\n" <<
-      "call tensorboard_logger_server failed!\n";
+    std::cout << "[ERROR][ViewPointExtractorServer::logTensorBoard]\n" <<
+      "\t call tensorboard_logger_server failed!\n";
 
     return false;
   }
 
   if(!tensorboard_logger_serve.response.success)
   {
-    std::cout << "ViewPointExtractorServer::logTensorBoard :\n" <<
-      "tensorboard_logger_server log failed!\n";
+    std::cout << "[ERROR][ViewPointExtractorServer::logTensorBoard]\n" <<
+      "\t tensorboard_logger_server log failed!\n";
 
     return false;
   }
