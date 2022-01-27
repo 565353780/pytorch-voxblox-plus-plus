@@ -140,15 +140,15 @@ void samplePointCloudsCuda(const std::vector<pcl::PointCloud<pcl::PointXYZ>>& in
   fillSampledPointClouds(input_point_clouds, sampled_point_clouds, sampling_point_num,
                          need_sampling_point_cloud_indices, output_indices);
 
-  if (need_sampling_point_cloud_num > 1)
-  {
-    std::cout << "samplePointCloudsCuda : output indices check : " << std::endl;
-    for (size_t i = 0; i < need_sampling_point_cloud_num; ++i)
-    {
-      std::cout << output_indices[i * sampling_point_num + 1] << " , ";
-    }
-    std::cout << std::endl;
-  }
+  // if (need_sampling_point_cloud_num > 1)
+  // {
+    // std::cout << "samplePointCloudsCuda : output indices check : " << std::endl;
+    // for (size_t i = 0; i < need_sampling_point_cloud_num; ++i)
+    // {
+      // std::cout << output_indices[i * sampling_point_num + 1] << " , ";
+    // }
+    // std::cout << std::endl;
+  // }
 
   cudaFree(input_point_cloud);
   cudaFree(input_point_nums);
