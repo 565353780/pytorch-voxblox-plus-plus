@@ -21,15 +21,23 @@ bool LabeledObject::addPoint(
     const float &point_x,
     const float &point_y,
     const float &point_z,
+    const std::uint8_t &point_r,
+    const std::uint8_t &point_g,
+    const std::uint8_t &point_b,
+    const std::uint8_t &point_a,
     const float &point_distance,
     const float &point_weight,
     const std::uint16_t &segment_label,
     const std::uint8_t &semantic_label)
 {
-  PointWithSemanticAndInstanceLabel new_point;
+  PointWithRGBAndLabel new_point;
   new_point.x = point_x;
   new_point.y = point_y;
   new_point.z = point_z;
+  new_point.r = point_r;
+  new_point.g = point_g;
+  new_point.b = point_b;
+  new_point.a = point_a,
   new_point.distance = point_distance;
   new_point.weight = point_weight;
   new_point.segment_label = segment_label;
@@ -59,7 +67,7 @@ bool LabeledObject::getBBox(
 
   bbox.is_valid = true;
 
-  for(const PointWithSemanticAndInstanceLabel& point : points)
+  for(const PointWithRGBAndLabel& point : points)
   {
     bbox.x_min = std::fmin(bbox.x_min, point.x);
     bbox.x_max = std::fmax(bbox.x_max, point.x);
@@ -82,17 +90,21 @@ bool PointCloud2ToObjectVecConverter::splitPointCloudChannelToLabeledObjects(
     return false;
   }
 
-  // point_cloud.channels[*].name = [distance, weight, segment_label, semantic_class, instance_label]
+  // point_cloud.channels[*].name = [r, g, b, a, distance, weight, segment_label, semantic_class, instance_label]
   for(size_t i = 0; i < point_cloud.points.size(); ++i)
   {
     const float &current_x = point_cloud.points[i].x;
     const float &current_y = point_cloud.points[i].y;
     const float &current_z = point_cloud.points[i].z;
-    const float &current_distance = point_cloud.channels[0].values[i];
-    const float &current_weight = point_cloud.channels[1].values[i];
-    const std::uint16_t &current_segment_label = point_cloud.channels[2].values[i];
-    const std::uint8_t &current_semantic_label = point_cloud.channels[3].values[i];
-    const std::uint16_t &current_instance_label = point_cloud.channels[4].values[i];
+    const std::uint8_t &current_r = point_cloud.channels[0].values[i];
+    const std::uint8_t &current_g = point_cloud.channels[1].values[i];
+    const std::uint8_t &current_b = point_cloud.channels[2].values[i];
+    const std::uint8_t &current_a = point_cloud.channels[3].values[i];
+    const float &current_distance = point_cloud.channels[4].values[i];
+    const float &current_weight = point_cloud.channels[5].values[i];
+    const std::uint16_t &current_segment_label = point_cloud.channels[6].values[i];
+    const std::uint8_t &current_semantic_label = point_cloud.channels[7].values[i];
+    const std::uint16_t &current_instance_label = point_cloud.channels[8].values[i];
 
     bool find_this_label = false;
     for(size_t j = 0; j < labeled_objects_vec.size(); ++j)
@@ -101,6 +113,7 @@ bool PointCloud2ToObjectVecConverter::splitPointCloudChannelToLabeledObjects(
       {
         labeled_objects_vec[j].addPoint(
             current_x, current_y, current_z,
+            current_r, current_g, current_b, current_a,
             current_distance, current_weight,
             current_segment_label, current_semantic_label);
         find_this_label = true;
@@ -114,6 +127,7 @@ bool PointCloud2ToObjectVecConverter::splitPointCloudChannelToLabeledObjects(
       new_labeled_objects.setLabel(current_instance_label);
       new_labeled_objects.addPoint(
           current_x, current_y, current_z,
+          current_r, current_g, current_b, current_a,
           current_distance, current_weight,
           current_segment_label, current_semantic_label);
       labeled_objects_vec.emplace_back(new_labeled_objects);
@@ -147,7 +161,7 @@ bool PointCloud2ToObjectVecConverter::getSemanticLabelOfInstance(
   // data type : [[semantic_label_1, count], [semantic_label_2, count], ...]
   std::vector<std::pair<size_t, size_t>> semantic_label_count_vec;
 
-  for(const PointWithSemanticAndInstanceLabel& point : instance_labeled_object.points)
+  for(const PointWithRGBAndLabel& point : instance_labeled_object.points)
   {
     const size_t &current_semantic_label = point.semantic_label;
 
@@ -215,7 +229,7 @@ bool PointCloud2ToObjectVecConverter::transLabeledObjectsToPointCloud2WithSemant
     return false;
   }
 
-  pcl::PointCloud<PointWithSemanticAndInstanceLabel> pcl_point_cloud;
+  pcl::PointCloud<PointWithRGBAndLabel> pcl_point_cloud;
 
   pcl_point_cloud.width = labeled_object.points.size();
   pcl_point_cloud.height = 1;
@@ -248,7 +262,7 @@ bool PointCloud2ToObjectVecConverter::transPointCloud2ToObjects(
 
   current_header_ = point_cloud2.header;
 
-  // point_cloud.channels[*].name = [distance, weight, segment_label, semantic_class, instance_label]
+  // point_cloud.channels[*].name = [r, g, b, a, distance, weight, segment_label, semantic_class, instance_label]
   sensor_msgs::PointCloud point_cloud;
   convertPointCloud2ToPointCloud(point_cloud2, point_cloud);
 
@@ -276,5 +290,4 @@ bool PointCloud2ToObjectVecConverter::transPointCloud2ToObjects(
 
   return true;
 }
-
 

@@ -61,6 +61,9 @@ struct PointSurfelSemanticInstance {
 struct PointTSDFLabel {
   PCL_ADD_POINT4D;
 
+  // Surface Color
+  PCL_ADD_RGB;
+
   // TSDF fields.
   float distance;
   float weight;
@@ -96,6 +99,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(
 POINT_CLOUD_REGISTER_POINT_STRUCT(
     voxblox::PointTSDFLabel,
     (float, x, x)(float, y, y)(float, z, z)
+    (std::uint8_t, r, r)(std::uint8_t, g, g)(std::uint8_t, b, b)(std::uint8_t, a, a)
     (float, distance, distance)
     (float, weight, weight)
     (voxblox::Label, segment_label,segment_label)

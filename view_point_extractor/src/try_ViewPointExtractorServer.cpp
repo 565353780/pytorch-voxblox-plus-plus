@@ -16,9 +16,8 @@ int main(int argc, char** argv)
   ros::ServiceClient try_view_point_extractor_client =
       nh.serviceClient<view_point_extractor::PC2ToViewPointVec>("view_point_extractor/get_view_point_vec");
 
-  std::cout << "Start call view_point_extractor_server service...\n";
-
-  std::cout << "Start wait pointcloud2_to_object_vec_converter_server...\n";
+  std::cout << "[INFO][try_ViewPointExtractorServer::main]\n" <<
+    "\t start wait pointcloud2_to_object_vec_converter_server...\n";
   view_point_extractor::PC2ToViewPointVec first_get_view_point_vec_serve;
   while(!try_view_point_extractor_client.call(first_get_view_point_vec_serve))
   {
@@ -29,16 +28,19 @@ int main(int argc, char** argv)
   {
     ros::Duration(sleep_duration).sleep();
 
-    std::cout << "Start call view_point_extractor_server service...\n";
+    std::cout << "[INFO][try_ViewPointExtractorServer::main]\n" <<
+      "\t start call view_point_extractor_server service...\n";
     view_point_extractor::PC2ToViewPointVec get_view_point_vec_serve;
     if (!try_view_point_extractor_client.call(get_view_point_vec_serve))
     {
-      std::cout << "call view_point_extractor_server failed!\n";
+      std::cout << "[ERROR][try_ViewPointExtractorServer::main]\n" <<
+        "\t call view_point_extractor_server failed!\n";
 
       return -1;
     }
 
-    std::cout << "Get view_point_extractor_server response!\n";
+    std::cout << "[INFO][try_ViewPointExtractorServer::main]\n" <<
+      "\t get response!\n";
   }
   return 0;
 }

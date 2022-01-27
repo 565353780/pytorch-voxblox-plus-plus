@@ -68,6 +68,11 @@ inline void createPointcloudFromMap(const LabelTsdfMap& map,
       point.y = coord.y();
       point.z = coord.z();
 
+      point.r = tsdf_voxel.color.r;
+      point.g = tsdf_voxel.color.g;
+      point.b = tsdf_voxel.color.b;
+      point.a = tsdf_voxel.color.a;
+
       point.distance = tsdf_voxel.distance;
       point.weight = tsdf_voxel.weight;
 

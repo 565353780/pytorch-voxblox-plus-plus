@@ -21,9 +21,10 @@
 #include <pcl_conversions/pcl_conversions.h>
 
 // create a new point type for using pcl to generate sensor_msgs::PointCloud2::data
-struct PointWithSemanticAndInstanceLabel
+struct PointWithRGBAndLabel
 {
   PCL_ADD_POINT4D
+  PCL_ADD_RGB
 
   float distance;
   float weight;
@@ -34,8 +35,9 @@ struct PointWithSemanticAndInstanceLabel
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 }EIGEN_ALIGN16;
 
-POINT_CLOUD_REGISTER_POINT_STRUCT(PointWithSemanticAndInstanceLabel,
+POINT_CLOUD_REGISTER_POINT_STRUCT(PointWithRGBAndLabel,
                                   (float, x, x)(float, y, y)(float, z, z)
+                                  (std::uint8_t, r, r)(std::uint8_t, g, g)(std::uint8_t, b, b)(std::uint8_t, a, a)
                                   (float, distance, distance)
                                   (float, weight, weight)
                                   (std::uint16_t, segment_label, segment_label)
@@ -56,7 +58,7 @@ struct LabeledObject
 {
   size_t instance_label = 0;
 
-  std::vector<PointWithSemanticAndInstanceLabel> points;
+  std::vector<PointWithRGBAndLabel> points;
 
   bool reset();
 
@@ -67,6 +69,10 @@ struct LabeledObject
       const float &point_x,
       const float &point_y,
       const float &point_z,
+      const std::uint8_t &point_r,
+      const std::uint8_t &point_g,
+      const std::uint8_t &point_b,
+      const std::uint8_t &point_a,
       const float &point_distance,
       const float &point_weight,
       const std::uint16_t &segment_label,
