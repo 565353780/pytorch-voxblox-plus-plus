@@ -57,10 +57,11 @@
     <arg name="robot_name" value="$(arg robot_name)"/>
     <arg name="robot_num" value="$(arg robot_num)"/>
   </include>
-  <include file="$(find robot_position_visualizer)/launch/RobotPositionVisualizer.launch">
-    <arg name="robot_name" value="$(arg robot_name)"/>
-    <arg name="robot_num" value="$(arg robot_num)"/>
-  </include>
+
+  <!-- <include file="$(find robot_position_visualizer)/launch/RobotPositionVisualizer.launch"> -->
+    <!-- <arg name="robot_name" value="$(arg robot_name)"/> -->
+    <!-- <arg name="robot_num" value="$(arg robot_num)"/> -->
+  <!-- </include> -->
 
   <node name="view_point_extractor" pkg="view_point_extractor" type="try_view_point_extractor" output="screen"/>
 </launch>
