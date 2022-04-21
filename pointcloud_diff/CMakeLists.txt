@@ -7,6 +7,8 @@ find_package(catkin REQUIRED COMPONENTS
   tensorboard_logger_ros
 )
 
+catkin_package()
+
 catkin_install_python(PROGRAMS
   scripts/PointCloudDiff.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
