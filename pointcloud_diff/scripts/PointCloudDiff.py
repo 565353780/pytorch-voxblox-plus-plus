@@ -80,6 +80,7 @@ class PointCloudDiff(object):
             current_var = dist_to_scene.var()
 
             dist_to_recon = self.scene_pointcloud.compute_point_cloud_distance(current_pcd)
+            dist_to_recon = np.asarray(dist_to_recon)
             current_recon_point_num = len(np.where(dist_to_recon < 0.01)[0])
             current_3d_recon_percent = 1.0 * current_recon_point_num / self.scene_point_num
 
