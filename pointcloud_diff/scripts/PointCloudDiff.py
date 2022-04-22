@@ -38,6 +38,7 @@ class PointCloudDiff(object):
             return True
 
         self.scene_pointcloud = o3d.io.read_point_cloud(pointcloud_file_path)
+        self.scene_point_num = len(self.scene_pointcloud.points)
         return True
 
     def logScalar(self, name, step, value):
