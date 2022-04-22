@@ -2,7 +2,7 @@
 
 <launch>
 
-  <arg name="scene_pointcloud_file_path" default="/home/chli/.gazebo/models/MatterPort/01/bed1a77d92d64f5cbbaaae4feed64ec1.obj"/>
+  <arg name="scene_pointcloud_file_path" default="/home/chli/.gazebo/models/MatterPort/01/matterport_01_1000000.ply"/>
 
   <node pkg="pointcloud_diff" name="PointCloudDiff" type="PointCloudDiff.py" output="screen">
     <rosparam param="/scene_pointcloud_file_path" subst_value="True">$(arg scene_pointcloud_file_path)</rosparam>

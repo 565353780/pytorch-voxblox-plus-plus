@@ -12,6 +12,7 @@
   <arg name="camera_rgb_image_topic_prefix" default="/head_camera/rgb/"/>
   <arg name="camera_groud_truth_topic_name" default="head_camera_ground_truth"/>
   <arg name="pub_tf" default="0"/>
+  <arg name="scene_pointcloud_file_path" default="/home/chli/.gazebo/models/MatterPort/01/matterport_01_1000000.ply"/>
 
   <include file="$(find mask_rcnn_ros)/launch/mask_rcnn_node.launch">
     <arg name="sensor_name" value="$(arg sensor_name)" />
@@ -64,5 +65,10 @@
   <!-- </include> -->
 
   <node name="view_point_extractor" pkg="view_point_extractor" type="try_view_point_extractor" output="screen"/>
+
+  <!-- <include file="$(find pointcloud_diff)/launch/PointCloudDiff.launch"> -->
+    <!-- <arg name="scene_pointcloud_file_path" value="$(arg scene_pointcloud_file_path)"/> -->
+  <!-- </include> -->
+
 </launch>
 

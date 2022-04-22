@@ -62,15 +62,14 @@ class PointCloudDiff(object):
         return pointcloud
 
     def startComparePointCloud(self):
-        o3d.visualization.draw_geometries([self.scene_pointcloud])
-        exit()
         while True:
             sleep(10)
             pointcloud2_msg = self.get_map_proxy()
             current_pcd = self.loadPointCloud2Msg(pointcloud2_msg.map_cloud)
             current_pcd.estimate_normals(
                 search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.05, max_nn=30))
-            o3d.visualization.draw_geometries([current_pcd])
+            o3d.visualization.draw_geometries([current_pcd, self.scene_pointcloud])
+            break
         return True
 
 if __name__ == "__main__":
