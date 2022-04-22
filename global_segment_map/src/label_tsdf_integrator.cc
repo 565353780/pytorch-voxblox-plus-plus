@@ -924,7 +924,8 @@ void LabelTsdfIntegrator::mergeLabels(LLSet* merges_to_publish) {
     Label old_label;
     while (getNextMerge(&new_label, &old_label)) {
       timing::Timer merge_timer("merge_segments");
-      LOG(ERROR) << "Merging labels " << new_label << " and " << old_label;
+      // OUTPUT for merge labels
+      // LOG(ERROR) << "Merging labels " << new_label << " and " << old_label;
       swapLabels(old_label, new_label);
 
       // Delete any staged segment publishing for overridden label.
