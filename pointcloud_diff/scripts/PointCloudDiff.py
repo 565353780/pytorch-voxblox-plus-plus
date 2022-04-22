@@ -17,7 +17,7 @@ class PointCloudDiff(object):
     def __init__(self):
         self.scene_pointcloud = None
 
-        #  sleep(10)
+        sleep(10)
         self.get_map_proxy = rospy.ServiceProxy("/gsm_node/get_map", GetMap)
         self.tf_logger_proxy = rospy.ServiceProxy('/tensorboard_logger/log_scalar', ScalarToBool)
         return
@@ -63,17 +63,13 @@ class PointCloudDiff(object):
 
     def startComparePointCloud(self):
         log_start_time = time()
-        last_log_time = 0
+        last_log_time = log_start_time
 
         while True:
-            last_log_time = time()
             sleep(10)
 
             pointcloud2_msg = self.get_map_proxy()
             current_pcd = self.loadPointCloud2Msg(pointcloud2_msg.map_cloud)
-
-            #  current_pcd.estimate_normals(
-                #  search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.05, max_nn=30))
 
             dists = current_pcd.compute_point_cloud_distance(self.scene_pointcloud)
             dists = np.asarray(dists)
