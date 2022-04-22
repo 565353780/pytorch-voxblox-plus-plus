@@ -66,9 +66,8 @@
 
   <node name="view_point_extractor" pkg="view_point_extractor" type="try_view_point_extractor" output="screen"/>
 
-  <!-- <include file="$(find pointcloud_diff)/launch/PointCloudDiff.launch"> -->
-    <!-- <arg name="scene_pointcloud_file_path" value="$(arg scene_pointcloud_file_path)"/> -->
-  <!-- </include> -->
-
+  <include file="$(find pointcloud_diff)/launch/PointCloudDiff.launch">
+    <arg name="scene_pointcloud_file_path" value="$(arg scene_pointcloud_file_path)"/>
+  </include>
 </launch>
 

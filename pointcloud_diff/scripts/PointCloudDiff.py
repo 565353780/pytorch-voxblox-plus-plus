@@ -4,7 +4,7 @@
 import os
 import numpy as np
 import open3d as o3d
-from time import sleep
+from time import time, sleep
 
 import rospy
 from sensor_msgs.point_cloud2 import read_points
@@ -24,8 +24,8 @@ class PointCloudDiff(object):
 
     def loadScenePointCloud(self, pointcloud_file_path):
         if not os.path.exists(pointcloud_file_path):
-            print("[ERROR][PointCloudDiff]")
-            print("\t pointcloud_file not exist!")
+            print("[ERROR][PointCloudDiff::loadScenePointCloud]")
+            print("\t scene_pointcloud_file not exist!")
             return False
 
         pointcloud_file_path_split_list = pointcloud_file_path.split(".")
@@ -62,14 +62,48 @@ class PointCloudDiff(object):
         return pointcloud
 
     def startComparePointCloud(self):
+        log_start_time = time()
+        last_log_time = 0
+
         while True:
+            last_log_time = time()
             sleep(10)
+
             pointcloud2_msg = self.get_map_proxy()
             current_pcd = self.loadPointCloud2Msg(pointcloud2_msg.map_cloud)
-            current_pcd.estimate_normals(
-                search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.05, max_nn=30))
-            o3d.visualization.draw_geometries([current_pcd, self.scene_pointcloud])
-            break
+
+            #  current_pcd.estimate_normals(
+                #  search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.05, max_nn=30))
+
+            dists = current_pcd.compute_point_cloud_distance(self.scene_pointcloud)
+            dists = np.asarray(dists)
+            current_mean = dists.mean()
+            current_var = dists.var()
+            current_std = dists.std()
+
+            new_log_time = time()
+            if new_log_time == last_log_time:
+                continue
+
+            last_log_time = new_log_time
+            if not self.logScalar("PointCloudDiff/point_distance_mean",
+                                  new_log_time - log_start_time,
+                                  current_mean):
+                print("[ERROR][PointCloudDiff::startComparePointCloud]")
+                print("\t logScalar for point_distance_mean failed!")
+                break
+            if not self.logScalar("PointCloudDiff/point_distance_var",
+                                  new_log_time - log_start_time,
+                                  current_var):
+                print("[ERROR][PointCloudDiff::startComparePointCloud]")
+                print("\t logScalar for point_distance_var failed!")
+                break
+            if not self.logScalar("PointCloudDiff/point_distance_std",
+                                  new_log_time - log_start_time,
+                                  current_std):
+                print("[ERROR][PointCloudDiff::startComparePointCloud]")
+                print("\t logScalar for point_distance_std failed!")
+                break
         return True
 
 if __name__ == "__main__":
