@@ -112,6 +112,9 @@ class PointCloudDiff(object):
 if __name__ == "__main__":
     rospy.init_node("PointCloudDiff")
     pointcloud_file_path = rospy.get_param("/scene_pointcloud_file_path")
+    pointcloud_file_path = os.path.expanduser('~') + "/" + pointcloud_file_path
+    print(pointcloud_file_path)
+    exit()
 
     pointcloud_diff = PointCloudDiff()
     pointcloud_diff.loadScenePointCloud(pointcloud_file_path)
