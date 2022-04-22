@@ -17,7 +17,7 @@ class PointCloudDiff(object):
     def __init__(self):
         self.scene_pointcloud = None
 
-        sleep(10)
+        #  sleep(10)
         self.get_map_proxy = rospy.ServiceProxy("/gsm_node/get_map", GetMap)
         self.tf_logger_proxy = rospy.ServiceProxy('/tensorboard_logger/log_scalar', ScalarToBool)
         return
@@ -27,6 +27,13 @@ class PointCloudDiff(object):
             print("[ERROR][PointCloudDiff]")
             print("\t pointcloud_file not exist!")
             return False
+
+        pointcloud_file_path_split_list = pointcloud_file_path.split(".")
+        if pointcloud_file_path_split_list[-1] == "obj":
+            mesh = o3d.io.read_triangle_mesh(pointcloud_file_path)
+            self.scene_pointcloud = o3d.geometry.PointCloud()
+            self.scene_pointcloud.points = o3d.utility.Vector3dVector(mesh.vertices)
+            return True
 
         self.scene_pointcloud = o3d.io.read_point_cloud(pointcloud_file_path)
         return True
@@ -44,23 +51,26 @@ class PointCloudDiff(object):
             read_points(pointcloud2_msg,
                         skip_nans=True,
                         field_names=("x", "y", "z"))
-        print("==============point_list")
-        print(point_list)
+
         point_array = []
+
         for point in point_list:
             point_array.append(point[0:3])
-        print("==============point_array")
-        print(point_array)
 
         pointcloud = o3d.geometry.PointCloud()
         pointcloud.points = o3d.utility.Vector3dVector(np.array(point_array))
         return pointcloud
 
     def startComparePointCloud(self):
+        o3d.visualization.draw_geometries([self.scene_pointcloud])
+        exit()
         while True:
             sleep(10)
             pointcloud2_msg = self.get_map_proxy()
-            current_pcd = self.loadPointCloud2Msg(pointcloud2_msg)
+            current_pcd = self.loadPointCloud2Msg(pointcloud2_msg.map_cloud)
+            current_pcd.estimate_normals(
+                search_param=o3d.geometry.KDTreeSearchParamHybrid(radius=0.05, max_nn=30))
+            o3d.visualization.draw_geometries([current_pcd])
         return True
 
 if __name__ == "__main__":
