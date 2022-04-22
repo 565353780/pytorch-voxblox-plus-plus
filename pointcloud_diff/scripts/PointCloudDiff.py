@@ -16,6 +16,7 @@ from tensorboard_logger_ros.srv import ScalarToBool
 class PointCloudDiff(object):
     def __init__(self):
         self.scene_pointcloud = None
+        self.scene_point_num = None
 
         sleep(10)
         self.get_map_proxy = rospy.ServiceProxy("/gsm_node/get_map", GetMap)
@@ -33,6 +34,7 @@ class PointCloudDiff(object):
             mesh = o3d.io.read_triangle_mesh(pointcloud_file_path)
             self.scene_pointcloud = o3d.geometry.PointCloud()
             self.scene_pointcloud.points = o3d.utility.Vector3dVector(mesh.vertices)
+            self.scene_point_num = len(self.scene_pointcloud.points)
             return True
 
         self.scene_pointcloud = o3d.io.read_point_cloud(pointcloud_file_path)
@@ -71,11 +73,14 @@ class PointCloudDiff(object):
             pointcloud2_msg = self.get_map_proxy()
             current_pcd = self.loadPointCloud2Msg(pointcloud2_msg.map_cloud)
 
-            dists = current_pcd.compute_point_cloud_distance(self.scene_pointcloud)
-            dists = np.asarray(dists)
-            current_mean = dists.mean()
-            current_var = dists.var()
-            current_std = dists.std()
+            dist_to_scene = current_pcd.compute_point_cloud_distance(self.scene_pointcloud)
+            dist_to_scene = np.asarray(dist_to_scene)
+            current_mean = dist_to_scene.mean()
+            current_var = dist_to_scene.var()
+
+            dist_to_recon = self.scene_pointcloud.compute_point_cloud_distance(current_pcd)
+            current_recon_point_num = len(np.where(dist_to_recon < 0.01)[0])
+            current_3d_recon_percent = 1.0 * current_recon_point_num / self.scene_point_num
 
             new_log_time = time()
             if new_log_time == last_log_time:
@@ -94,11 +99,11 @@ class PointCloudDiff(object):
                 print("[ERROR][PointCloudDiff::startComparePointCloud]")
                 print("\t logScalar for point_distance_var failed!")
                 break
-            if not self.logScalar("PointCloudDiff/point_distance_std",
+            if not self.logScalar("PointCloudDiff/3d_recon_percent",
                                   new_log_time - log_start_time,
-                                  current_std):
+                                  current_3d_recon_percent):
                 print("[ERROR][PointCloudDiff::startComparePointCloud]")
-                print("\t logScalar for point_distance_std failed!")
+                print("\t logScalar for 3d_recon_percent failed!")
                 break
         return True
 
