@@ -130,13 +130,16 @@ double GSMTopicSync::getGaussNoise(
     const double& sigma)
 {
   const double epsilon = std::numeric_limits<double>::min();
-  static double z;
-  double u1, u2;
+
+  double u1 = rand() * (1.0 / RAND_MAX);
+  double u2 = rand() * (1.0 / RAND_MAX);
   while(u1 <= epsilon)
   {
     u1 = rand() * (1.0 / RAND_MAX);
     u2 = rand() * (1.0 / RAND_MAX);
   }
+
+  double z;
   const int use_cos = rand() % 2;
   if(use_cos == 1)
   {
@@ -178,7 +181,7 @@ bool GSMTopicSync::addGaussNoise(
       const short current_image_value = cv_image.at<short>(j, i);
 
       short new_image_value = std::fmax(
-          std::numeric_limits<short>::min(),
+          short(0),
           short(current_image_value + noise_max * current_gauss_noise));
       new_image_value = std::fmin(
           new_image_value, std::numeric_limits<short>::max());
@@ -205,7 +208,7 @@ void GSMTopicSync::unionCallback(
   sensor_msgs::CameraInfo camera_rgb_camera_info_copy = *camera_rgb_camera_info;
   sensor_msgs::Image camera_rgb_image_raw_copy = *camera_rgb_image_raw;
 
-  addGaussNoise(camera_depth_image_raw_copy, 0.0, 1.0, 2, 10);
+  addGaussNoise(camera_depth_image_raw_copy, 0.0, 20.0, 2, 1);
 
   ros::Time current_time = camera_ground_truth->header.stamp;
 
