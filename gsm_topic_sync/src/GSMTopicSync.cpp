@@ -155,17 +155,16 @@ bool GSMTopicSync::addGaussNoise(
     const double& noise_exp,
     const double& noise_max)
 {
-  const sensor_msgs::ImageConstPtr image_ptr(image);
   cv::Mat cv_image = RosToCv(image);
 
-  const float image_width_center = cv_ptr->image.cols / 2.0;
-  const float image_height_center = cv_ptr->image.rows / 2.0;
+  const float image_width_center = cv_image.cols / 2.0;
+  const float image_height_center = cv_image.rows / 2.0;
   const float unit_divide =
-    std::pow(cv_ptr->image.cols / 2.0, noise_exp) +
-    std::pow(cv_ptr->image.rows / 2.0, noise_exp);
-  for(size_t i = 0; i < cv_ptr->image.cols; ++i)
+    std::pow(cv_image.cols / 2.0, noise_exp) +
+    std::pow(cv_image.rows / 2.0, noise_exp);
+  for(size_t i = 0; i < cv_image.cols; ++i)
   {
-    for(size_t j = 0; j < cv_ptr->image.rows; ++j)
+    for(size_t j = 0; j < cv_image.rows; ++j)
     {
       const float width_diff = std::abs(image_width_center - i);
       const float height_diff = std::abs(image_height_center - j);
@@ -179,19 +178,17 @@ bool GSMTopicSync::addGaussNoise(
       const float current_weighted_noise =
         (1.0 + noise_max * unit_noise_weight) * current_gauss_noise;
 
-      const float current_image_value = cv_ptr->image.at<float>(j, i);
+      const short current_image_value = cv_image.at<short>(j, i);
 
-      const float new_image_value = std::fmax(
-          0, current_image_value + current_weighted_noise);
+      const short new_image_value = std::fmax(
+          0, short(current_image_value + current_weighted_noise));
 
-      cv_ptr->image.at<float>(j, i) = new_image_value;
+      cv_image.at<short>(j, i) = new_image_value;
     }
   }
 
-  sensor_msgs::ImagePtr msg = cv_bridge::CvImage(
-      std_msgs::Header(), "bgr8", cv_ptr->image).toImageMsg();
-
-  image.data = msg->data;
+  sensor_msgs::Image new_image = CvToRos(cv_image);
+  image.data = new_image.data;
   return true;
 }
 

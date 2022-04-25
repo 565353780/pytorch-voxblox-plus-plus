@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package()
 
 add_executable(${PROJECT_NAME}_node
+  src/ImageConvert.cpp
   src/GSMTopicSync.cpp
   src/GSMTopicSync_node.cpp
 )

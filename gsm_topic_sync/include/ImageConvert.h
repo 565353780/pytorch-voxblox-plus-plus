@@ -12,9 +12,9 @@ std::string GetType(int type);
 
 int PixelSize(int type);
 
-std::shared_ptr<sensor_msgs::Image> CvToRos(cv::Mat& img);
+sensor_msgs::Image CvToRos(const cv::Mat& img);
 
-std::shared_ptr<cv::Mat> RosToCv(const sensor_msgs::Image::ConstPtr& img);
+cv::Mat RosToCv(const sensor_msgs::Image& img);
 
 #endif // IMAGE_CONVERT_H
 
