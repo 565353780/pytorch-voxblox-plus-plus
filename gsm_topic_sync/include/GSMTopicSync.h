@@ -55,10 +55,6 @@ public:
   bool startSync();
 
 private:
-  double getGaussNoise(
-      const double& mu,
-      const double& sigma);
-
   bool addGaussNoise(
       sensor_msgs::Image& image,
       const double& mu,
