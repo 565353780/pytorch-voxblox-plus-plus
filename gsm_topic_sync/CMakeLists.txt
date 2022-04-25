@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   genmsg
   message_filters
   tf
+  cv_bridge
 )
 
 catkin_package()
@@ -17,8 +18,9 @@ add_executable(${PROJECT_NAME}_node
   src/GSMTopicSync_node.cpp
 )
 
-target_link_libraries(${PROJECT_NAME}_node PRIVATE ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_node PRIVATE ${OpenCV_LIBS} ${catkin_LIBRARIES})
 
 target_include_directories(${PROJECT_NAME}_node PRIVATE include ${catkin_INCLUDE_DIRS})
 
 target_compile_features(${PROJECT_NAME}_node PRIVATE cxx_std_17)
+

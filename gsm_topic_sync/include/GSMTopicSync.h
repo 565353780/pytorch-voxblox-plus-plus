@@ -1,3 +1,7 @@
+#ifndef GSM_TOPIC_SYNC_H
+#define GSM_TOPIC_SYNC_H
+
+#include <math.h>
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <message_filters/subscriber.h>
@@ -13,6 +17,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <random>
+
+#include <ImageConvert.h>
 
 #define PI 3.14159265358979
 
@@ -48,10 +55,16 @@ public:
   bool startSync();
 
 private:
-  void tfOnlyCallback(
-      const OdometryConstPtr& camera_ground_truth,
-      size_t robot_idx);
-    
+  double getGaussNoise(
+      const double& mu,
+      const double& sigma);
+
+  bool addGaussNoise(
+      sensor_msgs::Image& image,
+      const double& mu,
+      const double& sigma,
+      const double& noise_exp,
+      const double& noise_max);
 
   void unionCallback(
       const CameraInfoConstPtr& camera_depth_camera_info,
@@ -85,4 +98,6 @@ private:
 
     ros::Time last_pub_camera_data_time_;
 };
+
+#endif // GSM_TOPIC_SYNC_H
 

@@ -125,6 +125,76 @@ bool GSMTopicSync::startSync()
   return true;
 }
 
+double GSMTopicSync::getGaussNoise(
+    const double& mu,
+    const double& sigma)
+{
+  const double epsilon = std::numeric_limits<double>::min();
+  static double z;
+  double u1, u2;
+  while(u1 <= epsilon)
+  {
+    u1 = rand() * (1.0 / RAND_MAX);
+    u2 = rand() * (1.0 / RAND_MAX);
+  }
+  const int use_cos = rand() % 2;
+  if(use_cos == 1)
+  {
+    z = sqrt(-2.0*log(u1))*cos(2 * M_PI*u2);
+    return z * sigma + mu;
+  }
+
+  z = sqrt(-2.0*log(u1))*sin(2 * M_PI*u2);
+  return z * sigma + mu;
+}
+
+bool GSMTopicSync::addGaussNoise(
+    sensor_msgs::Image& image,
+    const double& mu,
+    const double& sigma,
+    const double& noise_exp,
+    const double& noise_max)
+{
+  const sensor_msgs::ImageConstPtr image_ptr(image);
+  cv::Mat cv_image = RosToCv(image);
+
+  const float image_width_center = cv_ptr->image.cols / 2.0;
+  const float image_height_center = cv_ptr->image.rows / 2.0;
+  const float unit_divide =
+    std::pow(cv_ptr->image.cols / 2.0, noise_exp) +
+    std::pow(cv_ptr->image.rows / 2.0, noise_exp);
+  for(size_t i = 0; i < cv_ptr->image.cols; ++i)
+  {
+    for(size_t j = 0; j < cv_ptr->image.rows; ++j)
+    {
+      const float width_diff = std::abs(image_width_center - i);
+      const float height_diff = std::abs(image_height_center - j);
+
+      const float unit_noise_weight =
+        (std::pow(width_diff, noise_exp) + std::pow(height_diff, noise_exp)) /
+        unit_divide;
+
+      const float current_gauss_noise = getGaussNoise(mu, sigma);
+
+      const float current_weighted_noise =
+        (1.0 + noise_max * unit_noise_weight) * current_gauss_noise;
+
+      const float current_image_value = cv_ptr->image.at<float>(j, i);
+
+      const float new_image_value = std::fmax(
+          0, current_image_value + current_weighted_noise);
+
+      cv_ptr->image.at<float>(j, i) = new_image_value;
+    }
+  }
+
+  sensor_msgs::ImagePtr msg = cv_bridge::CvImage(
+      std_msgs::Header(), "bgr8", cv_ptr->image).toImageMsg();
+
+  image.data = msg->data;
+  return true;
+}
+
 void GSMTopicSync::unionCallback(
     const CameraInfoConstPtr& camera_depth_camera_info,
     const ImageConstPtr& camera_depth_image_raw,
@@ -137,6 +207,8 @@ void GSMTopicSync::unionCallback(
   sensor_msgs::Image camera_depth_image_raw_copy = *camera_depth_image_raw;
   sensor_msgs::CameraInfo camera_rgb_camera_info_copy = *camera_rgb_camera_info;
   sensor_msgs::Image camera_rgb_image_raw_copy = *camera_rgb_image_raw;
+
+  addGaussNoise(camera_depth_image_raw_copy, 0.0, 1.0, 2, 0.1);
 
   ros::Time current_time = camera_ground_truth->header.stamp;
 
