@@ -189,7 +189,7 @@ void GSMTopicSync::unionCallback(
   const double min_noise_sigma = 0.01;
   const double max_noise_sigma = 0.03;
 
-  addGaussNoise(camera_depth_image_raw_copy, 0.0, 0.03, 2, 1);
+  addGaussNoise(camera_depth_image_raw_copy, 0.0, min_noise_sigma, 2, 1);
 
   ros::Time current_time = camera_ground_truth->header.stamp;
 
