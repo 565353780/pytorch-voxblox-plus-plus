@@ -173,6 +173,48 @@ bool GSMTopicSync::addGaussNoise(
   return true;
 }
 
+bool GSMTopicSync::addPaperGaussNoise(
+    sensor_msgs::Image& image)
+{
+  std::random_device rd{};
+  std::mt19937 gen{rd()};
+
+  std::normal_distribution<double> dist_1{0, 0.25};
+  std::normal_distribution<double> dist_2{0, 1.0 / 36};
+
+  cv::Mat cv_image = RosToCv(image);
+
+  for(size_t i = 0; i < cv_image.cols; ++i)
+  {
+    for(size_t j = 0; j < cv_image.rows; ++j)
+    {
+      const double n_i = dist_1(gen);
+      const double n_j = dist_1(gen);
+      const double noise_d = dist_2(gen);
+
+      size_t refer_col = size_t(i + n_i);
+      size_t refer_row = size_t(j + n_j);
+      refer_col = std::fmax(0, refer_col);
+      refer_col = std::fmin(cv_image.cols - 1, refer_col);
+      refer_row = std::fmax(0, refer_row);
+      refer_row = std::fmin(cv_image.rows - 1, refer_row);
+
+      const float refer_value = cv_image.at<float>(refer_row, refer_col);
+
+      float new_image_value = 35130.0 / (35130.0 / refer_value + noise_d + 0.5);
+
+      new_image_value = std::fmax(0.0, new_image_value);
+      new_image_value = std::fmin(new_image_value, std::numeric_limits<float>::max());
+
+      cv_image.at<float>(j, i) = new_image_value;
+    }
+  }
+
+  sensor_msgs::Image new_image = CvToRos(cv_image);
+  image.data = new_image.data;
+  return true;
+}
+
 void GSMTopicSync::unionCallback(
     const CameraInfoConstPtr& camera_depth_camera_info,
     const ImageConstPtr& camera_depth_image_raw,
@@ -186,10 +228,11 @@ void GSMTopicSync::unionCallback(
   sensor_msgs::CameraInfo camera_rgb_camera_info_copy = *camera_rgb_camera_info;
   sensor_msgs::Image camera_rgb_image_raw_copy = *camera_rgb_image_raw;
 
-  const double min_noise_sigma = 0.01;
-  const double max_noise_sigma = 0.03;
+  // const double min_noise_sigma = 0.01;
+  // const double max_noise_sigma = 0.03;
+  // addGaussNoise(camera_depth_image_raw_copy, 0.0, min_noise_sigma, 2, 1);
 
-  addGaussNoise(camera_depth_image_raw_copy, 0.0, min_noise_sigma, 2, 1);
+  addPaperGaussNoise(camera_depth_image_raw_copy);
 
   ros::Time current_time = camera_ground_truth->header.stamp;
 

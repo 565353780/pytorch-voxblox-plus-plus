@@ -62,6 +62,9 @@ private:
       const double& noise_exp,
       const double& noise_max);
 
+  bool addPaperGaussNoise(
+      sensor_msgs::Image& image);
+
   void unionCallback(
       const CameraInfoConstPtr& camera_depth_camera_info,
       const ImageConstPtr& camera_depth_image_raw,
