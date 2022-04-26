@@ -174,7 +174,8 @@ bool GSMTopicSync::addGaussNoise(
 }
 
 bool GSMTopicSync::addPaperGaussNoise(
-    sensor_msgs::Image& image)
+    sensor_msgs::Image& image,
+    const double& noise_level)
 {
   std::random_device rd{};
   std::mt19937 gen{rd()};
@@ -201,7 +202,9 @@ bool GSMTopicSync::addPaperGaussNoise(
 
       const float refer_value = cv_image.at<float>(refer_row, refer_col);
 
-      float new_image_value = 35130.0 / (35130.0 / refer_value + noise_d + 0.5);
+      const float super_value = 35130.0 / noise_level;
+
+      float new_image_value = super_value / (super_value / refer_value + noise_d + 0.5);
 
       new_image_value = std::fmax(0.0, new_image_value);
       new_image_value = std::fmin(new_image_value, std::numeric_limits<float>::max());
@@ -232,7 +235,7 @@ void GSMTopicSync::unionCallback(
   // const double max_noise_sigma = 0.03;
   // addGaussNoise(camera_depth_image_raw_copy, 0.0, min_noise_sigma, 2, 1);
 
-  addPaperGaussNoise(camera_depth_image_raw_copy);
+  addPaperGaussNoise(camera_depth_image_raw_copy, 1);
 
   ros::Time current_time = camera_ground_truth->header.stamp;
 
