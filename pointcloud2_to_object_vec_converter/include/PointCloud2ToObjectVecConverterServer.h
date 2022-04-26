@@ -45,7 +45,8 @@ public:
     }
 
     log_prefix_ = log_prefix;
-    log_idx_ = 0;
+    save_scene_idx_ = 0;
+    log_start_time_ = clock();
   }
 
 private:
@@ -57,6 +58,9 @@ private:
       const sensor_msgs::PointCloud2& scene);
 
   bool saveObjectVec(
+      const std::vector<sensor_msgs::PointCloud2>& object_vec);
+
+  bool logObjectScalar(
       const std::vector<sensor_msgs::PointCloud2>& object_vec);
 
   bool logTensorBoard(
@@ -75,7 +79,9 @@ private:
   PointCloud2ToObjectVecConverter pointcloud2_to_object_vec_converter_;
 
   std::string log_prefix_;
-  size_t log_idx_;
+  clock_t log_start_time_;
+  size_t save_scene_idx_;
+  size_t log_step_;
 
   ros::ServiceClient tensorboard_logger_client_;
 };

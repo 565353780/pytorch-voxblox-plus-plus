@@ -37,6 +37,8 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
     return true;
   }
 
+  log_step_ = size_t((clock() - log_start_time_) / CLOCKS_PER_SEC);
+
   if(!saveScene(current_map_pointcloud2))
   {
     std::cout << "[ERROR][PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback]\n" <<
@@ -53,18 +55,13 @@ bool PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback(
     return false;
   }
 
-  if(!logTensorBoard(
-        "PointCloud2ToObjectVecConverterServer/object_num",
-        log_idx_,
-        objects.size()))
+  if(!logObjectScalar(objects))
   {
     std::cout << "[ERROR][PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback]\n" <<
-      "\t logTensorBoard for object_num failed!\n";
+      "\t logObjectScalar failed!\n";
 
     return false;
   }
-
-  ++log_idx_;
 
   return true;
 }
@@ -108,12 +105,14 @@ bool PointCloud2ToObjectVecConverterServer::saveScene(
     pcl_point_cloud.points[i].instance_label = current_instance_label;
   }
 
-  if(log_idx_ % save_duration == 0)
+  if(save_scene_idx_ % save_duration == 0)
   {
     pcl::io::savePCDFileASCII(
-        log_prefix_ + "scene_" + std::to_string(log_idx_) + ".pcd",
+        log_prefix_ + "scene_" + std::to_string(save_scene_idx_) + ".pcd",
         pcl_point_cloud);
   }
+
+  ++save_scene_idx_;
 
   return true;
 }
@@ -138,6 +137,23 @@ bool PointCloud2ToObjectVecConverterServer::saveObjectVec(
     pcl::io::savePCDFileASCII(
         log_prefix_ + "object_" + std::to_string(i) + ".pcd",
         pcl_point_cloud);
+  }
+
+  return true;
+}
+
+bool PointCloud2ToObjectVecConverterServer::logObjectScalar(
+    const std::vector<sensor_msgs::PointCloud2>& object_vec)
+{
+  if(!logTensorBoard(
+        "PointCloud2ToObjectVecConverterServer/object_num",
+        log_step_,
+        object_vec.size()))
+  {
+    std::cout << "[ERROR][PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback]\n" <<
+      "\t logTensorBoard for object_num failed!\n";
+
+    return false;
   }
 
   return true;
