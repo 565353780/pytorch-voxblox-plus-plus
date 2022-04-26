@@ -180,7 +180,7 @@ bool GSMTopicSync::addPaperGaussNoise(
   std::random_device rd{};
   std::mt19937 gen{rd()};
 
-  std::normal_distribution<double> dist_1{0, 0.25};
+  std::normal_distribution<double> dist_1{0, 0.25 * noise_level};
   std::normal_distribution<double> dist_2{0, 1.0 / 36};
 
   cv::Mat cv_image = RosToCv(image);
@@ -202,7 +202,7 @@ bool GSMTopicSync::addPaperGaussNoise(
 
       const float refer_value = cv_image.at<float>(refer_row, refer_col);
 
-      const float super_value = 35130.0 / noise_level;
+      const float super_value = 35130.0;
 
       float new_image_value = super_value / (super_value / refer_value + noise_d + 0.5);
 
