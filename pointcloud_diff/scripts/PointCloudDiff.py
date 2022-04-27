@@ -18,10 +18,20 @@ class PointCloudDiff(object):
         self.scene_pointcloud = None
         self.scene_point_num = None
 
+        self.total_pointcloud_save_path = None
+
         sleep(10)
         self.get_map_proxy = rospy.ServiceProxy("/gsm_node/get_map", GetMap)
         self.tf_logger_proxy = rospy.ServiceProxy('/tensorboard_logger/log_scalar', ScalarToBool)
         return
+
+    def updatePointCloudSavePath(self):
+        total_pointcloud_save_basepath = os.path.expanduser('~') + \
+            "/.ros/RUN_LOG/PointCloud2ToObjectVecConverterServer/"
+        pointcloud_save_folder_list = os.listdir(total_pointcloud_save_basepath)
+        pointcloud_save_folder_list.sort()
+        print(pointcloud_save_folder_list)
+        return True
 
     def loadScenePointCloud(self, pointcloud_file_path):
         if not os.path.exists(pointcloud_file_path):
