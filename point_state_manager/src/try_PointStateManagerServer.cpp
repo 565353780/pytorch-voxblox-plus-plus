@@ -15,12 +15,12 @@ bool tryAddNewPointVec()
   std::vector<geometry_msgs::Point> new_point_vec;
   geometry_msgs::Point new_point;
 
-  new_point.x = 1;
+  new_point.x = 0;
   new_point.y = 1;
   new_point.z = 0;
   new_point_vec.emplace_back(new_point);
 
-  new_point.x = 20;
+  new_point.x = 1;
   new_point.y = 1;
   new_point.z = 0;
   new_point_vec.emplace_back(new_point);
@@ -59,7 +59,7 @@ bool tryAddFinishPointVec()
   finish_point.z = 0;
   finish_point_vec.emplace_back(finish_point);
 
-  finish_point.x = 20;
+  finish_point.x = 2;
   finish_point.y = 1;
   finish_point.z = 0;
   finish_point_vec.emplace_back(finish_point);
@@ -93,12 +93,22 @@ bool tryGetPointStateVec()
 
   geometry_msgs::Point query_point;
 
+  query_point.x = 0;
+  query_point.y = 1;
+  query_point.z = 0;
+  query_point_vec.emplace_back(query_point);
+
   query_point.x = 1;
   query_point.y = 1;
   query_point.z = 0;
   query_point_vec.emplace_back(query_point);
 
-  query_point.x = 20;
+  query_point.x = 2;
+  query_point.y = 1;
+  query_point.z = 0;
+  query_point_vec.emplace_back(query_point);
+
+  query_point.x = 3;
   query_point.y = 1;
   query_point.z = 0;
   query_point_vec.emplace_back(query_point);

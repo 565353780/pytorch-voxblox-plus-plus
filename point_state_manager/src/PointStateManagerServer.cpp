@@ -13,6 +13,8 @@ bool PointStateManagerServer::addNewPointVecCallback(
     return false;
   }
 
+  occupancy_grid_pub_.publish(point_state_manager_.getOccupancyGrid());
+
   return true;
 }
 
@@ -28,6 +30,8 @@ bool PointStateManagerServer::addFinishPointVecCallback(
 
     return false;
   }
+
+  occupancy_grid_pub_.publish(point_state_manager_.getOccupancyGrid());
 
   return true;
 }

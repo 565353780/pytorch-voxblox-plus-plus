@@ -49,6 +49,11 @@ bool PointStateManager::addNewPointVec(
     return true;
   }
 
+  for(const auto& point : point_vec)
+  {
+    std::cout << "add point " << point.x << "," << point.y << std::endl;
+  }
+
   occupancy_grid_.header.frame_id = "point_state_manager";
   occupancy_grid_.info.map_load_time = ros::Time::now();
 
@@ -73,7 +78,7 @@ bool PointStateManager::addNewPointVec(
     return false;
   }
 
-  const size_t point_half_length =
+  const int point_half_length =
     std::floor(different_point_dist_min_ / occupancy_grid_.info.resolution);
 
   for(const geometry_msgs::Point& point : point_vec)
@@ -114,6 +119,11 @@ bool PointStateManager::addFinishPointVec(
     return true;
   }
 
+  for(const auto& point : point_vec)
+  {
+    std::cout << "finish point " << point.x << "," << point.y << std::endl;
+  }
+
   occupancy_grid_.header.frame_id = "point_state_manager";
   occupancy_grid_.info.map_load_time = ros::Time::now();
 
@@ -138,7 +148,7 @@ bool PointStateManager::addFinishPointVec(
     return false;
   }
 
-  const size_t point_half_length =
+  const int point_half_length =
     std::floor(different_point_dist_min_ / occupancy_grid_.info.resolution);
 
   for(const geometry_msgs::Point& point : point_vec)
