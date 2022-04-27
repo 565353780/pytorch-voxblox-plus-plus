@@ -44,6 +44,11 @@ bool PointStateManager::initOccupancyGrid()
 bool PointStateManager::addNewPointVec(
     const std::vector<geometry_msgs::Point>& point_vec)
 {
+  if(point_vec.size() == 0)
+  {
+    return true;
+  }
+
   occupancy_grid_.header.frame_id = "point_state_manager";
   occupancy_grid_.info.map_load_time = ros::Time::now();
 
@@ -94,7 +99,7 @@ bool PointStateManager::addNewPointVec(
     }
   }
 
-  occupancy_grid_.header.frame_id = "map";
+  occupancy_grid_.header.frame_id = "task_map";
 
   last_occupancy_grid_ = occupancy_grid_;
 
@@ -104,6 +109,11 @@ bool PointStateManager::addNewPointVec(
 bool PointStateManager::addFinishPointVec(
     const std::vector<geometry_msgs::Point>& point_vec)
 {
+  if(point_vec.size() == 0)
+  {
+    return true;
+  }
+
   occupancy_grid_.header.frame_id = "point_state_manager";
   occupancy_grid_.info.map_load_time = ros::Time::now();
 
@@ -154,7 +164,7 @@ bool PointStateManager::addFinishPointVec(
     }
   }
 
-  occupancy_grid_.header.frame_id = "map";
+  occupancy_grid_.header.frame_id = "task_map";
 
   last_occupancy_grid_ = occupancy_grid_;
 
@@ -165,6 +175,11 @@ bool PointStateManager::getPointStateVec(
     const std::vector<geometry_msgs::Point>& point_vec,
     std::vector<int>& state_vec)
 {
+  if(point_vec.size() == 0)
+  {
+    return true;
+  }
+
   state_vec.clear();
 
   occupancy_grid_.header.frame_id = "point_state_manager";
@@ -204,7 +219,7 @@ bool PointStateManager::getPointStateVec(
 
     state_vec.emplace_back(int(occupancy_grid_.data[idx]));
   }
-  occupancy_grid_.header.frame_id = "map";
+  occupancy_grid_.header.frame_id = "task_map";
 
   last_occupancy_grid_ = occupancy_grid_;
 

@@ -42,3 +42,13 @@ target_compile_features(${PROJECT_NAME}_node
     cxx_std_17
 )
 
+add_executable(try_${PROJECT_NAME}
+  src/try_PointStateManagerServer.cpp
+)
+
+target_link_libraries(try_${PROJECT_NAME} ${catkin_LIBRARIES})
+
+add_dependencies(try_${PROJECT_NAME}
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+)
+

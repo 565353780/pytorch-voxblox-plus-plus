@@ -1,9 +1,7 @@
 #include <ros/ros.h>
 #include <iostream>
 
-#include "view_point_extractor/PC2ToViewPointVec.h"
-
-#include "ViewPointSaver.h"
+#include <view_point_extractor/PC2ToViewPointVec.h>
 
 int main(int argc, char** argv)
 {
@@ -14,7 +12,8 @@ int main(int argc, char** argv)
 
   ros::NodeHandle nh;
   ros::ServiceClient try_view_point_extractor_client =
-      nh.serviceClient<view_point_extractor::PC2ToViewPointVec>("view_point_extractor/get_view_point_vec");
+      nh.serviceClient<view_point_extractor::PC2ToViewPointVec>(
+          "view_point_extractor/get_view_point_vec");
 
   // OUTPUT for try call get_view_point_vec
   // std::cout << "[INFO][try_ViewPointExtractorServer::main]\n" <<

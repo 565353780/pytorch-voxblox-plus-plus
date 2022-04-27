@@ -68,7 +68,6 @@ target_compile_features(${PROJECT_NAME}_node
 )
 
 add_executable(try_${PROJECT_NAME}
-  src/ViewPointSaver.cpp
   src/try_ViewPointExtractorServer.cpp
 )
 
