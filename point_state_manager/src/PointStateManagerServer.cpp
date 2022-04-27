@@ -1,14 +1,14 @@
 #include "point_state_manager/PointStateManagerServer.h"
 
-bool PointStateManagerServer::addNewPointCallback(
-    point_state_manager::PointToState::Request& req,
-    point_state_manager::PointToState::Response& res)
+bool PointStateManagerServer::addNewPointVecCallback(
+    point_state_manager::PointVecToStateVec::Request& req,
+    point_state_manager::PointVecToStateVec::Response& res)
 {
-  const geometry_msgs::Point& new_point = req.point;
-  if(!point_state_manager_.addNewPoint(new_point))
+  const std::vector<geometry_msgs::Point>& new_point_vec = req.point_vec;
+  if(!point_state_manager_.addNewPointVec(new_point_vec))
   {
-    std::cout << "[ERROR][PointStateManagerServer::addNewPointCallback]\n" <<
-      "\t addNewPoint failed!\n";
+    std::cout << "[ERROR][PointStateManagerServer::addNewPointVecCallback]\n" <<
+      "\t addNewPointVec failed!\n";
 
     return false;
   }
@@ -16,15 +16,15 @@ bool PointStateManagerServer::addNewPointCallback(
   return true;
 }
 
-bool PointStateManagerServer::addFinishPointCallback(
-    point_state_manager::PointToState::Request& req,
-    point_state_manager::PointToState::Response& res)
+bool PointStateManagerServer::addFinishPointVecCallback(
+    point_state_manager::PointVecToStateVec::Request& req,
+    point_state_manager::PointVecToStateVec::Response& res)
 {
-  const geometry_msgs::Point& finish_point = req.point;
-  if(!point_state_manager_.addFinishPoint(finish_point))
+  const std::vector<geometry_msgs::Point>& finish_point_vec = req.point_vec;
+  if(!point_state_manager_.addFinishPointVec(finish_point_vec))
   {
-    std::cout << "[ERROR][PointStateManagerServer::addNewPointCallback]\n" <<
-      "\t addNewPoint failed!\n";
+    std::cout << "[ERROR][PointStateManagerServer::addFinishPointVecCallback]\n" <<
+      "\t addFinishPointVec failed!\n";
 
     return false;
   }
@@ -32,21 +32,21 @@ bool PointStateManagerServer::addFinishPointCallback(
   return true;
 }
 
-bool PointStateManagerServer::getPointStateCallback(
-    point_state_manager::PointToState::Request& req,
-    point_state_manager::PointToState::Response& res)
+bool PointStateManagerServer::getPointStateVecCallback(
+    point_state_manager::PointVecToStateVec::Request& req,
+    point_state_manager::PointVecToStateVec::Response& res)
 {
-  const geometry_msgs::Point& query_point = req.point;
-  const int point_state = point_state_manager_.getPointState(query_point);
-  if(point_state == 0)
+  const std::vector<geometry_msgs::Point>& query_point_vec = req.point_vec;
+  std::vector<int> state_vec;
+  if(!point_state_manager_.getPointStateVec(query_point_vec, state_vec))
   {
-    std::cout << "[ERROR][PointStateManagerServer::addNewPointCallback]\n" <<
-      "\t addNewPoint failed!\n";
+    std::cout << "[ERROR][PointStateManagerServer::getPointStateVecCallback]\n" <<
+      "\t getPointStateVec failed!\n";
 
     return false;
   }
 
-  res.state = point_state;
+  res.state_vec = state_vec;
 
   return true;
 }

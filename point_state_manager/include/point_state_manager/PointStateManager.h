@@ -21,14 +21,15 @@ public:
     initOccupancyGrid();
   }
 
-  bool addNewPoint(
-      const geometry_msgs::Point& point);
+  bool addNewPointVec(
+      const std::vector<geometry_msgs::Point>& point_vec);
 
-  bool addFinishPoint(
-      const geometry_msgs::Point& point);
+  bool addFinishPointVec(
+      const std::vector<geometry_msgs::Point>& point_vec);
 
-  int getPointState(
-      const geometry_msgs::Point& point);
+  bool getPointStateVec(
+      const std::vector<geometry_msgs::Point>& point_vec,
+      std::vector<int>& state_vec);
 
   const nav_msgs::OccupancyGrid& getOccupancyGrid()
   {

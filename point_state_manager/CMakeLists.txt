@@ -14,7 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_service_files(
   FILES
-  PointToState.srv
+  PointVecToStateVec.srv
 )
 
 generate_messages(

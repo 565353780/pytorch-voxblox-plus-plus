@@ -41,20 +41,28 @@ bool PointStateManager::initOccupancyGrid()
   return true;
 }
 
-bool PointStateManager::addNewPoint(
-    const geometry_msgs::Point& point)
+bool PointStateManager::addNewPointVec(
+    const std::vector<geometry_msgs::Point>& point_vec)
 {
   occupancy_grid_.header.frame_id = "point_state_manager";
   occupancy_grid_.info.map_load_time = ros::Time::now();
 
-  current_x_min_ = std::fmin(current_x_min_, point.x - different_point_dist_min_);
-  current_x_max_ = std::fmax(current_x_max_, point.x + different_point_dist_min_);
-  current_y_min_ = std::fmin(current_y_min_, point.y - different_point_dist_min_);
-  current_y_max_ = std::fmax(current_y_max_, point.y + different_point_dist_min_);
+  // get the pointcloud's region
+  auto [x_min_point, x_max_point] =
+      std::minmax_element(point_vec.cbegin(), point_vec.cend(),
+          [](const auto& point1, const auto& point2) { return point1.x < point2.x; });
+  auto [y_min_point, y_max_point] =
+      std::minmax_element(point_vec.cbegin(), point_vec.cend(),
+          [](const auto& point1, const auto& point2) { return point1.y < point2.y; });
+
+  current_x_min_ = std::fmin(current_x_min_, x_min_point->x - different_point_dist_min_);
+  current_x_max_ = std::fmax(current_x_max_, x_max_point->x + different_point_dist_min_);
+  current_y_min_ = std::fmin(current_y_min_, y_min_point->y - different_point_dist_min_);
+  current_y_max_ = std::fmax(current_y_max_, y_max_point->y + different_point_dist_min_);
 
   if(!updateMapSize())
   {
-    std::cout << "[ERROR][PointStateManager::addNewPoint]\n" <<
+    std::cout << "[ERROR][PointStateManager::addNewPointVec]\n" <<
       "\t updateMapSize failed!\n";
 
     return false;
@@ -63,23 +71,26 @@ bool PointStateManager::addNewPoint(
   const size_t point_half_length =
     std::floor(different_point_dist_min_ / occupancy_grid_.info.resolution);
 
-  const int col = std::floor(
-      (point.x - float(occupancy_grid_.info.origin.position.x)) /
-      occupancy_grid_.info.resolution);
-  const int row = std::floor(
-      (point.y - float(occupancy_grid_.info.origin.position.y)) /
-      occupancy_grid_.info.resolution);
-
-  for(int i = -point_half_length; i <= point_half_length; ++i)
+  for(const geometry_msgs::Point& point : point_vec)
   {
-    const int current_col = col + i;
-    for(int j = -point_half_length; j <= point_half_length; ++j)
+    const int col = std::floor(
+        (point.x - float(occupancy_grid_.info.origin.position.x)) /
+        occupancy_grid_.info.resolution);
+    const int row = std::floor(
+        (point.y - float(occupancy_grid_.info.origin.position.y)) /
+        occupancy_grid_.info.resolution);
+
+    for(int i = -point_half_length; i <= point_half_length; ++i)
     {
-      const int current_row = row + j;
+      const int current_col = col + i;
+      for(int j = -point_half_length; j <= point_half_length; ++j)
+      {
+        const int current_row = row + j;
 
-      const int idx = current_row * occupancy_grid_.info.width + current_col;
+        const int idx = current_row * occupancy_grid_.info.width + current_col;
 
-      occupancy_grid_.data[idx] = 100;
+        occupancy_grid_.data[idx] = 100;
+      }
     }
   }
 
@@ -90,20 +101,28 @@ bool PointStateManager::addNewPoint(
   return true;
 }
 
-bool PointStateManager::addFinishPoint(
-    const geometry_msgs::Point& point)
+bool PointStateManager::addFinishPointVec(
+    const std::vector<geometry_msgs::Point>& point_vec)
 {
   occupancy_grid_.header.frame_id = "point_state_manager";
   occupancy_grid_.info.map_load_time = ros::Time::now();
 
-  current_x_min_ = std::fmin(current_x_min_, point.x - different_point_dist_min_);
-  current_x_max_ = std::fmax(current_x_max_, point.x + different_point_dist_min_);
-  current_y_min_ = std::fmin(current_y_min_, point.y - different_point_dist_min_);
-  current_y_max_ = std::fmax(current_y_max_, point.y + different_point_dist_min_);
+  // get the pointcloud's region
+  auto [x_min_point, x_max_point] =
+      std::minmax_element(point_vec.cbegin(), point_vec.cend(),
+          [](const auto& point1, const auto& point2) { return point1.x < point2.x; });
+  auto [y_min_point, y_max_point] =
+      std::minmax_element(point_vec.cbegin(), point_vec.cend(),
+          [](const auto& point1, const auto& point2) { return point1.y < point2.y; });
+
+  current_x_min_ = std::fmin(current_x_min_, x_min_point->x - different_point_dist_min_);
+  current_x_max_ = std::fmax(current_x_max_, x_max_point->x + different_point_dist_min_);
+  current_y_min_ = std::fmin(current_y_min_, y_min_point->y - different_point_dist_min_);
+  current_y_max_ = std::fmax(current_y_max_, y_max_point->y + different_point_dist_min_);
 
   if(!updateMapSize())
   {
-    std::cout << "[ERROR][PointStateManager::addFinishPoint]\n" <<
+    std::cout << "[ERROR][PointStateManager::addFinishPointVec]\n" <<
       "\t updateMapSize failed!\n";
 
     return false;
@@ -112,23 +131,26 @@ bool PointStateManager::addFinishPoint(
   const size_t point_half_length =
     std::floor(different_point_dist_min_ / occupancy_grid_.info.resolution);
 
-  const int col = std::floor(
-      (point.x - float(occupancy_grid_.info.origin.position.x)) /
-      occupancy_grid_.info.resolution);
-  const int row = std::floor(
-      (point.y - float(occupancy_grid_.info.origin.position.y)) /
-      occupancy_grid_.info.resolution);
-
-  for(int i = -point_half_length; i <= point_half_length; ++i)
+  for(const geometry_msgs::Point& point : point_vec)
   {
-    const int current_col = col + i;
-    for(int j = -point_half_length; j <= point_half_length; ++j)
+    const int col = std::floor(
+        (point.x - float(occupancy_grid_.info.origin.position.x)) /
+        occupancy_grid_.info.resolution);
+    const int row = std::floor(
+        (point.y - float(occupancy_grid_.info.origin.position.y)) /
+        occupancy_grid_.info.resolution);
+
+    for(int i = -point_half_length; i <= point_half_length; ++i)
     {
-      const int current_row = row + j;
+      const int current_col = col + i;
+      for(int j = -point_half_length; j <= point_half_length; ++j)
+      {
+        const int current_row = row + j;
 
-      const int idx = current_row * occupancy_grid_.info.width + current_col;
+        const int idx = current_row * occupancy_grid_.info.width + current_col;
 
-      occupancy_grid_.data[idx] = 0;
+        occupancy_grid_.data[idx] = 0;
+      }
     }
   }
 
@@ -139,39 +161,54 @@ bool PointStateManager::addFinishPoint(
   return true;
 }
 
-int PointStateManager::getPointState(
-    const geometry_msgs::Point& point)
+bool PointStateManager::getPointStateVec(
+    const std::vector<geometry_msgs::Point>& point_vec,
+    std::vector<int>& state_vec)
 {
+  state_vec.clear();
+
   occupancy_grid_.header.frame_id = "point_state_manager";
   occupancy_grid_.info.map_load_time = ros::Time::now();
 
-  current_x_min_ = std::fmin(current_x_min_, point.x);
-  current_x_max_ = std::fmax(current_x_max_, point.x);
-  current_y_min_ = std::fmin(current_y_min_, point.y);
-  current_y_max_ = std::fmax(current_y_max_, point.y);
+  // get the pointcloud's region
+  auto [x_min_point, x_max_point] =
+      std::minmax_element(point_vec.cbegin(), point_vec.cend(),
+          [](const auto& point1, const auto& point2) { return point1.x < point2.x; });
+  auto [y_min_point, y_max_point] =
+      std::minmax_element(point_vec.cbegin(), point_vec.cend(),
+          [](const auto& point1, const auto& point2) { return point1.y < point2.y; });
+
+  current_x_min_ = std::fmin(current_x_min_, x_min_point->x);
+  current_x_max_ = std::fmax(current_x_max_, x_max_point->x);
+  current_y_min_ = std::fmin(current_y_min_, y_min_point->y);
+  current_y_max_ = std::fmax(current_y_max_, y_max_point->y);
 
   if(!updateMapSize())
   {
-    std::cout << "[ERROR][PointStateManager::addFinishPoint]\n" <<
+    std::cout << "[ERROR][PointStateManager::addFinishPointVec]\n" <<
       "\t updateMapSize failed!\n";
 
     return false;
   }
 
-  const int col = std::floor(
-      (point.x - float(occupancy_grid_.info.origin.position.x)) /
-      occupancy_grid_.info.resolution);
-  const int row = std::floor(
-      (point.y - float(occupancy_grid_.info.origin.position.y)) /
-      occupancy_grid_.info.resolution);
+  for(const geometry_msgs::Point& point : point_vec)
+  {
+    const int col = std::floor(
+        (point.x - float(occupancy_grid_.info.origin.position.x)) /
+        occupancy_grid_.info.resolution);
+    const int row = std::floor(
+        (point.y - float(occupancy_grid_.info.origin.position.y)) /
+        occupancy_grid_.info.resolution);
 
-  const int idx = row * occupancy_grid_.info.width + col;
+    const int idx = row * occupancy_grid_.info.width + col;
 
+    state_vec.emplace_back(int(occupancy_grid_.data[idx]));
+  }
   occupancy_grid_.header.frame_id = "map";
 
   last_occupancy_grid_ = occupancy_grid_;
 
-  return occupancy_grid_.data[idx];
+  return true;
 }
 
 bool PointStateManager::isNeedToUpdateMapSize()
