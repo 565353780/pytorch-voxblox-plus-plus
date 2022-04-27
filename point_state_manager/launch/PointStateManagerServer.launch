@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <node pkg="point_state_manager" name="PointStateManagerServer" type="point_state_manager_node" output="screen">
+  </node>
+
+</launch>
+

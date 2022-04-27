@@ -69,5 +69,7 @@
   <include file="$(find pointcloud_diff)/launch/PointCloudDiff.launch">
     <arg name="scene_pointcloud_file_path" value="$(arg scene_pointcloud_file_path)"/>
   </include>
+
+  <include file="$(find point_state_manager)/launch/PointStateManagerServer.launch"/>
 </launch>
 
