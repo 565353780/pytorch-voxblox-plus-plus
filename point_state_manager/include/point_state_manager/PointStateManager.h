@@ -27,7 +27,7 @@ public:
   bool addFinishPoint(
       const geometry_msgs::Point& point);
 
-  bool getPointState(
+  int getPointState(
       const geometry_msgs::Point& point);
 
   const nav_msgs::OccupancyGrid& getOccupancyGrid()

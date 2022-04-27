@@ -44,6 +44,9 @@ bool PointStateManager::initOccupancyGrid()
 bool PointStateManager::addNewPoint(
     const geometry_msgs::Point& point)
 {
+  occupancy_grid_.header.frame_id = "point_state_manager";
+  occupancy_grid_.info.map_load_time = ros::Time::now();
+
   current_x_min_ = std::fmin(current_x_min_, point.x - different_point_dist_min_);
   current_x_max_ = std::fmax(current_x_max_, point.x + different_point_dist_min_);
   current_y_min_ = std::fmin(current_y_min_, point.y - different_point_dist_min_);
@@ -90,13 +93,85 @@ bool PointStateManager::addNewPoint(
 bool PointStateManager::addFinishPoint(
     const geometry_msgs::Point& point)
 {
+  occupancy_grid_.header.frame_id = "point_state_manager";
+  occupancy_grid_.info.map_load_time = ros::Time::now();
+
+  current_x_min_ = std::fmin(current_x_min_, point.x - different_point_dist_min_);
+  current_x_max_ = std::fmax(current_x_max_, point.x + different_point_dist_min_);
+  current_y_min_ = std::fmin(current_y_min_, point.y - different_point_dist_min_);
+  current_y_max_ = std::fmax(current_y_max_, point.y + different_point_dist_min_);
+
+  if(!updateMapSize())
+  {
+    std::cout << "[ERROR][PointStateManager::addFinishPoint]\n" <<
+      "\t updateMapSize failed!\n";
+
+    return false;
+  }
+
+  const size_t point_half_length =
+    std::floor(different_point_dist_min_ / occupancy_grid_.info.resolution);
+
+  const int col = std::floor(
+      (point.x - float(occupancy_grid_.info.origin.position.x)) /
+      occupancy_grid_.info.resolution);
+  const int row = std::floor(
+      (point.y - float(occupancy_grid_.info.origin.position.y)) /
+      occupancy_grid_.info.resolution);
+
+  for(int i = -point_half_length; i <= point_half_length; ++i)
+  {
+    const int current_col = col + i;
+    for(int j = -point_half_length; j <= point_half_length; ++j)
+    {
+      const int current_row = row + j;
+
+      const int idx = current_row * occupancy_grid_.info.width + current_col;
+
+      occupancy_grid_.data[idx] = 0;
+    }
+  }
+
+  occupancy_grid_.header.frame_id = "map";
+
+  last_occupancy_grid_ = occupancy_grid_;
+
   return true;
 }
 
-bool PointStateManager::getPointState(
+int PointStateManager::getPointState(
     const geometry_msgs::Point& point)
 {
-  return true;
+  occupancy_grid_.header.frame_id = "point_state_manager";
+  occupancy_grid_.info.map_load_time = ros::Time::now();
+
+  current_x_min_ = std::fmin(current_x_min_, point.x);
+  current_x_max_ = std::fmax(current_x_max_, point.x);
+  current_y_min_ = std::fmin(current_y_min_, point.y);
+  current_y_max_ = std::fmax(current_y_max_, point.y);
+
+  if(!updateMapSize())
+  {
+    std::cout << "[ERROR][PointStateManager::addFinishPoint]\n" <<
+      "\t updateMapSize failed!\n";
+
+    return false;
+  }
+
+  const int col = std::floor(
+      (point.x - float(occupancy_grid_.info.origin.position.x)) /
+      occupancy_grid_.info.resolution);
+  const int row = std::floor(
+      (point.y - float(occupancy_grid_.info.origin.position.y)) /
+      occupancy_grid_.info.resolution);
+
+  const int idx = row * occupancy_grid_.info.width + col;
+
+  occupancy_grid_.header.frame_id = "map";
+
+  last_occupancy_grid_ = occupancy_grid_;
+
+  return occupancy_grid_.data[idx];
 }
 
 bool PointStateManager::isNeedToUpdateMapSize()
