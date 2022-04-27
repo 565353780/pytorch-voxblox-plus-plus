@@ -13,7 +13,6 @@ public:
     pointcloud_diff_sub_(nh_.subscribe<sensor_msgs::PointCloud2>(
           "depth_segmentation_node/object_segment", queue_size_,
           [this](const auto& msg){ this->addPointCloud2DiffCallback(msg); })),
-    // occupancy_grid_publisher_(nh_.advertise<nav_msgs::OccupancyGrid>("gsm_node/occupancy_grid", queue_size_))
     occupancy_grid_pub_(nh_.advertise<nav_msgs::OccupancyGrid>("map", queue_size_)),
     tensorboard_logger_client_(nh_.serviceClient<tensorboard_logger_ros::ScalarToBool>("tensorboard_logger/log_scalar"))
   {
@@ -49,3 +48,4 @@ private:
 };
 
 #endif // OCCUPANCY_GRID_PUBLISHER_SERVER_H
+

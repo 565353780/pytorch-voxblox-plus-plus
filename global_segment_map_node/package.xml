@@ -41,6 +41,7 @@
   <build_depend>view_point_extractor</build_depend>
   <build_depend>pointcloud2_to_object_vec_converter</build_depend>
   <build_depend>pointcloud_diff</build_depend>
+  <build_depend>point_state_manager</build_depend>
   <build_depend>grnet-detect-ros</build_depend>
   <build_depend>multi-fetch-ros</build_depend>
   <build_depend>robot-manage-ros</build_depend>
