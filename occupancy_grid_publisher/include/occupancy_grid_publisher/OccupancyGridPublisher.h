@@ -56,6 +56,8 @@ private:
 
   bool isNeedToUpdateMapSize();
 
+  bool updateMapSize();
+
   float robot_height_min_ = 0.5;
   float robot_height_max_ = std::numeric_limits<float>::max();
   unsigned unknown_padding_size_ = 20;

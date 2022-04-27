@@ -40,6 +40,8 @@ private:
 
   bool isNeedToUpdateMapSize();
 
+  bool updateMapSize();
+
   unsigned unknown_padding_size_ = 20;
   float pixel_area_ = 0.05 * 0.05;
   float different_point_dist_min_ = 0.2;
