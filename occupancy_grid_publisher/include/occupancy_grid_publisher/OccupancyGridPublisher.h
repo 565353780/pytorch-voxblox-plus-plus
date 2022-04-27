@@ -54,11 +54,17 @@ public:
 private:
   bool initOccupancyGrid();
 
+  bool isNeedToUpdateMapSize();
+
   float robot_height_min_ = 0.5;
   float robot_height_max_ = std::numeric_limits<float>::max();
   unsigned unknown_padding_size_ = 20;
   float pixel_area_ = 0.05 * 0.05;
 
+  float last_x_min_;
+  float last_x_max_;
+  float last_y_min_;
+  float last_y_max_;
   float current_x_min_;
   float current_x_max_;
   float current_y_min_;

@@ -38,10 +38,16 @@ public:
 private:
   bool initOccupancyGrid();
 
+  bool isNeedToUpdateMapSize();
+
   unsigned unknown_padding_size_ = 20;
   float pixel_area_ = 0.05 * 0.05;
   float different_point_dist_min_ = 0.2;
 
+  float last_x_min_;
+  float last_x_max_;
+  float last_y_min_;
+  float last_y_max_;
   float current_x_min_;
   float current_x_max_;
   float current_y_min_;
