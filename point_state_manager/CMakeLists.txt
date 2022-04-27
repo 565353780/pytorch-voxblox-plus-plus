@@ -9,6 +9,8 @@ find_package(catkin REQUIRED COMPONENTS
   genmsg
   nav_msgs
   vpp_msgs
+  tf
+  tf2_ros
   tensorboard_logger_ros
 )
 

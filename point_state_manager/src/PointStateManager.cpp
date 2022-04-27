@@ -54,7 +54,8 @@ bool PointStateManager::addNewPointVec(
     std::cout << "add point " << point.x << "," << point.y << std::endl;
   }
 
-  occupancy_grid_.header.frame_id = "point_state_manager";
+  occupancy_grid_.header.frame_id = "task_map";
+  occupancy_grid_.header.stamp = ros::Time::now();
   occupancy_grid_.info.map_load_time = ros::Time::now();
 
   // get the pointcloud's region
@@ -124,7 +125,8 @@ bool PointStateManager::addFinishPointVec(
     std::cout << "finish point " << point.x << "," << point.y << std::endl;
   }
 
-  occupancy_grid_.header.frame_id = "point_state_manager";
+  occupancy_grid_.header.frame_id = "task_map";
+  occupancy_grid_.header.stamp = ros::Time::now();
   occupancy_grid_.info.map_load_time = ros::Time::now();
 
   // get the pointcloud's region
@@ -192,7 +194,8 @@ bool PointStateManager::getPointStateVec(
 
   state_vec.clear();
 
-  occupancy_grid_.header.frame_id = "point_state_manager";
+  occupancy_grid_.header.frame_id = "task_map";
+  occupancy_grid_.header.stamp = ros::Time::now();
   occupancy_grid_.info.map_load_time = ros::Time::now();
 
   // get the pointcloud's region

@@ -36,6 +36,8 @@ private:
       point_state_manager::PointVecToStateVec::Request& req,
       point_state_manager::PointVecToStateVec::Response& res);
 
+  bool publishOccupancyMap();
+
   bool logTensorBoard(
       const std::string& name,
       const size_t& step,
@@ -50,6 +52,7 @@ private:
   clock_t start_clock_;
 
   ros::Publisher occupancy_grid_pub_;
+  tf2_ros::TransformBroadcaster tf_pub_;
 
   ros::ServiceServer add_new_point_vec_server_;
   ros::ServiceServer add_finish_point_vec_server_;

@@ -13,7 +13,13 @@ bool PointStateManagerServer::addNewPointVecCallback(
     return false;
   }
 
-  occupancy_grid_pub_.publish(point_state_manager_.getOccupancyGrid());
+  if(!publishOccupancyMap())
+  {
+    std::cout << "[ERROR][PointStateManagerServer::addNewPointVecCallback]\n" <<
+      "\t publishOccupancyMap failed!\n";
+
+    return false;
+  }
 
   return true;
 }
@@ -31,7 +37,13 @@ bool PointStateManagerServer::addFinishPointVecCallback(
     return false;
   }
 
-  occupancy_grid_pub_.publish(point_state_manager_.getOccupancyGrid());
+  if(!publishOccupancyMap())
+  {
+    std::cout << "[ERROR][PointStateManagerServer::addFinishPointVecCallback]\n" <<
+      "\t publishOccupancyMap failed!\n";
+
+    return false;
+  }
 
   return true;
 }
@@ -51,6 +63,29 @@ bool PointStateManagerServer::getPointStateVecCallback(
   }
 
   res.state_vec = state_vec;
+
+  return true;
+}
+
+bool PointStateManagerServer::publishOccupancyMap()
+{
+  const nav_msgs::OccupancyGrid& occupancy_grid =
+    point_state_manager_.getOccupancyGrid();
+
+  geometry_msgs::TransformStamped transform_map_to_occupancy_grid;
+  transform_map_to_occupancy_grid.header.frame_id = "map";
+  transform_map_to_occupancy_grid.child_frame_id = occupancy_grid.header.frame_id;
+  transform_map_to_occupancy_grid.transform.translation.x = 0;
+  transform_map_to_occupancy_grid.transform.translation.y = 0;
+  transform_map_to_occupancy_grid.transform.translation.z = 0;
+  transform_map_to_occupancy_grid.transform.rotation.x = 0;
+  transform_map_to_occupancy_grid.transform.rotation.y = 0;
+  transform_map_to_occupancy_grid.transform.rotation.z = 0;
+  transform_map_to_occupancy_grid.transform.rotation.w = 1;
+  transform_map_to_occupancy_grid.header.stamp = occupancy_grid.header.stamp;
+  tf_pub_.sendTransform(transform_map_to_occupancy_grid);
+
+  occupancy_grid_pub_.publish(occupancy_grid);
 
   return true;
 }
