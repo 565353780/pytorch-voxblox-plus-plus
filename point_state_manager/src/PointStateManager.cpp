@@ -49,11 +49,6 @@ bool PointStateManager::addNewPointVec(
     return true;
   }
 
-  for(const auto& point : point_vec)
-  {
-    std::cout << "add point " << point.x << "," << point.y << std::endl;
-  }
-
   occupancy_grid_.header.frame_id = "task_map";
   occupancy_grid_.header.stamp = ros::Time::now();
   occupancy_grid_.info.map_load_time = ros::Time::now();
@@ -118,11 +113,6 @@ bool PointStateManager::addFinishPointVec(
   if(point_vec.size() == 0)
   {
     return true;
-  }
-
-  for(const auto& point : point_vec)
-  {
-    std::cout << "finish point " << point.x << "," << point.y << std::endl;
   }
 
   occupancy_grid_.header.frame_id = "task_map";
