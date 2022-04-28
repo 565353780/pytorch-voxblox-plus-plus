@@ -43,10 +43,12 @@ private:
   ros::NodeHandle nh_;
   std::uint32_t queue_size_ = 1;
 
-  clock_t start_clock_;
-
   ros::Publisher occupancy_grid_pub_;
   tf2_ros::TransformBroadcaster tf_pub_;
+
+  ros::Time last_pub_tf_time_;
+
+  clock_t start_clock_;
 
   ros::ServiceServer set_point_vec_state_server_;
   ros::ServiceServer get_point_state_vec_server_;

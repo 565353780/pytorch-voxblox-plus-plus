@@ -48,6 +48,12 @@ bool PointStateManagerServer::publishOccupancyMap()
   const nav_msgs::OccupancyGrid& occupancy_grid =
     point_state_manager_.getOccupancyGrid();
 
+  occupancy_grid_pub_.publish(occupancy_grid);
+
+  if(last_pub_tf_time_ == occupancy_grid.header.stamp)
+  {
+    return true;
+  }
   geometry_msgs::TransformStamped transform_map_to_occupancy_grid;
   transform_map_to_occupancy_grid.header.frame_id = "map";
   transform_map_to_occupancy_grid.child_frame_id = occupancy_grid.header.frame_id;
@@ -61,7 +67,7 @@ bool PointStateManagerServer::publishOccupancyMap()
   transform_map_to_occupancy_grid.header.stamp = occupancy_grid.header.stamp;
   tf_pub_.sendTransform(transform_map_to_occupancy_grid);
 
-  occupancy_grid_pub_.publish(occupancy_grid);
+  last_pub_tf_time_ = occupancy_grid.header.stamp;
 
   return true;
 }
