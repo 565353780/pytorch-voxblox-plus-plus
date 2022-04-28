@@ -15,6 +15,7 @@ from tensorboard_logger_ros.srv import ScalarToBool
 
 class PointCloudDiff(object):
     def __init__(self):
+        self.scene_pointcloud_folder_path = None
         self.scene_pointcloud = None
         self.scene_point_num = None
 
@@ -72,16 +73,17 @@ class PointCloudDiff(object):
         return True
 
     def loadScenePointCloud(self, scene_pointcloud_folder_path):
-        if scene_pointcloud_folder_path[-1] != "/":
-            scene_pointcloud_folder_path += "/"
+        self.scene_pointcloud_folder_path = scene_pointcloud_folder_path
+        if self.scene_pointcloud_folder_path[-1] != "/":
+            self.scene_pointcloud_folder_path += "/"
 
-        if not os.path.exists(scene_pointcloud_folder_path):
+        if not os.path.exists(self.scene_pointcloud_folder_path):
             print("[ERROR][PointCloudDiff::loadScenePointCloud]")
             print("\t scene_pointcloud_folder not exist!")
             return False
 
         scene_pointcloud_folder_filename_list = \
-            os.listdir(scene_pointcloud_folder_path)
+            os.listdir(self.scene_pointcloud_folder_path)
         scene_pointcloud_filename = None
         for scene_pointcloud_folder_filename in scene_pointcloud_folder_filename_list:
             if ".ply" not in scene_pointcloud_folder_filename:
@@ -90,7 +92,7 @@ class PointCloudDiff(object):
             break
 
         scene_pointcloud_file_path = \
-            scene_pointcloud_folder_path + scene_pointcloud_filename
+            self.scene_pointcloud_folder_path + scene_pointcloud_filename
 
         pointcloud_file_path_split_list = scene_pointcloud_file_path.split(".")
         if pointcloud_file_path_split_list[-1] == "obj":
