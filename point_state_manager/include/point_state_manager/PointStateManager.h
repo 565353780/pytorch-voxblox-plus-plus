@@ -21,11 +21,10 @@ public:
     initOccupancyGrid();
   }
 
-  bool addNewPointVec(
-      const std::vector<geometry_msgs::Point>& point_vec);
-
-  bool addFinishPointVec(
-      const std::vector<geometry_msgs::Point>& point_vec);
+  bool setPointVecState(
+      const std::vector<geometry_msgs::Point>& point_vec,
+      const int& state,
+      const double& effect_radius);
 
   bool getPointStateVec(
       const std::vector<geometry_msgs::Point>& point_vec,
@@ -45,7 +44,6 @@ private:
 
   unsigned unknown_padding_size_ = 20;
   float pixel_area_ = 0.05 * 0.05;
-  float different_point_dist_min_ = 0.2;
 
   float last_x_min_;
   float last_x_max_;

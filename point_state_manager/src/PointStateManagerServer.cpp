@@ -1,14 +1,14 @@
 #include "point_state_manager/PointStateManagerServer.h"
 
-bool PointStateManagerServer::addNewPointVecCallback(
+bool PointStateManagerServer::setPointVecStateCallback(
     point_state_manager::PointVecToStateVec::Request& req,
     point_state_manager::PointVecToStateVec::Response& res)
 {
-  const std::vector<geometry_msgs::Point>& new_point_vec = req.point_vec;
-  if(!point_state_manager_.addNewPointVec(new_point_vec))
+  if(!point_state_manager_.setPointVecState(
+        req.point_vec, req.state, req.effect_radius))
   {
     std::cout << "[ERROR][PointStateManagerServer::addNewPointVecCallback]\n" <<
-      "\t addNewPointVec failed!\n";
+      "\t setPointVecState failed!\n";
 
     return false;
   }
@@ -16,30 +16,6 @@ bool PointStateManagerServer::addNewPointVecCallback(
   if(!publishOccupancyMap())
   {
     std::cout << "[ERROR][PointStateManagerServer::addNewPointVecCallback]\n" <<
-      "\t publishOccupancyMap failed!\n";
-
-    return false;
-  }
-
-  return true;
-}
-
-bool PointStateManagerServer::addFinishPointVecCallback(
-    point_state_manager::PointVecToStateVec::Request& req,
-    point_state_manager::PointVecToStateVec::Response& res)
-{
-  const std::vector<geometry_msgs::Point>& finish_point_vec = req.point_vec;
-  if(!point_state_manager_.addFinishPointVec(finish_point_vec))
-  {
-    std::cout << "[ERROR][PointStateManagerServer::addFinishPointVecCallback]\n" <<
-      "\t addFinishPointVec failed!\n";
-
-    return false;
-  }
-
-  if(!publishOccupancyMap())
-  {
-    std::cout << "[ERROR][PointStateManagerServer::addFinishPointVecCallback]\n" <<
       "\t publishOccupancyMap failed!\n";
 
     return false;

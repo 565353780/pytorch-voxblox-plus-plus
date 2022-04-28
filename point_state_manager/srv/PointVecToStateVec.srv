@@ -1,4 +1,6 @@
 geometry_msgs/Point[] point_vec
+int32 state
+float64 effect_radius
 ---
 int32[] state_vec
 

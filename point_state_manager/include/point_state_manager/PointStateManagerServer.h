@@ -12,10 +12,8 @@ class PointStateManagerServer
 public:
   PointStateManagerServer() :
     occupancy_grid_pub_(nh_.advertise<nav_msgs::OccupancyGrid>("task_map", queue_size_)),
-    add_new_point_vec_server_(nh_.advertiseService("point_state_manager/add_new_point_vec",
-          &PointStateManagerServer::addNewPointVecCallback, this)),
-    add_finish_point_vec_server_(nh_.advertiseService("point_state_manager/add_finish_point_vec",
-          &PointStateManagerServer::addFinishPointVecCallback, this)),
+    set_point_vec_state_server_(nh_.advertiseService("point_state_manager/set_point_vec_state",
+          &PointStateManagerServer::setPointVecStateCallback, this)),
     get_point_state_vec_server_(nh_.advertiseService("point_state_manager/get_point_state_vec",
           &PointStateManagerServer::getPointStateVecCallback, this)),
     tensorboard_logger_client_(nh_.serviceClient<tensorboard_logger_ros::ScalarToBool>("tensorboard_logger/log_scalar"))
@@ -24,11 +22,7 @@ public:
   }
 
 private:
-  bool addNewPointVecCallback(
-      point_state_manager::PointVecToStateVec::Request& req,
-      point_state_manager::PointVecToStateVec::Response& res);
-
-  bool addFinishPointVecCallback(
+  bool setPointVecStateCallback(
       point_state_manager::PointVecToStateVec::Request& req,
       point_state_manager::PointVecToStateVec::Response& res);
 
@@ -54,8 +48,7 @@ private:
   ros::Publisher occupancy_grid_pub_;
   tf2_ros::TransformBroadcaster tf_pub_;
 
-  ros::ServiceServer add_new_point_vec_server_;
-  ros::ServiceServer add_finish_point_vec_server_;
+  ros::ServiceServer set_point_vec_state_server_;
   ros::ServiceServer get_point_state_vec_server_;
   ros::ServiceClient tensorboard_logger_client_;
 };
