@@ -23,6 +23,8 @@ class PointCloudDiff(object):
         sleep(10)
         self.get_map_proxy = rospy.ServiceProxy("/gsm_node/get_map", GetMap)
         self.tf_logger_proxy = rospy.ServiceProxy('/tensorboard_logger/log_scalar', ScalarToBool)
+
+        self.updatePointCloudSavePath()
         return
 
     def updatePointCloudSavePath(self):
@@ -30,7 +32,36 @@ class PointCloudDiff(object):
             "/.ros/RUN_LOG/PointCloud2ToObjectVecConverterServer/"
         pointcloud_save_folder_list = os.listdir(total_pointcloud_save_basepath)
         pointcloud_save_folder_list.sort()
-        print(pointcloud_save_folder_list)
+
+        max_idx_list = None
+        max_idx_folder_name = None
+        for pointcloud_save_folder in pointcloud_save_folder_list:
+            date_split_list = pointcloud_save_folder.split("_")
+            time_split_list = date_split_list[3].split("-")
+            current_idx_list = [
+                int(date_split_list[0]),
+                int(date_split_list[1]),
+                int(date_split_list[2]),
+                int(time_split_list[0]),
+                int(time_split_list[1]),
+                int(time_split_list[2])
+            ]
+            if max_idx_list is None:
+                max_idx_list = current_idx_list
+                max_idx_folder_name = pointcloud_save_folder
+                continue
+
+            for i in range(len(max_idx_list)):
+                if current_idx_list[i] > max_idx_list[i]:
+                    max_idx_list = current_idx_list
+                    max_idx_folder_name = pointcloud_save_folder
+                    break
+                if current_idx_list[i] < max_idx_list[i]:
+                    break
+
+        print("===========================")
+        print(max_idx_folder_name)
+        print("===========================")
         return True
 
     def loadScenePointCloud(self, pointcloud_file_path):
