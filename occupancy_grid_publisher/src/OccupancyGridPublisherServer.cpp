@@ -56,17 +56,21 @@ bool OccupancyGridPublisherServer::addPointCloud2DiffCallback(
 
   last_pub_tf_time_ = occupancy_grid.header.stamp;
 
-  if((clock() - start_clock_) / CLOCKS_PER_SEC < log_idx_)
+  const size_t current_log_time = (clock() - start_clock_) / CLOCKS_PER_SEC;
+
+  if(current_log_time == last_log_time_ && last_log_time_ > 0)
   {
     return true;
   }
+
+  last_log_time_ = current_log_time;
 
   const float obstacle_area = occupancy_grid_publisher_.getObstacleArea();
   const float free_area = occupancy_grid_publisher_.getFreeArea();
 
   if(!logTensorBoard(
         "OccupancyGridPublisherServer/obstacle_area",
-        log_idx_,
+        last_log_time_,
         obstacle_area))
   {
     std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
@@ -77,7 +81,7 @@ bool OccupancyGridPublisherServer::addPointCloud2DiffCallback(
 
   if(!logTensorBoard(
         "OccupancyGridPublisherServer/free_area",
-        log_idx_,
+        last_log_time_,
         free_area))
   {
     std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
@@ -88,7 +92,7 @@ bool OccupancyGridPublisherServer::addPointCloud2DiffCallback(
 
   if(!logTensorBoard(
         "OccupancyGridPublisherServer/scene_area",
-        log_idx_,
+        last_log_time_,
         obstacle_area + free_area))
   {
     std::cout << "PointCloud2ToObjectVecConverterServer::getObjectsFromPointCloud2Callback :\n" <<
@@ -96,8 +100,6 @@ bool OccupancyGridPublisherServer::addPointCloud2DiffCallback(
 
     return false;
   }
-
-  ++log_idx_;
 
   return true;
 }

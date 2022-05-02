@@ -17,7 +17,8 @@ public:
     tensorboard_logger_client_(nh_.serviceClient<tensorboard_logger_ros::ScalarToBool>("tensorboard_logger/log_scalar"))
   {
     start_clock_ = clock();
-    log_idx_ = 0;
+
+    last_log_time_ = 0;
   }
 
 private:
@@ -40,9 +41,9 @@ private:
   tf2_ros::TransformBroadcaster tf_pub_;
 
   ros::Time last_pub_tf_time_;
+  size_t last_log_time_;
 
   clock_t start_clock_;
-  size_t log_idx_;
 
   ros::ServiceClient tensorboard_logger_client_;
 };
