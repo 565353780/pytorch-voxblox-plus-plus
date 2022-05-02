@@ -24,13 +24,19 @@ class PointCloudDiff(object):
         # dataset data
         self.scene_pointcloud = None
         self.scene_point_num = None
+
         self.object_pointcloud_list = None
         self.merge_object_pointcloud = None
 
+        self.valid_object_pointcloud_list = None
+        self.merge_valid_object_pointcloud_list = None
+
         # recon data
         self.object_pointcloud_save_path = None
+
         self.object_last_create_time = None
         self.object_last_modify_time = None
+
         self.log_start_time = None
         self.last_log_time = None
 
@@ -138,7 +144,7 @@ class PointCloudDiff(object):
         scene_point_move_list = point_move_dict[scene_idx]
 
         object_pointcloud_folder_path = self.scene_pointcloud_folder_path + \
-            "objects/"
+            "region_objects/"
         object_pointcloud_filename_list = os.listdir(object_pointcloud_folder_path)
         for object_pointcloud_filename in object_pointcloud_filename_list:
             object_pointcloud_filepath = object_pointcloud_folder_path + \
@@ -158,6 +164,34 @@ class PointCloudDiff(object):
                 radius=0.1, max_nn=30))
         return True
 
+    def loadValidObjectPointCloud(self):
+        self.valid_object_pointcloud_list = []
+
+        scene_idx = self.scene_pointcloud_folder_path.split("/")[-2]
+        scene_point_move_list = point_move_dict[scene_idx]
+
+        object_pointcloud_folder_path = \
+            self.scene_pointcloud_folder_path + "valid_region_objects/"
+        object_pointcloud_filename_list = \
+            os.listdir(object_pointcloud_folder_path)
+        for object_pointcloud_filename in object_pointcloud_filename_list:
+            object_pointcloud_filepath = object_pointcloud_folder_path + \
+                object_pointcloud_filename
+            object_pointcloud = o3d.io.read_point_cloud(object_pointcloud_filepath)
+            object_points = np.array(object_pointcloud.points)
+            object_points[:, :2] += scene_point_move_list
+            object_pointcloud.points = \
+                o3d.utility.Vector3dVector(object_points)
+            self.valid_object_pointcloud_list.append(object_pointcloud)
+
+        self.merge_valid_object_pointcloud = \
+            self.getMergePointCloud(self.valid_object_pointcloud_list)
+
+        self.merge_valid_object_pointcloud.estimate_normals(
+            search_param=o3d.geometry.KDTreeSearchParamHybrid(
+                radius=0.1, max_nn=30))
+        return True
+
     def loadAllPointCloud(self, scene_pointcloud_folder_path):
         if not self.updateObjectPointCloudSavePath():
             print("[ERROR][PointCloudDiff::loadAllPointCloud]")
@@ -170,6 +204,10 @@ class PointCloudDiff(object):
         if not self.loadObjectPointCloud():
             print("[ERROR][PointCloudDiff::loadAllPointCloud]")
             print("\t loadObjectPointCloud failed!")
+            return False
+        if not self.loadValidObjectPointCloud():
+            print("[ERROR][PointCloudDiff::loadAllPointCloud]")
+            print("\t loadValidObjectPointCloud failed!")
             return False
         return True
 
@@ -228,7 +266,8 @@ class PointCloudDiff(object):
         return True
 
     def logObjectData(self):
-        pointcloud_save_filename_list = os.listdir(self.object_pointcloud_save_path)
+        pointcloud_save_filename_list = \
+            os.listdir(self.object_pointcloud_save_path)
         if len(pointcloud_save_filename_list) == 0:
             return True
 
@@ -287,6 +326,35 @@ class PointCloudDiff(object):
             print("\t logScalar for point_distance_mean failed!")
             return False
         if not self.logScalar("PointCloudDiff/object_completeness",
+                              self.last_log_time - self.log_start_time,
+                              recon_percent):
+            print("[ERROR][PointCloudDiff::startComparePointCloud]")
+            print("\t logScalar for recon_percent failed!")
+            return False
+
+        dist_to_scene = \
+            recon_merge_object_pointcloud.compute_point_cloud_distance(
+                self.merge_valid_object_pointcloud)
+        dist_to_scene = np.asarray(dist_to_scene)
+        avg_dist2_error = 0
+        for dist in dist_to_scene:
+            avg_dist2_error += dist * dist
+        avg_dist2_error /= dist_to_scene.shape[0]
+
+        dist_to_recon = \
+            self.merge_valid_object_pointcloud.compute_point_cloud_distance(
+                recon_merge_object_pointcloud)
+        dist_to_recon = np.asarray(dist_to_recon)
+        recon_point_num = len(np.where(dist_to_recon < 0.2)[0])
+        recon_percent = 1.0 * recon_point_num / self.scene_point_num
+
+        if not self.logScalar("PointCloudDiff/valid_object_error",
+                              self.last_log_time - self.log_start_time,
+                              avg_dist2_error):
+            print("[ERROR][PointCloudDiff::startComparePointCloud]")
+            print("\t logScalar for point_distance_mean failed!")
+            return False
+        if not self.logScalar("PointCloudDiff/valid_object_completeness",
                               self.last_log_time - self.log_start_time,
                               recon_percent):
             print("[ERROR][PointCloudDiff::startComparePointCloud]")
