@@ -295,6 +295,8 @@ class PointCloudDiff(object):
         for object_filename in object_filename_list:
             recon_object_pointcloud = o3d.io.read_point_cloud(
                 self.object_pointcloud_save_path + object_filename)
+            if np.array(recon_object_pointcloud.points).shape[0] == 0:
+                continue
             recon_object_pointcloud_list.append(recon_object_pointcloud)
 
         recon_merge_object_pointcloud = self.getMergePointCloud(
