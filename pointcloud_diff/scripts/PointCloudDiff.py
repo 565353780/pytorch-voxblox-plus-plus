@@ -19,10 +19,10 @@ point_move_dict = {
     "03": [-8.3, -0.5, 0],
     "04": [7.35, -4.2, 0],
     "05": [0, -0.4, 0],
-    "06": [0, 0, 0]
+    "06": [-4.1, -3.32, 0]
 }
 
-DEBUG = True
+DEBUG = False
 
 class PointCloudDiff(object):
     def __init__(self):
