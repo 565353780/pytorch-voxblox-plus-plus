@@ -2,7 +2,7 @@
 
 <launch>
 
-  <arg name="scene_pointcloud_folder_path" default=".ros/COSCAN/MatterPort/02/"/>
+  <arg name="scene_pointcloud_folder_path" default=".ros/COSCAN/MatterPort/03/"/>
 
   <node pkg="pointcloud_diff" name="PointCloudDiff" type="PointCloudDiff.py" output="screen">
     <rosparam param="/scene_pointcloud_folder_path" subst_value="True">$(arg scene_pointcloud_folder_path)</rosparam>
