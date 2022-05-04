@@ -15,14 +15,14 @@ from tensorboard_logger_ros.srv import ScalarToBool
 
 point_move_dict = {
     "01": [-9.2, 0.1, 0],
-    "02": [0, 0, 0],
+    "02": [0.9, -1.6, 0],
     "03": [-8.45, 0, 0],
     "04": [7.32, -3.8, -1.5],
     "05": [0, 0, 0],
     "06": [0, 0, 0]
 }
 
-DEBUG = False
+DEBUG = True
 
 class PointCloudDiff(object):
     def __init__(self):
