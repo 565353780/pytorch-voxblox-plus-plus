@@ -14,8 +14,15 @@ from tensorboard_logger_ros.msg import Scalar
 from tensorboard_logger_ros.srv import ScalarToBool
 
 point_move_dict = {
-    "01": [-9.2, 0.1],
+    "01": [-9.2, 0.1, 0],
+    "02": [0, 0, 0],
+    "03": [-8.45, 0, 0],
+    "04": [7.32, -3.8, -1.5],
+    "05": [0, 0, 0],
+    "06": [0, 0, 0]
 }
+
+DEBUG = False
 
 class PointCloudDiff(object):
     def __init__(self):
@@ -40,7 +47,8 @@ class PointCloudDiff(object):
         self.log_start_time = None
         self.last_log_time = None
 
-        sleep(10)
+        if not DEBUG:
+            sleep(10)
         self.get_map_proxy = rospy.ServiceProxy("/gsm_node/get_map", GetMap)
         self.tf_logger_proxy = rospy.ServiceProxy('/tensorboard_logger/log_scalar', ScalarToBool)
         return
@@ -49,6 +57,9 @@ class PointCloudDiff(object):
         self.scene_pointcloud_folder_path = scene_pointcloud_folder_path
         if self.scene_pointcloud_folder_path[-1] != "/":
             self.scene_pointcloud_folder_path += "/"
+
+        scene_idx = self.scene_pointcloud_folder_path.split("/")[-2]
+        scene_point_move_list = point_move_dict[scene_idx]
 
         if not os.path.exists(self.scene_pointcloud_folder_path):
             print("[ERROR][PointCloudDiff::loadScenePointCloud]")
@@ -71,12 +82,23 @@ class PointCloudDiff(object):
         if pointcloud_file_path_split_list[-1] == "obj":
             mesh = o3d.io.read_triangle_mesh(scene_pointcloud_file_path)
             self.scene_pointcloud = o3d.geometry.PointCloud()
-            self.scene_pointcloud.points = o3d.utility.Vector3dVector(mesh.vertices)
-            self.scene_point_num = len(self.scene_pointcloud.points)
+            scene_pointcloud_points = np.array(mesh.vertices)
+            scene_pointcloud_points[:, :] += scene_point_move_list
+            self.scene_pointcloud.points = \
+                o3d.utility.Vector3dVector(scene_pointcloud_points)
+            self.scene_point_num = scene_pointcloud_points.shape[0]
             return True
 
         self.scene_pointcloud = o3d.io.read_point_cloud(scene_pointcloud_file_path)
-        self.scene_point_num = len(self.scene_pointcloud.points)
+        scene_pointcloud_points = np.array(self.scene_pointcloud.points)
+        scene_pointcloud_points[:, :] += scene_point_move_list
+        self.scene_pointcloud.points = \
+            o3d.utility.Vector3dVector(scene_pointcloud_points)
+        self.scene_point_num = scene_pointcloud_points.shape[0]
+
+        self.scene_pointcloud.estimate_normals(
+            search_param=o3d.geometry.KDTreeSearchParamHybrid(
+                radius=0.1, max_nn=30))
         return True
 
     def updateObjectPointCloudSavePath(self):
@@ -141,7 +163,7 @@ class PointCloudDiff(object):
         self.object_pointcloud_list = []
 
         scene_idx = self.scene_pointcloud_folder_path.split("/")[-2]
-        scene_point_move_list = point_move_dict[scene_idx]
+        object_point_move_list = point_move_dict[scene_idx]
 
         object_pointcloud_folder_path = self.scene_pointcloud_folder_path + \
             "region_objects/"
@@ -151,7 +173,7 @@ class PointCloudDiff(object):
                 object_pointcloud_filename
             object_pointcloud = o3d.io.read_point_cloud(object_pointcloud_filepath)
             object_points = np.array(object_pointcloud.points)
-            object_points[:, :2] += scene_point_move_list
+            object_points[:, :] += object_point_move_list
             object_pointcloud.points = \
                 o3d.utility.Vector3dVector(object_points)
             self.object_pointcloud_list.append(object_pointcloud)
@@ -162,13 +184,14 @@ class PointCloudDiff(object):
         self.merge_object_pointcloud.estimate_normals(
             search_param=o3d.geometry.KDTreeSearchParamHybrid(
                 radius=0.1, max_nn=30))
+
         return True
 
     def loadValidObjectPointCloud(self):
         self.valid_object_pointcloud_list = []
 
         scene_idx = self.scene_pointcloud_folder_path.split("/")[-2]
-        scene_point_move_list = point_move_dict[scene_idx]
+        object_point_move_list = point_move_dict[scene_idx]
 
         object_pointcloud_folder_path = \
             self.scene_pointcloud_folder_path + "valid_region_objects/"
@@ -179,7 +202,7 @@ class PointCloudDiff(object):
                 object_pointcloud_filename
             object_pointcloud = o3d.io.read_point_cloud(object_pointcloud_filepath)
             object_points = np.array(object_pointcloud.points)
-            object_points[:, :2] += scene_point_move_list
+            object_points[:, :] += object_point_move_list
             object_pointcloud.points = \
                 o3d.utility.Vector3dVector(object_points)
             self.valid_object_pointcloud_list.append(object_pointcloud)
@@ -309,6 +332,11 @@ class PointCloudDiff(object):
             search_param=o3d.geometry.KDTreeSearchParamHybrid(
                 radius=0.1, max_nn=30))
 
+        if DEBUG:
+            o3d.visualization.draw_geometries([
+                self.merge_object_pointcloud, recon_merge_object_pointcloud])
+            exit()
+
         dist_to_scene = \
             recon_merge_object_pointcloud.compute_point_cloud_distance(
                 self.merge_object_pointcloud)
@@ -373,17 +401,20 @@ class PointCloudDiff(object):
         self.last_log_time = self.log_start_time
 
         while True:
-            sleep(10)
+            if not DEBUG:
+                sleep(10)
 
             new_log_time = time()
             if new_log_time == self.last_log_time:
                 return True
             self.last_log_time = new_log_time
 
-            if not self.logSceneData():
-                print("[ERROR][PointCloudDiff::startComparePointCloud]")
-                print("\t logSceneData failed!")
-                break
+            if not DEBUG:
+                if not self.logSceneData():
+                    print("[ERROR][PointCloudDiff::startComparePointCloud]")
+                    print("\t logSceneData failed!")
+                    break
+
             if not self.logObjectData():
                 print("[ERROR][PointCloudDiff::startComparePointCloud]")
                 print("\t logObjectData failed!")
