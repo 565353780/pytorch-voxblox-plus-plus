@@ -3,7 +3,6 @@
 
 #include <grnet_detect/PC2ToPC2.h>
 #include <pointcloud2_to_object_vec_converter/PC2ToOBJS.h>
-#include <pointcloud2_to_object_vec_converter/PointCloud2Vec.h>
 
 #define PCL_NO_PRECOMPILE
 #include <pcl/register_point_struct.h>

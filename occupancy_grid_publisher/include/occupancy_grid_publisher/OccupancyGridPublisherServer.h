@@ -22,7 +22,8 @@ public:
   }
 
 private:
-  bool addPointCloud2DiffCallback(const sensor_msgs::PointCloud2ConstPtr pointcloud2_diff);
+  bool addPointCloud2DiffCallback(
+      const sensor_msgs::PointCloud2ConstPtr pointcloud2_diff);
 
   bool logTensorBoard(
       const std::string& name,

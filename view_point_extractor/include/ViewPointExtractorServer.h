@@ -13,8 +13,9 @@ class ViewPointExtractorServer
 {
 public:
   ViewPointExtractorServer() :
-    view_point_extractor_server_(nh_.advertiseService("view_point_extractor/get_view_point_vec",
-                                 &ViewPointExtractorServer::getViewPointVecCallback, this)),
+    view_point_extractor_server_(nh_.advertiseService(
+          "view_point_extractor/get_view_point_vec",
+          &ViewPointExtractorServer::getViewPointVecCallback, this)),
     view_point_vec_pub_(nh_.advertise<view_point_extractor::ViewPointVec>("view_point_extractor/view_point_vec", queue_size_)),
     tensorboard_logger_client_(nh_.serviceClient<tensorboard_logger_ros::ScalarToBool>("tensorboard_logger/log_scalar"))
   {
