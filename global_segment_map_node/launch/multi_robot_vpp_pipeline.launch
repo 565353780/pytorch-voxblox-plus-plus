@@ -71,5 +71,7 @@
   </include>
 
   <include file="$(find point_state_manager)/launch/PointStateManagerServer.launch"/>
+
+  <include file="$(find robot_path_planner)/launch/RobotPathPlannerServer.launch"/>
 </launch>
 
