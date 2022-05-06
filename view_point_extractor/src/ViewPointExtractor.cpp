@@ -26,8 +26,8 @@ bool ViewPointExtractor::getMultiView(
 
   if(objects.size() == 0)
   {
-    std::cout << "[WARN][ViewPointExtractor::getMultiView]\n" <<
-      "\t no object found! please get view_ponit_vec later.\n";
+    // std::cout << "[WARN][ViewPointExtractor::getMultiView]\n" <<
+      // "\t no object found! please get view_ponit_vec later.\n";
 
     return true;
   }
