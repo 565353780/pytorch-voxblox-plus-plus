@@ -115,7 +115,13 @@ class PointCloudDiff(object):
         max_idx_folder_name = None
         for pointcloud_save_folder in pointcloud_save_folder_list:
             date_split_list = pointcloud_save_folder.split("_")
+            if len(date_split_list) < 4:
+                continue
+            if "-" not in date_split_list[3]:
+                continue
             time_split_list = date_split_list[3].split("-")
+            if(len(time_split_list) != 3):
+                continue
             current_idx_list = [
                 int(date_split_list[0]),
                 int(date_split_list[1]),
