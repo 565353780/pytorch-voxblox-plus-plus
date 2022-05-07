@@ -110,7 +110,7 @@ bool OccupancyGridPublisher::addPointCloudDiff(
       occupancy_grid_.data[idx] = 100;
       ++obstacle_pixel_num_;
     }
-    else
+    else if(occupancy_grid_.data[idx] == -1)
     {
       occupancy_grid_.data[idx] = 0;
       ++free_pixel_num_;
