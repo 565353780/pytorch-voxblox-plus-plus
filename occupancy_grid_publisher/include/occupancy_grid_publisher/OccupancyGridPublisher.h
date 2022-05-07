@@ -58,8 +58,8 @@ private:
 
   bool updateMapSize();
 
-  float robot_height_min_ = 0.3;
-  float robot_height_max_ = 1.5;
+  float robot_height_min_ = 0.2;
+  float robot_height_max_ = 1.8;
   unsigned unknown_padding_size_ = 20;
   float pixel_area_ = 0.05 * 0.05;
 

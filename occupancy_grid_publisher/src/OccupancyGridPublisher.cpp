@@ -93,13 +93,14 @@ bool OccupancyGridPublisher::addPointCloudDiff(
 
     const int idx = row * occupancy_grid_.info.width + col;
 
-    if(occupancy_grid_.data[idx] != -1)
+    if(occupancy_grid_.data[idx] == 100)
     {
       continue;
     }
 
     // if have obstacle, the value is 100, otherwise is 0
-    if(trans_diff_point.z >= robot_height_min_ && trans_diff_point.z <= robot_height_max_)
+    if(trans_diff_point.z >= robot_height_min_ &&
+        trans_diff_point.z <= robot_height_max_)
     {
       occupancy_grid_.data[idx] = 100;
       ++obstacle_pixel_num_;
