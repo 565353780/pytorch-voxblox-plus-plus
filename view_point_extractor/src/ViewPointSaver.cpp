@@ -488,8 +488,12 @@ float ObjectHistory::getViewPointDist2(
     view_point_1.direction.z - view_point_2.direction.z;
 
   const float total_dist =
-    position_x_diff + position_y_diff + position_z_diff +
-    direction_x_diff + direction_y_diff + direction_z_diff;
+    position_x_diff * position_x_diff +
+    position_y_diff * position_y_diff +
+    position_z_diff * position_z_diff +
+    direction_x_diff * direction_x_diff +
+    direction_y_diff * direction_y_diff +
+    direction_z_diff * direction_z_diff;
 
   return total_dist;
 }
