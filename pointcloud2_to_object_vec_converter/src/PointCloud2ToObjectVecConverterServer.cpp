@@ -70,7 +70,7 @@ bool PointCloud2ToObjectVecConverterServer::saveScene(
     const sensor_msgs::PointCloud2& scene)
 {
   // RUN_LOG PARAM
-  const size_t save_duration = 10;
+  const size_t save_duration = 1;
 
   // scene_point_cloud.channels[*].name =
   // [distance, weight, segment_label, semantic_class, instance_label]
