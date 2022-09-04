@@ -10,9 +10,9 @@ sudo apt install python3-dev python3-pip python3-wstool protobuf-compiler \
   ros-noetic-nav-core ros-noetic-clear-costmap-recovery ros-noetic-move-base-msgs \
   ros-noetic-rotate-recovery ros-noetic-octomap
 pip3 install -U numpy protobuf scipy scikit-image ipython keras wrapt simplejson \
-  netaddr osrf-pycommon scipy pillow catkin_pkg rospkg opencv-python empy open3d \
-  easydict tensorflow-gpu argparse easydict h5py matplotlib numpy opencv-python \
-  pyexr scipy transforms3d tqdm ninja pygments
+  netaddr osrf-pycommon scipy pillow catkin_pkg rospkg opencv-python empy easydict \
+  tensorflow-gpu argparse easydict h5py matplotlib numpy opencv-python pyexr scipy \
+  transforms3d tqdm ninja pygments
 pip3 install tensorboardX==1.2 open3d==0.10.0.0
 
 # pip3 install -U tensorflow-gpu==2.5.0 keras-nightly==2.5.0.dev2021032900 keras==2.4.3
