@@ -12,8 +12,8 @@ sudo apt install python3-dev python3-pip python3-wstool protobuf-compiler \
 pip3 install -U numpy protobuf scipy scikit-image ipython keras wrapt simplejson \
   netaddr osrf-pycommon scipy pillow catkin_pkg rospkg opencv-python empy easydict \
   tensorflow-gpu argparse easydict h5py matplotlib numpy opencv-python pyexr scipy \
-  transforms3d tqdm ninja pygments
-pip3 install tensorboardX==1.2 open3d==0.10.0.0
+  transforms3d tqdm ninja pygments open3d
+pip3 install tensorboardX==1.2
 
 # pip3 install -U tensorflow-gpu==2.5.0 keras-nightly==2.5.0.dev2021032900 keras==2.4.3
 pip3 install torch torchvision torchaudio \
