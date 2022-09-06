@@ -41,5 +41,5 @@ icp:
 debug:
   verbose_log: false
   multiple_visualizers: true
-  save_visualizer_frames: true
+  save_visualizer_frames: false
 
