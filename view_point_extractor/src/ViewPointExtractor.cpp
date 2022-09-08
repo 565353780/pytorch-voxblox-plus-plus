@@ -10,9 +10,6 @@ bool ViewPointExtractor::getMultiView(
 {
   view_point_vec.clear();
 
-  // std::cout << "[INFO][ViewPointExtractor::getMultiView]\n" <<
-    // "\t start call pointcloud2_to_object_vec_converter to get objects...\n";
-
   // objects[*].channels[*].name = [semantic_label]
   std::vector<sensor_msgs::PointCloud2> objects;
   if(!getObjects(objects))
@@ -22,13 +19,9 @@ bool ViewPointExtractor::getMultiView(
 
     return false;
   }
-  // std::cout << "SUCCESS!\n";
 
   if(objects.size() == 0)
   {
-    // std::cout << "[WARN][ViewPointExtractor::getMultiView]\n" <<
-      // "\t no object found! please get view_ponit_vec later.\n";
-
     return true;
   }
 
@@ -50,30 +43,11 @@ bool ViewPointExtractor::getMultiView(
   std::vector<size_t> object_point_num_more_to_less_vec;
   sortVecIndexByMoreToLess(object_point_num_vec, object_point_num_more_to_less_vec);
 
-  // std::cout << "ViewPointExtractor::getMultiView :\n" <<
-    // "Got " << objects.size() << " objects!\n";
-  // for(size_t i = 0; i < object_point_num_more_to_less_vec.size(); ++i)
-  // {
-    // std::cout << "object[" << i << "] : size = "
-      // << trans_objects[object_point_num_more_to_less_vec[i]].points.size()
-      // << ", semantic = "
-      // << coco_names_vec_[trans_objects[object_point_num_more_to_less_vec[i]].channels[0].values[0]]
-      // << std::endl;
-  // }
-
-  // std::cout << "[INFO][ViewPointExtractor::getMultiView]\n" <<
-    // "\t start get sampling point cloud vec...\n";
-
   std::vector<sensor_msgs::PointCloud> sampling_point_cloud_vec;
   getSamplingPointCloudVec(trans_objects, sampling_point_cloud_vec, grnet_input_pointcloud_size_);
 
   std::vector<sensor_msgs::PointCloud2> sampling_point_cloud2_vec;
   transPointCloudVecToPointCloud2Vec(sampling_point_cloud_vec, sampling_point_cloud2_vec);
-
-  // std::cout << "SUCCESS!\n";
-
-  // std::cout << "[INFO][ViewPointExtractor::getMultiView]\n" <<
-    // "\t start call grnet_detect to get full point cloud2 vec...\n";
 
   std::vector<sensor_msgs::PointCloud2> full_point_cloud2_vec;
   if(!getFullPointCloud2VecFromPartialPointCloud2Vec(sampling_point_cloud2_vec, full_point_cloud2_vec))
@@ -84,8 +58,6 @@ bool ViewPointExtractor::getMultiView(
     return false;
   }
 
-  // std::cout << "SUCCESS!\n";
-
   std::vector<sensor_msgs::PointCloud> trans_full_point_cloud_vec;
   transPointCloud2VecToPointCloudVec(full_point_cloud2_vec, trans_full_point_cloud_vec);
 
@@ -94,9 +66,6 @@ bool ViewPointExtractor::getMultiView(
   const float view_point_diff_max = 2;
   const size_t view_point_similar_time = 1;
   const size_t object_disappear_count_max = 1;
-
-  // std::cout << "[ERROR][ViewPointExtractor::getMultiView]\n" <<
-    // "\t start search valid viewpoints...\n";
 
   object_saver_.resetObjectHistoryMatchState();
 
@@ -154,8 +123,6 @@ bool ViewPointExtractor::getMultiView(
   }
 
   object_saver_.updateObjectHistory(object_disappear_count_max);
-
-  // std::cout << "SUCCESS!\n";
 
   if(false)
   {
