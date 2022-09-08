@@ -10,7 +10,13 @@ bool ViewPointExtractorServer::getViewPointVecCallback(
   const clock_t start_clock = clock();
 
   std::vector<view_point_extractor::ViewPoint> view_point_vec;
-  view_point_extractor_.getMultiView(view_point_vec);
+  if(!view_point_extractor_.getMultiView(view_point_vec))
+  {
+    std::cout << "[ERROR][ViewPointExtractorServer::getViewPointVecCallback]\n" <<
+      "\t getMultiView failed!\n";
+
+    return false;
+  }
 
   time_spend_ = 1.0 * (clock() - start_clock) / CLOCKS_PER_SEC;
 

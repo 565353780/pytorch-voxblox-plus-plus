@@ -36,9 +36,9 @@ int main(int argc, char** argv)
     if (!try_view_point_extractor_client.call(get_view_point_vec_serve))
     {
       std::cout << "[ERROR][try_ViewPointExtractorServer::main]\n" <<
-        "\t call view_point_extractor_server failed!\n";
+        "\t call view_point_extractor_server failed! start retry...\n";
 
-      return -1;
+      // return -1;
     }
 
     // std::cout << "[INFO][try_ViewPointExtractorServer::main]\n" <<
