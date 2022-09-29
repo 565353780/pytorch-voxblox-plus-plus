@@ -18,6 +18,7 @@ cd ~/vpp_ws/src
 git clone https://github.com/565353780/pytorch-voxblox-plus-plus.git
 cd pytorch-voxblox-plus-plus
 ./setup.sh
+catkin build gsm_node
 ```
 
 ## Run
