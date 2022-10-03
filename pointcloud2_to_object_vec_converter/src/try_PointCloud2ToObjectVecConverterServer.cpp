@@ -14,14 +14,19 @@ int main(int argc, char** argv)
   ros::ServiceClient try_pointcloud_to_objects_client =
     nh.serviceClient<pointcloud2_to_object_vec_converter::PC2ToOBJS>("pointcloud2_to_object_vec_converter/convert_pointcloud2_to_object_vec");
 
-  std::cout << "Start call pointcloud_to_objects_server service...\n";
+  std::cout << "[INFO][try_PointCloud2ToObjectVecConverterServer]\n" <<
+    "Start call pointcloud_to_objects_server service...\n";
 
-  std::cout << "Start wait pointcloud2_to_object_vec_converter_server...\n";
+  std::cout << "[INFO][try_PointCloud2ToObjectVecConverterServer]\n" <<
+    "Start wait pointcloud2_to_object_vec_converter_server...\n";
+
   pointcloud2_to_object_vec_converter::PC2ToOBJS first_get_object_vec_serve;
   while(!try_pointcloud_to_objects_client.call(first_get_object_vec_serve))
   {
     ros::Duration(sleep_duration).sleep();
   }
+
+  bool is_output = false;
 
   while(true)
   {
@@ -30,15 +35,17 @@ int main(int argc, char** argv)
     std::cout << "Start call pointcloud2_to_object_vec_converter_server...\n";
     pointcloud2_to_object_vec_converter::PC2ToOBJS new_get_object_vec_serve;
 
-    bool is_output = false;
 
     if(!try_pointcloud_to_objects_client.call(new_get_object_vec_serve))
     {
-      if(!is_output)
+      if(is_output)
       {
-        std::cout << "call pointcloud2_to_object_vec_converter_server failed! start retry...\n";
-        is_output = true;
+        continue;
       }
+
+      std::cout << "[ERROR][try_PointCloud2ToObjectVecConverterServer]\n" <<
+        "call pointcloud2_to_object_vec_converter_server failed! start retry...\n";
+      is_output = true;
 
       continue;
       // return 0;
@@ -46,6 +53,8 @@ int main(int argc, char** argv)
 
     const std::vector<sensor_msgs::PointCloud2>& objects = new_get_object_vec_serve.response.objects;
     std::cout << "get " << objects.size() << " objects\n";
+
+    is_output = false;
   }
 
   return 1;

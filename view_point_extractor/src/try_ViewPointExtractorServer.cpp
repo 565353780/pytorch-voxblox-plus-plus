@@ -21,27 +21,32 @@ int main(int argc, char** argv)
     ros::Duration(sleep_duration).sleep();
   }
 
+  bool is_output = false;
+
   while(true)
   {
     ros::Duration(sleep_duration).sleep();
 
     view_point_extractor::PC2ToViewPointVec get_view_point_vec_serve;
 
-    bool is_output = false;
 
     if (!try_view_point_extractor_client.call(get_view_point_vec_serve))
     {
-      if(!is_output)
+      if(is_output)
       {
-        std::cout << "[ERROR][try_ViewPointExtractorServer::main]\n" <<
-          "\t call view_point_extractor_server failed! start retry...\n";
-
-        is_output = true;
+        continue;
       }
+
+      std::cout << "[ERROR][try_ViewPointExtractorServer::main]\n" <<
+        "\t call view_point_extractor_server failed! start retry...\n";
+
+      is_output = true;
 
       continue;
       // return -1;
     }
+
+    is_output = false;
   }
 
   return 0;
