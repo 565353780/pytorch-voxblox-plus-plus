@@ -30,11 +30,18 @@ int main(int argc, char** argv)
     std::cout << "Start call pointcloud2_to_object_vec_converter_server...\n";
     pointcloud2_to_object_vec_converter::PC2ToOBJS new_get_object_vec_serve;
 
+    bool is_output = false;
+
     if(!try_pointcloud_to_objects_client.call(new_get_object_vec_serve))
     {
-      std::cout << "call pointcloud2_to_object_vec_converter_server failed!\n";
+      if(!is_output)
+      {
+        std::cout << "call pointcloud2_to_object_vec_converter_server failed! start retry...\n";
+        is_output = true;
+      }
 
-      return 0;
+      continue;
+      // return 0;
     }
 
     const std::vector<sensor_msgs::PointCloud2>& objects = new_get_object_vec_serve.response.objects;
