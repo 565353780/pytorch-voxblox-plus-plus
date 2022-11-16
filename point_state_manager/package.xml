@@ -52,12 +52,14 @@
   <buildtool_depend>genmsg</buildtool_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>std_msgs</build_depend>
+  <build_depend>vpp_msgs</build_depend>
   <build_depend>message_generation</build_depend>
   <build_depend>tensorboard_logger_ros</build_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>std_msgs</exec_depend>
+  <exec_depend>vpp_msgs</exec_depend>
   <exec_depend>message_runtime</exec_depend>
 
 
