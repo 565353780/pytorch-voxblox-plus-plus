@@ -2,7 +2,7 @@ cd ..
 git clone https://github.com/565353780/multi-fetch-ros.git
 git clone https://github.com/565353780/robot-manage-ros.git
 git clone https://github.com/565353780/grnet-detect-ros.git
-git clone https://github.com/565353780/tensorboard_logger_ros.git
+git clone https://github.com/565353780/tensorboard-logger-ros.git
 
 sudo apt install python3-dev python3-pip python3-wstool protobuf-compiler \
   dh-autoreconf ccache libpcl1-dev libpcl-dev libcgal-dev python3-catkin-tools \
